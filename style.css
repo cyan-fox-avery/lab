@@ -165,7 +165,7 @@ body.epilogue-mode .progress-pill { opacity:0; pointer-events:none; }
 .tarot-spread { width:min(100%,560px); margin:38px auto 4px; padding-top:24px; border-top:1px solid rgba(166,109,130,.2); }
 .tarot-row { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; perspective:900px; align-items:start; }
 .tarot-item { min-width:0; text-align:center; }
-.tarot-card { width:100%; aspect-ratio:2.75 / 4.75; min-width:0; border-radius:10px; perspective:900px; }
+.tarot-card { width:100%; aspect-ratio:2 / 3; min-width:0; border-radius:10px; perspective:900px; }
 .tarot-card:focus-visible { outline:3px solid var(--accent-deep); outline-offset:4px; }
 .tarot-card-inner { position:relative; display:block; width:100%; height:100%; transform-style:preserve-3d; transition:transform 620ms cubic-bezier(.2,.72,.22,1); }
 .tarot-card.is-flipped .tarot-card-inner { transform:rotateY(180deg); }
@@ -178,6 +178,9 @@ body.epilogue-mode .progress-pill { opacity:0; pointer-events:none; }
 .tarot-back-moon { position:absolute; z-index:2; bottom:16%; font-size:.85rem; opacity:.72; }
 .tarot-front { padding:9px 5px 7px; transform:rotateY(180deg); border:1px solid #d8c7b4; color:var(--ink); background:linear-gradient(180deg,#fffaf4 0%,#f5eadf 100%); box-shadow:0 9px 20px rgba(0,0,0,.12); text-align:center; }
 .tarot-front::before { content:''; position:absolute; inset:6px; border:1px solid rgba(166,109,130,.22); border-radius:7px; pointer-events:none; }
+.tarot-front.tarot-front--image { padding:0; border:0; background:#fffaf4; }
+.tarot-front.tarot-front--image::before { content:none; }
+.tarot-card-image { display:block; width:100%; height:100%; object-fit:cover; border-radius:10px; }
 .tarot-title { position:relative; z-index:2; min-height:2em; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:clamp(.69rem,2.25vw,.94rem); line-height:1; font-weight:700; }
 .tarot-art { position:relative; z-index:2; width:88%; height:auto; max-height:66%; overflow:visible; }
 .tarot-line, .tarot-ornament, .tarot-water, .tarot-vine, .tarot-flower { fill:none; stroke:var(--accent-deep); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
