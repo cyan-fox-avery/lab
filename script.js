@@ -10,6 +10,53 @@ const finaleButton = document.querySelector('[data-finale-button]');
 const drawerLinks = [...document.querySelectorAll('.drawer-link[data-jump]')];
 const progressStorageKey = 'fiona-27-unlocked-v1';
 const firstNoteHint = document.getElementById('first-note-hint');
+const starField = document.querySelector('.star-field');
+const starLayout = [
+  [7, 18, 2.2, .78], [17, 73, 1.8, .58], [25, 31, 2.0, .68], [34, 86, 1.7, .72],
+  [43, 14, 1.9, .55], [51, 63, 2.3, .82], [59, 28, 1.6, .58], [67, 79, 2.1, .74],
+  [76, 20, 1.8, .61], [84, 67, 2.2, .76], [93, 39, 1.7, .62], [12, 48, 1.6, .56],
+  [29, 60, 2.0, .69], [39, 38, 1.7, .60], [48, 91, 2.1, .72], [57, 49, 1.6, .54],
+  [70, 53, 2.0, .66], [81, 88, 1.8, .62], [90, 13, 2.1, .73], [5, 91, 1.7, .60],
+  [22, 94, 1.6, .54], [88, 94, 1.9, .68]
+];
+const starGroups = [[0],[1,2],[3],[4,5],[6,7],[8],[9,10],[11,12],[13],[14,15],[16,17],[18],[19,20],[21]];
+let starTimers = [];
+
+function buildStarField() {
+  if (!starField || starField.children.length) return;
+  starLayout.forEach(([x, y, size, alpha]) => {
+    const star = document.createElement('span');
+    star.className = 'star';
+    star.style.setProperty('--star-x', `${x}%`);
+    star.style.setProperty('--star-y', `${y}%`);
+    star.style.setProperty('--star-size', `${size}px`);
+    star.style.setProperty('--star-alpha', alpha);
+    starField.appendChild(star);
+  });
+}
+
+function stopStarField() {
+  starTimers.forEach(clearTimeout);
+  starTimers = [];
+  starField?.querySelectorAll('.star').forEach((star) => star.classList.remove('is-visible'));
+}
+
+function playStarField() {
+  if (!starField) return;
+  buildStarField();
+  stopStarField();
+  const stars = [...starField.querySelectorAll('.star')];
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    stars.forEach((star) => star.classList.add('is-visible'));
+    return;
+  }
+  starGroups.forEach((group, groupIndex) => {
+    const timer = setTimeout(() => {
+      group.forEach((index) => stars[index]?.classList.add('is-visible'));
+    }, 420 + (groupIndex * 610));
+    starTimers.push(timer);
+  });
+}
 
 const music = document.getElementById('background-music');
 const musicToggle = document.getElementById('music-toggle');
@@ -64,14 +111,10 @@ function sizeNote(screen) {
 function resetNameRoll(screen) {
   const roll = screen?.querySelector('[data-name-roll]');
   if (!roll) return;
-  const current = roll.querySelector('.name-roll-current');
   (roll._timers || []).forEach(clearTimeout);
   roll._timers = [];
   roll.dataset.played = 'false';
-  if (current) {
-    current.textContent = '';
-    current.classList.remove('is-visible', 'is-switching');
-  }
+  roll.querySelectorAll('.name-roll-name').forEach((name) => name.classList.remove('is-visible'));
 }
 
 function resetMemory(screen) {
@@ -97,6 +140,9 @@ function showScreen(id) {
   document.body.classList.toggle('cover-mode', id === 'cover');
   document.body.classList.toggle('epilogue-mode', id === 'epilogue');
   target.classList.add('active');
+
+  if (id === 'cover' || id === 'epilogue') playStarField();
+  else stopStarField();
 
   if (target.dataset.memory && target.dataset.memory !== '00') {
     unlockMemory(Number.parseInt(target.dataset.memory, 10));
@@ -133,39 +179,20 @@ function closeDrawer() {
   drawer.setAttribute('aria-hidden', 'true');
 }
 
-// Memory 13: Grandma's mental Rolodex plays when the names actually reach the viewport.
+// Memory 13: Grandma's mental Rolodex builds one name at a time when it reaches the viewport.
 const nameRoll = document.querySelector('[data-name-roll]');
-const nameSequence = ['Deborah,', 'Donna,', 'Siobhan,', 'Kelly,', 'Tammy,', 'Hannah,', 'Fiona.'];
 
 function playNameRoll(roll) {
   if (!roll || roll.dataset.played === 'true') return;
-  const current = roll.querySelector('.name-roll-current');
-  if (!current) return;
+  const names = [...roll.querySelectorAll('.name-roll-name')];
+  if (!names.length) return;
 
   roll.dataset.played = 'true';
   roll._timers = [];
-  let index = 0;
-
-  const showNext = () => {
-    current.classList.add('is-switching');
-    const swapTimer = setTimeout(() => {
-      current.textContent = nameSequence[index];
-      current.classList.remove('is-switching');
-      requestAnimationFrame(() => current.classList.add('is-visible'));
-      index += 1;
-
-      if (index < nameSequence.length) {
-        const nextTimer = setTimeout(() => {
-          current.classList.remove('is-visible');
-          showNext();
-        }, 520);
-        roll._timers.push(nextTimer);
-      }
-    }, index === 0 ? 60 : 150);
-    roll._timers.push(swapTimer);
-  };
-
-  showNext();
+  names.forEach((name, index) => {
+    const timer = setTimeout(() => name.classList.add('is-visible'), 120 + (index * 520));
+    roll._timers.push(timer);
+  });
 }
 
 if ('IntersectionObserver' in window && nameRoll) {
@@ -243,7 +270,7 @@ function setupReconnectThread(widget) {
     const { rect, targetX, minX, maxX } = metrics();
     const x = Math.max(minX, Math.min(maxX, event.clientX - rect.left));
     placeEnd(x);
-    if (Math.abs(x - targetX) <= 42) tieThread();
+    if (Math.abs(x - targetX) <= 50) tieThread();
   });
 
   const finishDrag = (event) => {
@@ -273,12 +300,18 @@ document.querySelectorAll('[data-censor-toggle]').forEach((button) => {
   });
 });
 
-// Memory 26: each tarot card flips independently.
+// Memory 26: each tarot card flips independently and reveals its meaning underneath.
 document.querySelectorAll('[data-tarot-card]').forEach((card) => {
   card.addEventListener('click', (event) => {
     event.stopPropagation();
     const flipped = card.classList.toggle('is-flipped');
+    const item = card.closest('.tarot-item');
+    item?.classList.toggle('is-revealed', flipped);
     card.setAttribute('aria-pressed', String(flipped));
+    card.setAttribute('aria-label', flipped ? 'Turn this tarot card face down' : `Turn over ${card.querySelector('.tarot-title')?.textContent || 'this tarot card'}`);
+    const screen = card.closest('.memory-screen');
+    requestAnimationFrame(() => sizeNote(screen));
+    setTimeout(() => sizeNote(screen), 460);
   });
 });
 
