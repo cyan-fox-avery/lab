@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111416" />
-  <title>Rock Go Crunch — v2</title>
+  <title>Rock Go Crunch — v2.1</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">PROTOTYPE V2</p>
+        <p class="eyebrow">PROTOTYPE V2.1</p>
         <h1>ROCK GO CRUNCH</h1>
         <p class="subtitle">dig · discover · collect · upgrade</p>
       </div>
@@ -23,33 +23,53 @@
         <div class="status-grid">
           <div class="status-card"><span class="status-label">Depth</span><strong id="depthName">Upper Seam</strong><span id="depthNumber" class="status-note">Depth 1</span></div>
           <div class="status-card"><span class="status-label">Pick durability</span><strong><span id="durability">0</span>/<span id="maxDurability">0</span></strong><div class="meter"><span id="durabilityMeter"></span></div></div>
-          <div class="status-card"><span class="status-label">Surveying</span><strong id="surveyLevel">None</strong><span class="status-note">whole-face report</span></div>
+          <div class="status-card"><span class="status-label">Scanner</span><strong id="surveyLevel">None</strong><span id="scanUseSummary" class="status-note">locked</span></div>
           <div class="status-card"><span class="status-label">Balance</span><strong id="mineBalance">0¢</strong><span class="status-note">one currency only</span></div>
         </div>
 
         <div class="mine-card">
           <div class="mine-heading">
-            <div><h2>Rock face</h2><p>Dig blind. If you hit a vein, deciding where to swing next matters.</p></div>
+            <div><h2>Rock face</h2><p>Look for faint geological tells, scan promising areas, then follow whatever you uncover.</p></div>
             <button id="newFaceButton" class="secondary-button" type="button">New face</button>
           </div>
+
           <div id="depthSelector" class="depth-selector"></div>
-          <div class="survey-box">
-            <div class="survey-heading"><span class="survey-icon">⌁</span><div><span class="status-label">Survey report</span><strong id="surveyTitle">No survey equipment</strong></div></div>
+
+          <div class="survey-box scanner-box">
+            <div class="survey-heading scanner-heading">
+              <span class="survey-icon">⌁</span>
+              <div class="scanner-copy"><span class="status-label">Area scanner</span><strong id="surveyTitle">No scanner equipment</strong></div>
+              <button id="scanButton" class="secondary-button scan-button" type="button">Scan area</button>
+            </div>
             <div id="surveyReport" class="survey-report"></div>
           </div>
+
           <div id="mineBoard" class="mine-board" aria-label="10 by 10 mine grid"></div>
-          <div class="run-footer"><div><span class="status-label">Found this face</span><strong id="faceFinds">Nothing yet</strong></div><button id="surfaceButton" class="primary-button" type="button">Return to surface</button></div>
+
+          <div class="run-footer">
+            <div><span class="status-label">Found this face</span><strong id="faceFinds">Nothing yet</strong></div>
+            <button id="surfaceButton" class="primary-button" type="button">Return to surface</button>
+          </div>
         </div>
-        <div id="mineMessage" class="message-card"><span class="message-icon">⛏️</span><div><strong>Rock go crunch.</strong><p>No coloured hints. Pick a spot and start digging.</p></div></div>
+
+        <div id="mineMessage" class="message-card"><span class="message-icon">⛏️</span><div><strong>Rock go crunch.</strong><p>A few faint marks may suggest where to start, but they are clues, not guarantees.</p></div></div>
       </section>
 
       <section class="panel" data-panel="workbench">
-        <div class="section-heading"><div><p class="eyebrow">SURFACE WORKSHOP</p><h2>Workbench</h2></div><p>Collapsed for scanning. Expand a find for stats, processing, selling, and donating.</p></div>
+        <div class="section-heading">
+          <div><p class="eyebrow">SURFACE WORKSHOP</p><h2>Workbench</h2></div>
+          <p>Inventory sparkles show where something is waiting for you.</p>
+        </div>
+
+        <div id="automationPanel" class="automation-panel"></div>
         <div id="workbenchList" class="workbench-list"></div>
       </section>
 
       <section class="panel" data-panel="museum">
-        <div class="section-heading"><div><p class="eyebrow">THE COLLECTION</p><h2>Museum</h2></div><p>Fill the slots. Facts appear after a specimen is donated.</p></div>
+        <div class="section-heading">
+          <div><p class="eyebrow">THE COLLECTION</p><h2>Museum</h2></div>
+          <p>Three-across specimen rows keep the collection compact. Tap a collected specimen for its fact.</p>
+        </div>
         <div class="collection-progress-card"><div><span class="status-label">Museum completion</span><strong id="museumCount">0 / 19</strong></div><div class="big-meter"><span id="museumMeter"></span></div></div>
         <div id="museumWings" class="museum-wings"></div>
       </section>
@@ -58,18 +78,24 @@
         <div class="section-heading"><div><p class="eyebrow">GEAR & OPERATIONS</p><h2>Upgrades</h2></div><p>Better equipment is earned here. Nothing costs real money.</p></div>
         <div class="shop-balance"><span class="status-label">Current balance</span><strong id="shopBalance">0¢</strong></div>
         <div id="upgradeList" class="upgrade-list"></div>
-        <div class="design-note"><strong>Prototype rule</strong><p>Processing is free. Early processing is effectively instant; later materials can require better equipment instead of premium currency.</p></div>
-        <button id="resetButton" class="danger-button" type="button">Reset v2 save</button>
+        <div class="design-note"><strong>Prototype rule</strong><p>Processing is free. Scanner charges and pick durability reset with each fresh rock face. No real-time recharge.</p></div>
+        <button id="resetButton" class="danger-button" type="button">Reset v2.1 save</button>
       </section>
     </main>
 
+    <div id="mobileMineHud" class="mobile-mine-hud" aria-live="polite">
+      <span id="mobileDurability">⛏️ 0 / 0</span>
+      <span id="mobileScans">⌁ locked</span>
+    </div>
+
     <nav class="bottom-nav" aria-label="Game navigation">
       <button class="nav-button active" type="button" data-target="mine"><span>⛏️</span><small>Mine</small></button>
-      <button class="nav-button" type="button" data-target="workbench"><span>🛠️</span><small>Workbench</small></button>
+      <button id="workbenchNav" class="nav-button" type="button" data-target="workbench"><span class="nav-icon-wrap">🛠️<b id="workbenchBadge" class="nav-badge" hidden>✦</b></span><small>Workbench</small></button>
       <button class="nav-button" type="button" data-target="museum"><span>🏛️</span><small>Museum</small></button>
       <button class="nav-button" type="button" data-target="upgrades"><span>⬆️</span><small>Upgrades</small></button>
     </nav>
   </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="script.js"></script>
 </body>
