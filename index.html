@@ -3,161 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#151719" />
-  <title>Rock Go Crunch — Prototype 0.1</title>
+  <meta name="theme-color" content="#111416" />
+  <title>Rock Go Crunch — v2</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">PROTOTYPE 0.1</p>
+        <p class="eyebrow">PROTOTYPE V2</p>
         <h1>ROCK GO CRUNCH</h1>
-        <p class="subtitle">one mine · two minerals · zero microtransactions</p>
+        <p class="subtitle">dig · discover · collect · upgrade</p>
       </div>
-      <button id="soundToggle" class="icon-button" type="button" aria-label="Toggle sound" title="Toggle sound">🔊</button>
+      <button id="soundToggle" class="icon-button" type="button" aria-label="Toggle sound">🔊</button>
     </header>
 
     <main>
-      <section id="minePanel" class="panel active" data-panel="mine">
+      <section class="panel active" data-panel="mine">
         <div class="status-grid">
-          <div class="status-card">
-            <span class="status-label">Depth</span>
-            <strong>Level 1</strong>
-            <span class="status-note">Quartz seam</span>
-          </div>
-          <div class="status-card">
-            <span class="status-label">Pick</span>
-            <strong id="pickName">Basic Pick</strong>
-            <span class="status-note" id="pickTierText">Tier I</span>
-          </div>
-          <div class="status-card">
-            <span class="status-label">Durability</span>
-            <strong><span id="durability">0</span>/<span id="maxDurability">0</span></strong>
-            <div class="meter" aria-hidden="true"><span id="durabilityMeter"></span></div>
-          </div>
-          <div class="status-card">
-            <span class="status-label">Credits</span>
-            <strong>¢<span id="credits">0</span></strong>
-            <span class="status-note">from selling finds</span>
-          </div>
+          <div class="status-card"><span class="status-label">Depth</span><strong id="depthName">Upper Seam</strong><span id="depthNumber" class="status-note">Depth 1</span></div>
+          <div class="status-card"><span class="status-label">Pick durability</span><strong><span id="durability">0</span>/<span id="maxDurability">0</span></strong><div class="meter"><span id="durabilityMeter"></span></div></div>
+          <div class="status-card"><span class="status-label">Surveying</span><strong id="surveyLevel">None</strong><span class="status-note">whole-face report</span></div>
+          <div class="status-card"><span class="status-label">Balance</span><strong id="mineBalance">0¢</strong><span class="status-note">one currency only</span></div>
         </div>
 
         <div class="mine-card">
           <div class="mine-heading">
-            <div>
-              <h2>Rock face</h2>
-              <p>Look for mineral traces, then choose where to swing.</p>
-            </div>
-            <button id="newRunButton" class="secondary-button" type="button">New rock face</button>
+            <div><h2>Rock face</h2><p>Dig blind. If you hit a vein, deciding where to swing next matters.</p></div>
+            <button id="newFaceButton" class="secondary-button" type="button">New face</button>
           </div>
-
-          <div class="trace-legend" aria-label="Mining clue legend">
-            <span><i class="trace-dot quartz-dot"></i> pale trace: quartz nearby</span>
-            <span><i class="trace-dot amethyst-dot"></i> violet trace: amethyst nearby</span>
+          <div id="depthSelector" class="depth-selector"></div>
+          <div class="survey-box">
+            <div class="survey-heading"><span class="survey-icon">⌁</span><div><span class="status-label">Survey report</span><strong id="surveyTitle">No survey equipment</strong></div></div>
+            <div id="surveyReport" class="survey-report"></div>
           </div>
-
-          <div id="mineBoard" class="mine-board" aria-label="Mine grid"></div>
-
-          <div class="run-footer">
-            <div>
-              <span class="status-label">Found this run</span>
-              <strong id="runFinds">Nothing yet</strong>
-            </div>
-            <button id="returnButton" class="primary-button" type="button">Return to surface</button>
-          </div>
+          <div id="mineBoard" class="mine-board" aria-label="10 by 10 mine grid"></div>
+          <div class="run-footer"><div><span class="status-label">Found this face</span><strong id="faceFinds">Nothing yet</strong></div><button id="surfaceButton" class="primary-button" type="button">Return to surface</button></div>
         </div>
-
-        <div id="mineMessage" class="message-card">
-          <span class="message-icon">⛏️</span>
-          <div>
-            <strong>Pick a promising spot.</strong>
-            <p>Faint mineral flecks mean a gem is hiding in one of the surrounding tiles.</p>
-          </div>
-        </div>
+        <div id="mineMessage" class="message-card"><span class="message-icon">⛏️</span><div><strong>Rock go crunch.</strong><p>No coloured hints. Pick a spot and start digging.</p></div></div>
       </section>
 
-      <section id="workbenchPanel" class="panel" data-panel="workbench">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">SURFACE WORKSHOP</p>
-            <h2>Workbench</h2>
-          </div>
-          <p>Process finds, donate specimens, or sell your extras.</p>
-        </div>
-
-        <div id="workbenchList" class="mineral-list"></div>
+      <section class="panel" data-panel="workbench">
+        <div class="section-heading"><div><p class="eyebrow">SURFACE WORKSHOP</p><h2>Workbench</h2></div><p>Collapsed for scanning. Expand a find for stats, processing, selling, and donating.</p></div>
+        <div id="workbenchList" class="workbench-list"></div>
       </section>
 
-      <section id="collectionPanel" class="panel" data-panel="collection">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">SPECIMEN CABINET</p>
-            <h2>Collection</h2>
-          </div>
-          <p>Every mineral has three permanent slots: raw, tumbled, and cut.</p>
-        </div>
-
-        <div class="collection-progress-card">
-          <div>
-            <span class="status-label">Cabinet completion</span>
-            <strong id="collectionCount">0 / 6</strong>
-          </div>
-          <div class="big-meter" aria-hidden="true"><span id="collectionMeter"></span></div>
-        </div>
-
-        <div id="collectionGrid" class="collection-grid"></div>
+      <section class="panel" data-panel="museum">
+        <div class="section-heading"><div><p class="eyebrow">THE COLLECTION</p><h2>Museum</h2></div><p>Fill the slots. Facts appear after a specimen is donated.</p></div>
+        <div class="collection-progress-card"><div><span class="status-label">Museum completion</span><strong id="museumCount">0 / 19</strong></div><div class="big-meter"><span id="museumMeter"></span></div></div>
+        <div id="museumWings" class="museum-wings"></div>
       </section>
 
-      <section id="upgradesPanel" class="panel" data-panel="upgrades">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">GEAR BENCH</p>
-            <h2>Upgrades</h2>
-          </div>
-          <p>No timers. No premium currency. Just better tools.</p>
-        </div>
-
-        <div class="upgrade-card">
-          <div class="upgrade-icon">⛏️</div>
-          <div class="upgrade-copy">
-            <span class="status-label">Current pick</span>
-            <h3 id="upgradePickName">Basic Pick</h3>
-            <p id="upgradeDescription">A little clumsy, but it gets through rock.</p>
-          </div>
-          <div class="upgrade-action">
-            <span id="upgradeCost" class="price-tag">¢80</span>
-            <button id="upgradeButton" class="primary-button" type="button">Upgrade pick</button>
-          </div>
-        </div>
-
-        <div class="design-note">
-          <strong>Prototype rule:</strong>
-          <p>Pick upgrades increase how many tiles you can break in a run. They do not make you wait for energy to recharge.</p>
-        </div>
-
-        <button id="resetButton" class="danger-button" type="button">Reset prototype save</button>
+      <section class="panel" data-panel="upgrades">
+        <div class="section-heading"><div><p class="eyebrow">GEAR & OPERATIONS</p><h2>Upgrades</h2></div><p>Better equipment is earned here. Nothing costs real money.</p></div>
+        <div class="shop-balance"><span class="status-label">Current balance</span><strong id="shopBalance">0¢</strong></div>
+        <div id="upgradeList" class="upgrade-list"></div>
+        <div class="design-note"><strong>Prototype rule</strong><p>Processing is free. Early processing is effectively instant; later materials can require better equipment instead of premium currency.</p></div>
+        <button id="resetButton" class="danger-button" type="button">Reset v2 save</button>
       </section>
     </main>
 
     <nav class="bottom-nav" aria-label="Game navigation">
-      <button class="nav-button active" type="button" data-target="mine">
-        <span>⛏️</span><small>Mine</small>
-      </button>
-      <button class="nav-button" type="button" data-target="workbench">
-        <span>🛠️</span><small>Workbench</small>
-      </button>
-      <button class="nav-button" type="button" data-target="collection">
-        <span>💎</span><small>Collection</small>
-      </button>
-      <button class="nav-button" type="button" data-target="upgrades">
-        <span>⬆️</span><small>Upgrades</small>
-      </button>
+      <button class="nav-button active" type="button" data-target="mine"><span>⛏️</span><small>Mine</small></button>
+      <button class="nav-button" type="button" data-target="workbench"><span>🛠️</span><small>Workbench</small></button>
+      <button class="nav-button" type="button" data-target="museum"><span>🏛️</span><small>Museum</small></button>
+      <button class="nav-button" type="button" data-target="upgrades"><span>⬆️</span><small>Upgrades</small></button>
     </nav>
   </div>
-
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
   <script src="script.js"></script>
 </body>
 </html>
