@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111416" />
-  <title>Rock Go Crunch — v2.1</title>
+  <title>Rock Go Crunch — v3.0</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">PROTOTYPE V2.1</p>
+        <p class="eyebrow">PROTOTYPE V3.0</p>
         <h1>ROCK GO CRUNCH</h1>
         <p class="subtitle">dig · discover · collect · upgrade</p>
       </div>
@@ -29,7 +29,7 @@
 
         <div class="mine-card">
           <div class="mine-heading">
-            <div><h2>Rock face</h2><p>Look for faint geological tells, scan promising areas, then follow whatever you uncover.</p></div>
+            <div><h2>Rock face</h2><p>Read the rock, survey promising areas, then follow the veins you uncover.</p></div>
             <button id="newFaceButton" class="secondary-button" type="button">New face</button>
           </div>
 
@@ -52,34 +52,32 @@
           </div>
         </div>
 
-        <div id="mineMessage" class="message-card"><span class="message-icon">⛏️</span><div><strong>Rock go crunch.</strong><p>A few faint marks may suggest where to start, but they are clues, not guarantees.</p></div></div>
+        <div id="mineMessage" class="message-card"><span class="message-icon">⛏️</span><div><strong>Rock go crunch.</strong><p>Faint geological tells can suggest where to begin. Repeated scans can reveal the vaguest hint of something hidden.</p></div></div>
       </section>
 
       <section class="panel" data-panel="workbench">
         <div class="section-heading">
           <div><p class="eyebrow">SURFACE WORKSHOP</p><h2>Workbench</h2></div>
-          <p>Inventory sparkles show where something is waiting for you.</p>
+          <p>A sparkle appears on the specific material card whenever that material is in your inventory.</p>
         </div>
-
-        <div id="automationPanel" class="automation-panel"></div>
         <div id="workbenchList" class="workbench-list"></div>
       </section>
 
       <section class="panel" data-panel="museum">
         <div class="section-heading">
           <div><p class="eyebrow">THE COLLECTION</p><h2>Museum</h2></div>
-          <p>Three-across specimen rows keep the collection compact. Tap a collected specimen for its fact.</p>
+          <p>Each specimen keeps its own fact card. Complete a material set to unlock its mastery fact and automation.</p>
         </div>
-        <div class="collection-progress-card"><div><span class="status-label">Museum completion</span><strong id="museumCount">0 / 19</strong></div><div class="big-meter"><span id="museumMeter"></span></div></div>
+        <div class="collection-progress-card"><div><span class="status-label">Museum completion</span><strong id="museumCount">0 / 38</strong></div><div class="big-meter"><span id="museumMeter"></span></div></div>
         <div id="museumWings" class="museum-wings"></div>
       </section>
 
       <section class="panel" data-panel="upgrades">
-        <div class="section-heading"><div><p class="eyebrow">GEAR & OPERATIONS</p><h2>Upgrades</h2></div><p>Better equipment is earned here. Nothing costs real money.</p></div>
+        <div class="section-heading"><div><p class="eyebrow">GEAR & OPERATIONS</p><h2>Upgrades</h2></div><p>Better equipment is earned in-game. Nothing costs real money.</p></div>
         <div class="shop-balance"><span class="status-label">Current balance</span><strong id="shopBalance">0¢</strong></div>
         <div id="upgradeList" class="upgrade-list"></div>
-        <div class="design-note"><strong>Prototype rule</strong><p>Processing is free. Scanner charges and pick durability reset with each fresh rock face. No real-time recharge.</p></div>
-        <button id="resetButton" class="danger-button" type="button">Reset v2.1 save</button>
+        <div class="design-note"><strong>Prototype rule</strong><p>Processing is free. Scanner charges and pick durability reset with each fresh rock face. No real-time recharge, premium currency, or pay-to-skip.</p></div>
+        <button id="resetButton" class="danger-button" type="button">Reset v3.0 save</button>
       </section>
     </main>
 
@@ -90,7 +88,7 @@
 
     <nav class="bottom-nav" aria-label="Game navigation">
       <button class="nav-button active" type="button" data-target="mine"><span>⛏️</span><small>Mine</small></button>
-      <button id="workbenchNav" class="nav-button" type="button" data-target="workbench"><span class="nav-icon-wrap">🛠️<b id="workbenchBadge" class="nav-badge" hidden>✦</b></span><small>Workbench</small></button>
+      <button class="nav-button" type="button" data-target="workbench"><span>🛠️</span><small>Workbench</small></button>
       <button class="nav-button" type="button" data-target="museum"><span>🏛️</span><small>Museum</small></button>
       <button class="nav-button" type="button" data-target="upgrades"><span>⬆️</span><small>Upgrades</small></button>
     </nav>

@@ -6,88 +6,176 @@
 
   const MATERIALS = {
     quartz: {
-      name: 'Quartz', subtitle: 'Silicon dioxide · SiO₂', family: 'mineral', wing: 'minerals', iconClass: 'gem quartz',
-      signature: { id: 'silicon-dioxide', label: 'Silicon dioxide', formula: 'SiO₂' },
-      stages: ['raw','tumbled','cut'], stageLabels: {raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices: {raw:4,tumbled:7,cut:12},
-      process: {raw:'tumbled',tumbled:'cut'}, processLabels: {raw:'Tumble 1',tumbled:'Cut 1'},
-      facts: {
-        raw: 'Quartz commonly forms six-sided crystals and is one of Earth’s most abundant minerals.',
-        tumbled: 'Tumbling rounds rough edges through repeated abrasion with grit and water.',
-        cut: 'Clear quartz can be faceted even though it is much softer than diamond.'
+      name:'Quartz', subtitle:'Silicon dioxide · SiO₂', family:'mineral', wing:'minerals', iconClass:'gem quartz',
+      signature:{id:'silicon-dioxide',label:'Silicon dioxide',formula:'SiO₂'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:4,tumbled:7,cut:12},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'},
+      facts:{
+        raw:'Quartz commonly forms six-sided crystals and is one of Earth’s most abundant minerals.',
+        tumbled:'Tumbling rounds rough edges through repeated abrasion with grit and water.',
+        cut:'Clear quartz can be faceted even though it is much softer than diamond.'
       },
-      mastery: { reward: 25, fact: 'Quartz is piezoelectric: squeezing or vibrating it can create an electrical charge, which is why quartz is useful in clocks, watches, and electronics.' }
+      mastery:{fact:'Quartz is piezoelectric: squeezing or vibrating it can create an electrical charge, which is why quartz is useful in clocks, watches, and electronics.'}
     },
     amethyst: {
-      name: 'Amethyst', subtitle: 'Purple quartz · SiO₂', family: 'mineral', wing: 'minerals', iconClass: 'gem amethyst',
-      signature: { id: 'silicon-dioxide', label: 'Silicon dioxide', formula: 'SiO₂' },
-      stages: ['raw','tumbled','cut'], stageLabels: {raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices: {raw:8,tumbled:14,cut:24},
-      process: {raw:'tumbled',tumbled:'cut'}, processLabels: {raw:'Tumble 1',tumbled:'Cut 1'},
-      facts: {
-        raw: 'Amethyst is a purple variety of quartz. Its colour is linked to trace iron and natural irradiation.',
-        tumbled: 'Polishing can make amethyst’s colour zoning and internal patterns easier to see.',
-        cut: 'Amethyst is commonly faceted to emphasize colour and brilliance.'
+      name:'Amethyst', subtitle:'Purple quartz · SiO₂', family:'mineral', wing:'minerals', iconClass:'gem amethyst',
+      signature:{id:'silicon-dioxide',label:'Silicon dioxide',formula:'SiO₂'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:8,tumbled:14,cut:24},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'},
+      facts:{
+        raw:'Amethyst is a purple variety of quartz. Its colour is linked to trace iron and natural irradiation.',
+        tumbled:'Polishing can make amethyst’s colour zoning and internal patterns easier to see.',
+        cut:'Amethyst is commonly faceted to emphasize colour and brilliance.'
       },
-      mastery: { reward: 40, fact: 'Heating can change amethyst’s colour. Some commercial citrine is produced by carefully heat-treating amethyst.' }
+      mastery:{fact:'Heating can change amethyst’s colour. Some commercial citrine is produced by carefully heat-treating amethyst.'}
     },
     garnet: {
-      name: 'Garnet', subtitle: 'A family of silicate minerals', family: 'mineral', wing: 'minerals', iconClass: 'gem garnet',
-      signature: { id: 'garnet-silicate', label: 'Silicate-group chemistry', formula: 'variable' },
-      stages: ['raw','tumbled','cut'], stageLabels: {raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices: {raw:14,tumbled:26,cut:46},
-      process: {raw:'tumbled',tumbled:'cut'}, processLabels: {raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired: 1,
-      facts: {
-        raw: 'Garnet is not one single mineral but a group of related minerals with similar crystal structures.',
-        tumbled: 'Garnets occur in several colours; deep red is familiar, but green, orange, and other varieties exist.',
-        cut: 'Gem-quality garnet can be faceted, while more opaque material is often polished instead.'
+      name:'Garnet', subtitle:'A family of silicate minerals', family:'mineral', wing:'minerals', iconClass:'gem garnet',
+      signature:{id:'garnet-silicate',label:'Silicate-group chemistry',formula:'variable'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:14,tumbled:26,cut:46},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
+      facts:{
+        raw:'Garnet is not one single mineral but a group of related minerals with similar crystal structures.',
+        tumbled:'Garnets occur in several colours; deep red is familiar, but green, orange, and other varieties exist.',
+        cut:'Gem-quality garnet can be faceted, while more opaque material is often polished instead.'
       },
-      mastery: { reward: 65, fact: 'Garnet is useful outside jewellery too. Its hardness makes crushed garnet a practical industrial abrasive, including in some waterjet-cutting systems.' }
+      mastery:{fact:'Garnet is useful outside jewellery too. Its hardness makes crushed garnet a practical industrial abrasive, including in some waterjet-cutting systems.'}
     },
     topaz: {
-      name: 'Topaz', subtitle: 'Aluminium fluorosilicate', family: 'mineral', wing: 'minerals', iconClass: 'gem topaz',
-      signature: { id: 'topaz-chemistry', label: 'Aluminium fluorosilicate', formula: 'Al₂SiO₄(F,OH)₂' },
-      stages: ['raw','tumbled','cut'], stageLabels: {raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices: {raw:18,tumbled:34,cut:60},
-      process: {raw:'tumbled',tumbled:'cut'}, processLabels: {raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired: 1,
-      facts: {
-        raw: 'Topaz can occur in several colours. Natural crystals are often colourless, pale, or lightly coloured.',
-        tumbled: 'Topaz is hard but has perfect cleavage, so careless blows can split a crystal along flat planes.',
-        cut: 'Cutters orient topaz carefully because its cleavage affects how safely a stone can be shaped.'
+      name:'Topaz', subtitle:'Aluminium fluorosilicate', family:'mineral', wing:'minerals', iconClass:'gem topaz',
+      signature:{id:'topaz-chemistry',label:'Aluminium fluorosilicate',formula:'Al₂SiO₄(F,OH)₂'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:18,tumbled:34,cut:60},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
+      facts:{
+        raw:'Topaz can occur in several colours. Natural crystals are often colourless, pale, or lightly coloured.',
+        tumbled:'Topaz is hard but has perfect cleavage, so careless blows can split a crystal along flat planes.',
+        cut:'Cutters orient topaz carefully because its cleavage affects how safely a stone can be shaped.'
       },
-      mastery: { reward: 80, fact: 'Much of the bright blue topaz sold in jewellery starts as pale or colourless topaz and is treated with irradiation and heat to create stable blue colour.' }
+      mastery:{fact:'Much of the bright blue topaz sold in jewellery starts as pale or colourless topaz and is treated with irradiation and heat to create stable blue colour.'}
     },
     pyrite: {
-      name: 'Pyrite', subtitle: 'Iron sulfide · FeS₂', family: 'mineral', wing: 'minerals', iconClass: 'gem pyrite',
-      signature: { id: 'iron-sulfide', label: 'Iron sulfide', formula: 'FeS₂' },
-      stages: ['raw'], stageLabels: {raw:'Natural specimen'}, prices: {raw:11}, process: {},
-      facts: { raw: 'Pyrite is an iron sulfide mineral famous for its metallic lustre and nickname: fool’s gold.' }
+      name:'Pyrite', subtitle:'Iron sulfide · FeS₂', family:'mineral', wing:'minerals', iconClass:'gem pyrite',
+      signature:{id:'iron-sulfide',label:'Iron sulfide',formula:'FeS₂'},
+      stages:['raw'], stageLabels:{raw:'Natural specimen'}, prices:{raw:11}, process:{},
+      facts:{raw:'Pyrite is an iron sulfide mineral famous for its metallic lustre and nickname: fool’s gold.'},
+      mastery:{fact:'Pyrite commonly forms cubes, pyritohedra, and other sharply geometric crystals. Its metallic shine can be spectacular even when no gold is present.'}
+    },
+    citrine: {
+      name:'Citrine', subtitle:'Yellow to orange quartz · SiO₂', family:'mineral', wing:'minerals', iconClass:'gem citrine',
+      signature:{id:'silicon-dioxide',label:'Silicon dioxide',formula:'SiO₂'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:20,tumbled:36,cut:64},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
+      facts:{
+        raw:'Citrine is a yellow to orange variety of quartz. Natural citrine is much less common than amethyst.',
+        tumbled:'Polishing reveals citrine’s warm colour while keeping the quartz hardness that makes it practical for jewellery.',
+        cut:'Faceting can make transparent citrine bright and lively, especially in larger stones.'
+      },
+      mastery:{fact:'Citrine, amethyst, and colourless quartz are all the same mineral species: quartz. Their different colours come from impurities, defects, and treatment histories.'}
+    },
+    calcite: {
+      name:'Calcite', subtitle:'Calcium carbonate · CaCO₃', family:'mineral', wing:'minerals', iconClass:'gem calcite',
+      signature:{id:'calcium-carbonate',label:'Calcium carbonate',formula:'CaCO₃'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:10,tumbled:18,cut:30},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
+      facts:{
+        raw:'Calcite is a major mineral in limestone and marble and is one of the most common carbonate minerals.',
+        tumbled:'Calcite is quite soft, so polished pieces can scratch more easily than quartz.',
+        cut:'Transparent calcite can be cut, but its perfect cleavage makes it much trickier to facet than tougher gemstones.'
+      },
+      mastery:{fact:'Some clear calcite shows strong double refraction: viewed through the crystal, a single line can appear doubled.'}
+    },
+    fluorite: {
+      name:'Fluorite', subtitle:'Calcium fluoride · CaF₂', family:'mineral', wing:'minerals', iconClass:'gem fluorite',
+      signature:{id:'calcium-fluoride',label:'Calcium fluoride',formula:'CaF₂'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:16,tumbled:30,cut:54},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
+      facts:{
+        raw:'Fluorite often forms cubic crystals and occurs in a remarkable range of colours.',
+        tumbled:'Fluorite can take a beautiful polish, but it is softer than quartz and needs gentler handling.',
+        cut:'Gem fluorite can be faceted, though its softness and cleavage make it better suited to careful use than everyday rings.'
+      },
+      mastery:{fact:'The word fluorescence comes from fluorite. Some specimens glow vividly under ultraviolet light, although not every fluorite specimen fluoresces.'}
+    },
+    aquamarine: {
+      name:'Aquamarine', subtitle:'Blue-green beryl · Be₃Al₂Si₆O₁₈', family:'mineral', wing:'minerals', iconClass:'gem aquamarine',
+      signature:{id:'beryl',label:'Beryllium aluminium silicate',formula:'Be₃Al₂Si₆O₁₈'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:28,tumbled:52,cut:94},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:2,
+      facts:{
+        raw:'Aquamarine is the blue to blue-green variety of beryl, the same mineral family that includes emerald.',
+        tumbled:'Aquamarine is hard enough for durable jewellery, though inclusions and fractures still affect how a piece should be handled.',
+        cut:'Aquamarine is often cut to emphasize transparency and cool blue colour rather than maximum rainbow fire.'
+      },
+      mastery:{fact:'Aquamarine and emerald are both beryl. Small amounts of different trace elements are responsible for their very different colours.'}
+    },
+    sapphire: {
+      name:'Sapphire', subtitle:'Corundum · Al₂O₃', family:'mineral', wing:'minerals', iconClass:'gem sapphire',
+      signature:{id:'corundum',label:'Aluminium oxide',formula:'Al₂O₃'},
+      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:38,tumbled:72,cut:135},
+      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:2,
+      facts:{
+        raw:'Sapphire is gem-quality corundum. Blue is famous, but sapphires can occur in many colours.',
+        tumbled:'Corundum is very hard, ranking 9 on the Mohs scale, second only to diamond among common reference minerals.',
+        cut:'Cut orientation matters because sapphire colour can look different along different crystal directions.'
+      },
+      mastery:{fact:'Ruby and sapphire are the same mineral species: corundum. Red gem corundum is called ruby; most other gem colours are called sapphire.'}
     },
     hematite: {
-      name: 'Hematite', subtitle: 'Iron ore → Iron', family: 'ore', wing: 'ores', iconClass: 'ore hematite',
-      signature: { id: 'iron-oxide', label: 'Iron oxide', formula: 'Fe₂O₃' },
-      stages: ['ore','refined'], stageLabels: {ore:'Hematite ore',refined:'Iron'}, prices: {ore:6,refined:12},
-      process: {ore:'refined'}, processLabels: {ore:'Refine to iron'},
-      facts: {
-        ore: 'Hematite is iron oxide and one of the world’s most important ores of iron.',
-        refined: 'Iron extracted from ore became one of the most important metals in tools, structures, and machines.'
-      }
+      name:'Hematite', subtitle:'Iron ore → Iron', family:'ore', wing:'ores', iconClass:'ore hematite',
+      signature:{id:'iron-oxide',label:'Iron oxide',formula:'Fe₂O₃'},
+      stages:['ore','refined'], stageLabels:{ore:'Hematite ore',refined:'Iron'}, prices:{ore:6,refined:12},
+      process:{ore:'refined'}, processLabels:{ore:'Refine to iron'},
+      facts:{
+        ore:'Hematite is iron oxide and one of the world’s most important ores of iron.',
+        refined:'Iron extracted from ore became one of the most important metals in tools, structures, and machines.'
+      },
+      mastery:{fact:'Hematite can look metallic grey, earthy red, or almost black, but its powdered streak is characteristically reddish brown.'}
     },
     chalcopyrite: {
-      name: 'Chalcopyrite', subtitle: 'Copper ore → Copper', family: 'ore', wing: 'ores', iconClass: 'ore chalcopyrite',
-      signature: { id: 'copper-iron-sulfide', label: 'Copper iron sulfide', formula: 'CuFeS₂' },
-      stages: ['ore','refined'], stageLabels: {ore:'Chalcopyrite ore',refined:'Copper'}, prices: {ore:7,refined:15},
-      process: {ore:'refined'}, processLabels: {ore:'Refine to copper'},
-      facts: {
-        ore: 'Chalcopyrite is a copper iron sulfide and one of the most widespread copper-bearing minerals.',
-        refined: 'Copper is valued for conductivity, corrosion resistance, and its ability to be worked into useful shapes.'
-      }
+      name:'Chalcopyrite', subtitle:'Copper ore → Copper', family:'ore', wing:'ores', iconClass:'ore chalcopyrite',
+      signature:{id:'copper-iron-sulfide',label:'Copper iron sulfide',formula:'CuFeS₂'},
+      stages:['ore','refined'], stageLabels:{ore:'Chalcopyrite ore',refined:'Copper'}, prices:{ore:7,refined:15},
+      process:{ore:'refined'}, processLabels:{ore:'Refine to copper'},
+      facts:{
+        ore:'Chalcopyrite is a copper iron sulfide and one of the most widespread copper-bearing minerals.',
+        refined:'Copper is valued for conductivity, corrosion resistance, and its ability to be worked into useful shapes.'
+      },
+      mastery:{fact:'Fresh chalcopyrite is brassy yellow, but weathering can produce colourful iridescent tarnish that is sometimes mistaken for bornite.'}
+    },
+    cassiterite: {
+      name:'Cassiterite', subtitle:'Tin ore → Tin', family:'ore', wing:'ores', iconClass:'ore cassiterite',
+      signature:{id:'tin-oxide',label:'Tin oxide',formula:'SnO₂'},
+      stages:['ore','refined'], stageLabels:{ore:'Cassiterite ore',refined:'Tin'}, prices:{ore:22,refined:50},
+      process:{ore:'refined'}, processLabels:{ore:'Refine to tin'}, workshopRequired:1,
+      facts:{
+        ore:'Cassiterite is tin oxide and the principal ore from which most tin is obtained.',
+        refined:'Tin is a soft, corrosion-resistant metal used in solder, coatings, and alloys such as bronze.'
+      },
+      mastery:{fact:'Tin helped transform metallurgy because copper alloyed with tin produces bronze, a material that played a major role in many ancient technologies.'}
     },
     trilobite: {
-      name: 'Trilobite', subtitle: 'Fossil arthropod', family: 'fossil', wing: 'fossils', iconClass: 'round trilobite', iconText: '≋',
-      stages: ['found'], stageLabels: {found:'Fossil specimen'}, prices: {found:40}, process: {},
-      facts: { found: 'Trilobites were marine arthropods that lived for hundreds of millions of years and disappeared in the end-Permian mass extinction.' }
+      name:'Trilobite', subtitle:'Fossil arthropod', family:'fossil', wing:'fossils', iconClass:'round trilobite', iconText:'≋',
+      signature:{id:'fossil',label:'Fossilized biological material',formula:''},
+      stages:['found'], stageLabels:{found:'Fossil specimen'}, prices:{found:40}, process:{},
+      facts:{found:'Trilobites were marine arthropods that lived for hundreds of millions of years and disappeared in the end-Permian mass extinction.'}
+    },
+    ammonite: {
+      name:'Ammonite', subtitle:'Fossil marine cephalopod', family:'fossil', wing:'fossils', iconClass:'round ammonite', iconText:'◉',
+      signature:{id:'fossil',label:'Fossilized biological material',formula:''},
+      stages:['found'], stageLabels:{found:'Fossil specimen'}, prices:{found:85}, process:{},
+      facts:{found:'Ammonites were shelled marine cephalopods related to modern squid and octopuses. Their rapidly changing forms make many species useful index fossils.'}
     },
     miningTag: {
-      name: 'Mining Tag', subtitle: 'Historical mine check', family: 'artifact', wing: 'history', iconClass: 'tag mining-tag', iconText: '#',
-      stages: ['found'], stageLabels: {found:'Historical artifact'}, prices: {found:50}, process: {},
-      facts: { found: 'Some mines used numbered tags or checks to help track who was underground. Systems varied from one operation to another.' }
+      name:'Mining Tag', subtitle:'Historical mine check', family:'artifact', wing:'history', iconClass:'tag mining-tag', iconText:'#',
+      signature:{id:'artifact',label:'Historical object',formula:''},
+      stages:['found'], stageLabels:{found:'Historical artifact'}, prices:{found:50}, process:{},
+      facts:{found:'Some mines used numbered tags or checks to help track who was underground. Systems varied from one operation to another.'}
+    },
+    miningLamp: {
+      name:'Old Mining Lamp', subtitle:'Historical underground equipment', family:'artifact', wing:'history', iconClass:'tag mining-lamp', iconText:'◒',
+      signature:{id:'artifact',label:'Historical object',formula:''},
+      stages:['found'], stageLabels:{found:'Historical artifact'}, prices:{found:100}, process:{},
+      facts:{found:'Underground lamps changed dramatically over time, from open flames to safety lamps and eventually electric lighting. Safer designs were especially important where flammable gases could accumulate.'}
     }
   };
 
@@ -99,8 +187,21 @@
   ];
 
   const DEPTHS = {
-    1:{name:'Upper Seam',materials:{quartz:42,amethyst:22,hematite:20,chalcopyrite:16},sideFinds:[{key:'miningTag',weight:75},{key:'trilobite',weight:25}]},
-    2:{name:'Lower Works',materials:{quartz:20,amethyst:14,hematite:14,chalcopyrite:14,garnet:14,topaz:11,pyrite:13},sideFinds:[{key:'trilobite',weight:72},{key:'miningTag',weight:28}]}
+    1:{
+      name:'Upper Seam',
+      materials:{quartz:42,amethyst:22,hematite:20,chalcopyrite:16},
+      sideFinds:[{key:'miningTag',weight:75},{key:'trilobite',weight:25}]
+    },
+    2:{
+      name:'Lower Works',
+      materials:{quartz:20,amethyst:14,hematite:14,chalcopyrite:14,garnet:14,topaz:11,pyrite:13},
+      sideFinds:[{key:'trilobite',weight:72},{key:'miningTag',weight:28}]
+    },
+    3:{
+      name:'Deep Gallery',
+      materials:{quartz:10,amethyst:8,hematite:6,chalcopyrite:6,garnet:9,topaz:8,pyrite:7,citrine:12,calcite:10,fluorite:10,aquamarine:6,sapphire:3,cassiterite:5},
+      sideFinds:[{key:'ammonite',weight:55},{key:'trilobite',weight:25},{key:'miningLamp',weight:12},{key:'miningTag',weight:8}]
+    }
   };
 
   const DURABILITY_LEVELS = [
@@ -111,8 +212,8 @@
   ];
 
   const SURVEY_LEVELS = [
-    {name:'None',cost:75,next:'Field Scanner',description:'Unlocks a 3×3 area scanner. Early scans report chemical signatures rather than exact gem names.'},
-    {name:'Field Scanner',cost:160,next:'Spectral Scanner',description:'Reports chemical signatures and signal strength inside the selected 3×3 area.'},
+    {name:'None',cost:75,next:'Field Scanner',description:'Unlocks the 3×3 area scanner. Early scans report chemical signatures rather than exact gem names.'},
+    {name:'Field Scanner',cost:160,next:'Spectral Scanner',description:'Reports chemistry and signal strength inside the selected 3×3 area. Scanned tiles stay marked.'},
     {name:'Spectral Scanner',cost:360,next:'Mineral Analyzer',description:'Adds deposit-pattern information and notices unusual non-mineral signatures.'},
     {name:'Mineral Analyzer',cost:null,next:null,description:'Identifies exact minerals and distinguishes fossil signatures from historical objects.'}
   ];
@@ -121,33 +222,36 @@
     {uses:1,cost:80,label:'1 scan per face'},
     {uses:2,cost:170,label:'2 scans per face'},
     {uses:3,cost:340,label:'3 scans per face'},
-    {uses:4,cost:null,label:'4 scans per face'}
+    {uses:4,cost:560,label:'4 scans per face'},
+    {uses:5,cost:850,label:'5 scans per face'},
+    {uses:6,cost:null,label:'6 scans per face'}
   ];
 
   const WORKSHOP_LEVELS = [
     {name:'Basic Workshop',cost:180,next:'Precision Workshop',description:'Handles quartz, amethyst, iron ore, and copper ore.'},
-    {name:'Precision Workshop',cost:null,next:null,description:'Can also process garnet and topaz. Processing remains free.'}
+    {name:'Precision Workshop',cost:650,next:'Advanced Lapidary',description:'Adds garnet, topaz, citrine, calcite, fluorite, and cassiterite.'},
+    {name:'Advanced Lapidary',cost:null,next:null,description:'Can also process aquamarine and sapphire. Processing remains free.'}
   ];
 
-  const DEPTH_UPGRADE = {cost:225,description:'Unlocks Depth 2: the Lower Works, adding garnet, topaz, and pyrite.'};
-  const AUTOMATION_UPGRADE = {cost:160,description:'Unlocks Auto-process. New finds are processed as far as your equipment allows while reserving undonated museum specimens.'};
+  const DEPTH_UPGRADES = {
+    2:{cost:225,description:'Unlock Depth 2: the Lower Works, adding garnet, topaz, and pyrite.'},
+    3:{cost:850,description:'Unlock Depth 3: the Deep Gallery, adding citrine, calcite, fluorite, aquamarine, sapphire, cassiterite, ammonites, and deeper historical finds.'}
+  };
 
   const emptyInventory = () => Object.fromEntries(Object.entries(MATERIALS).map(([k,m]) => [k,Object.fromEntries(m.stages.map(s => [s,0]))]));
   const emptyCollection = () => Object.fromEntries(Object.entries(MATERIALS).map(([k,m]) => [k,Object.fromEntries(m.stages.map(s => [s,false]))]));
   const emptyStats = () => Object.fromEntries(Object.keys(MATERIALS).map(k => [k,{found:0,sold:0,donated:0,processed:0,earned:0}]));
-  const emptyMastery = () => Object.fromEntries(Object.entries(MATERIALS).filter(([,m]) => m.mastery).map(([k]) => [k,false]));
 
   const defaultState = () => ({
     credits:0,
     sound:true,
     unlockedDepth:1,
     currentDepth:1,
-    upgrades:{durability:0,surveying:0,workshop:0,scannerUses:0,automation:0},
-    settings:{autoProcess:false},
+    upgrades:{durability:0,surveying:0,workshop:0,scannerUses:0},
+    settings:{autoProcessByMaterial:{}},
     inventory:emptyInventory(),
     collection:emptyCollection(),
     stats:emptyStats(),
-    masteryClaimed:emptyMastery(),
     face:null
   });
 
@@ -157,15 +261,13 @@
   let audioContext = null;
   let scanMode = false;
   let activePanel = 'mine';
-  const museumSelection = {};
 
   const $ = id => document.getElementById(id);
   const els = {
     depthName:$('depthName'), depthNumber:$('depthNumber'), durability:$('durability'), maxDurability:$('maxDurability'), durabilityMeter:$('durabilityMeter'),
     surveyLevel:$('surveyLevel'), scanUseSummary:$('scanUseSummary'), mineBalance:$('mineBalance'), depthSelector:$('depthSelector'), surveyTitle:$('surveyTitle'), surveyReport:$('surveyReport'), scanButton:$('scanButton'),
     mineBoard:$('mineBoard'), faceFinds:$('faceFinds'), newFaceButton:$('newFaceButton'), surfaceButton:$('surfaceButton'), mineMessage:$('mineMessage'),
-    automationPanel:$('automationPanel'), workbenchList:$('workbenchList'), workbenchBadge:$('workbenchBadge'),
-    museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'),
+    workbenchList:$('workbenchList'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'),
     shopBalance:$('shopBalance'), upgradeList:$('upgradeList'), soundToggle:$('soundToggle'), resetButton:$('resetButton'), toast:$('toast'),
     mobileMineHud:$('mobileMineHud'), mobileDurability:$('mobileDurability'), mobileScans:$('mobileScans')
   };
@@ -175,11 +277,10 @@
   function init(){
     if(!state.face || state.face.depth !== state.currentDepth){
       state.face = generateFace(state.currentDepth);
-    } else {
+    }else{
       normalizeFace(state.face);
     }
 
-    const retroReward = applyRetroMasteryRewards();
     saveState();
 
     document.querySelectorAll('.nav-button').forEach(btn => btn.addEventListener('click',() => switchPanel(btn)));
@@ -190,7 +291,6 @@
     els.resetButton.addEventListener('click',resetGame);
 
     renderAll();
-    if(retroReward > 0) showToast(`Museum mastery rewards added: ${formatMoney(retroReward)} ✦`);
   }
 
   function loadState(){
@@ -204,11 +304,10 @@
         ...fresh,
         ...parsed,
         upgrades:{...fresh.upgrades,...(parsed.upgrades||{})},
-        settings:{...fresh.settings,...(parsed.settings||{})},
+        settings:{...fresh.settings,...(parsed.settings||{}),autoProcessByMaterial:{...(parsed.settings?.autoProcessByMaterial||{})}},
         inventory:fresh.inventory,
         collection:fresh.collection,
-        stats:fresh.stats,
-        masteryClaimed:{...fresh.masteryClaimed,...(parsed.masteryClaimed||{})}
+        stats:fresh.stats
       };
 
       Object.entries(MATERIALS).forEach(([k,m]) => {
@@ -218,6 +317,23 @@
         });
         merged.stats[k] = {...fresh.stats[k],...(parsed.stats?.[k]||{})};
       });
+
+      // v2.1 migration: if global automation was on, keep it on for materials
+      // that are already mastered in the migrated save.
+      if(parsed.settings?.autoProcess === true){
+        Object.keys(MATERIALS).forEach(k => {
+          if(hasProcessing(k) && MATERIALS[k].stages.every(stage => merged.collection[k][stage])){
+            merged.settings.autoProcessByMaterial[k] = true;
+          }
+        });
+      }
+
+      merged.unlockedDepth = Math.max(1,Math.min(3,merged.unlockedDepth||1));
+      merged.currentDepth = Math.max(1,Math.min(merged.unlockedDepth,merged.currentDepth||1));
+      merged.upgrades.workshop = Math.max(0,Math.min(WORKSHOP_LEVELS.length-1,merged.upgrades.workshop||0));
+      merged.upgrades.scannerUses = Math.max(0,Math.min(SCAN_CHARGE_LEVELS.length-1,merged.upgrades.scannerUses||0));
+      merged.upgrades.surveying = Math.max(0,Math.min(SURVEY_LEVELS.length-1,merged.upgrades.surveying||0));
+      merged.upgrades.durability = Math.max(0,Math.min(DURABILITY_LEVELS.length-1,merged.upgrades.durability||0));
 
       return merged;
     }catch{
@@ -230,7 +346,8 @@
   function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
   function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   function totalInventory(k){ return Object.values(state.inventory[k]||{}).reduce((a,n)=>a+n,0); }
-  function totalInventoryAll(){ return Object.keys(MATERIALS).reduce((a,k)=>a+totalInventory(k),0); }
+  function hasProcessing(k){ return Object.keys(MATERIALS[k].process||{}).length>0; }
+  function currentMaxScans(){ return SCAN_CHARGE_LEVELS[state.upgrades.scannerUses].uses; }
 
   function weightedChoice(source){
     const entries=Array.isArray(source)?source.map(x=>[x.key,x.weight]):Object.entries(source);
@@ -249,49 +366,53 @@
     const r=Math.floor(index/GRID_SIZE),c=index%GRID_SIZE,out=[];
     for(let rr=r-1;rr<=r+1;rr++){
       for(let cc=c-1;cc<=c+1;cc++){
-        if(rr>=0&&rr<GRID_SIZE&&cc>=0&&cc<GRID_SIZE) out.push(rr*GRID_SIZE+cc);
+        if(rr>=0&&rr<GRID_SIZE&&cc>=0&&cc<GRID_SIZE)out.push(rr*GRID_SIZE+cc);
       }
     }
     return out;
   }
 
-  function currentMaxScans(){ return SCAN_CHARGE_LEVELS[state.upgrades.scannerUses].uses; }
-
   function normalizeFace(face){
     if(!Array.isArray(face.hints)) face.hints = generateProspectHints(face);
+    if(!face.finds) face.finds = {};
     if(!Array.isArray(face.scanHistory)) face.scanHistory = [];
     if(face.lastScan === undefined) face.lastScan = null;
-    if(face.scanUsesRemaining === undefined || face.scanUsesRemaining === null){
-      face.scanUsesRemaining = state.upgrades.surveying > 0 ? currentMaxScans() : 0;
+
+    if(!Array.isArray(face.scanCounts) || face.scanCounts.length!==GRID_SIZE*GRID_SIZE){
+      face.scanCounts = Array(GRID_SIZE*GRID_SIZE).fill(0);
+      const oldHistory = Array.isArray(face.scanHistory)?face.scanHistory:[];
+      oldHistory.forEach(entry => {
+        const center = typeof entry==='number'?entry:entry?.center;
+        if(Number.isInteger(center)) scanAreaIndices(center).forEach(i => face.scanCounts[i]++);
+      });
+      if(!oldHistory.length && face.lastScan?.indices){
+        face.lastScan.indices.forEach(i => {if(face.scanCounts[i]!==undefined)face.scanCounts[i]++;});
+      }
     }
-    if(!face.finds) face.finds = {};
+
+    if(face.scanUsesRemaining === undefined || face.scanUsesRemaining === null){
+      face.scanUsesRemaining = state.upgrades.surveying>0 ? currentMaxScans() : 0;
+    }else{
+      face.scanUsesRemaining = Math.min(face.scanUsesRemaining,currentMaxScans());
+    }
   }
 
   function generateProspectHints(face){
-    const count = randInt(1,3);
-    const chosen = new Set();
-    const geologicalTiles = face.tiles.filter(t => t.material && MATERIALS[t.material] && !['fossil','artifact'].includes(MATERIALS[t.material].family));
-
+    const count=randInt(1,3),chosen=new Set();
+    const geological=face.tiles.filter(t=>t.material && !['fossil','artifact'].includes(MATERIALS[t.material].family));
     for(let i=0;i<count;i++){
-      let candidate = null;
-      const shouldBeUseful = geologicalTiles.length && Math.random() < .82;
-
-      if(shouldBeUseful){
-        const target = geologicalTiles[randInt(0,geologicalTiles.length-1)].index;
-        const nearby = [target,...neighbors(target)];
-        candidate = nearby[randInt(0,nearby.length-1)];
+      let candidate;
+      if(geological.length && Math.random()<.82){
+        const target=geological[randInt(0,geological.length-1)].index;
+        const nearby=[target,...neighbors(target)];
+        candidate=nearby[randInt(0,nearby.length-1)];
       }else{
-        candidate = randInt(0,face.tiles.length-1);
+        candidate=randInt(0,face.tiles.length-1);
       }
-
-      let guard = 0;
-      while(chosen.has(candidate) && guard < 30){
-        candidate = randInt(0,face.tiles.length-1);
-        guard++;
-      }
+      let guard=0;
+      while(chosen.has(candidate)&&guard<30){candidate=randInt(0,face.tiles.length-1);guard++;}
       chosen.add(candidate);
     }
-
     return [...chosen];
   }
 
@@ -301,11 +422,11 @@
     let nextId=0;
 
     function placeDeposit(material,size,type){
-      for(let attempt=0;attempt<80;attempt++){
+      for(let attempt=0;attempt<100;attempt++){
         const empty=tiles.filter(t=>!t.material);
         if(!empty.length)return false;
-        const chosen=[empty[randInt(0,empty.length-1)].index],set=new Set(chosen);
-
+        const chosen=[empty[randInt(0,empty.length-1)].index],set=new Set();
+        set.add(chosen[0]);
         while(chosen.length<size){
           const frontier=[];
           chosen.forEach(i=>neighbors(i).forEach(n=>{if(!set.has(n)&&!tiles[n].material&&!frontier.includes(n))frontier.push(n);}));
@@ -313,7 +434,6 @@
           const n=frontier[randInt(0,frontier.length-1)];
           chosen.push(n);set.add(n);
         }
-
         if(chosen.length!==size)continue;
         const id=`d${nextId++}`;
         chosen.forEach(i=>Object.assign(tiles[i],{material,depositId:id,depositType:type}));
@@ -325,22 +445,17 @@
 
     const cfg=DEPTHS[depth];
     placeDeposit(weightedChoice(cfg.materials),randInt(5,8),'large');
-    for(let i=0;i<randInt(3,4);i++)placeDeposit(weightedChoice(cfg.materials),randInt(2,4),'small');
+    for(let i=0;i<randInt(depth===3?4:3,depth===3?5:4);i++)placeDeposit(weightedChoice(cfg.materials),randInt(2,4),'small');
     for(let i=0;i<randInt(3,5);i++)placeDeposit(weightedChoice(cfg.materials),1,'isolated');
-    if(Math.random()<.24)placeDeposit(weightedChoice(cfg.sideFinds),1,'side');
-    if(Math.random()<.045)placeDeposit(weightedChoice(cfg.sideFinds),1,'side');
+    if(Math.random()<(depth===3?.30:.24))placeDeposit(weightedChoice(cfg.sideFinds),1,'side');
+    if(Math.random()<(depth===3?.07:.045))placeDeposit(weightedChoice(cfg.sideFinds),1,'side');
 
     const face={
-      depth,
-      size:GRID_SIZE,
+      depth,size:GRID_SIZE,
       durability:DURABILITY_LEVELS[state.upgrades.durability].swings,
-      finds:{},
-      tiles,
-      deposits,
-      hints:[],
+      finds:{},tiles,deposits,hints:[],
       scanUsesRemaining:state.upgrades.surveying>0?currentMaxScans():0,
-      scanHistory:[],
-      lastScan:null
+      scanHistory:[],scanCounts:Array(GRID_SIZE*GRID_SIZE).fill(0),lastScan:null
     };
     face.hints=generateProspectHints(face);
     return face;
@@ -362,7 +477,7 @@
     scanMode=false;
     state.face=generateFace(state.currentDepth);
     saveState();
-    setMineMessage('⛏️','Fresh rock face.','Look for faint geological tells, spend your scans where they matter, then start crunching.');
+    setMineMessage('⛏️','Fresh rock face.','Read the faint geological tells, survey where it seems worthwhile, then start crunching.');
     playTone('soft');
     renderMine();
     showToast('Fresh rock face.');
@@ -379,28 +494,26 @@
   }
 
   function toggleScanMode(){
-    if(state.upgrades.surveying===0){ showToast('Unlock the Field Scanner first.'); return; }
-    if(state.face.scanUsesRemaining<=0){ showToast('No scans left on this rock face.'); return; }
+    if(state.upgrades.surveying===0){showToast('Unlock the Field Scanner first.');return;}
+    if(state.face.scanUsesRemaining<=0){showToast('No scans left on this rock face.');return;}
     scanMode=!scanMode;
     if(scanMode){
-      setMineMessage('⌁','Scanner ready.','Tap any tile to analyze the 3×3 area around it. Scanning does not use pick durability.');
+      setMineMessage('⌁','Scanner ready.','Tap any tile to scan the 3×3 area around it. Overlap a scan twice and hidden occupied tiles may show a faint density shadow.');
     }else{
       setMineMessage('⛏️','Scanner cancelled.','Back to mining.');
     }
     renderMine();
   }
 
-  function handleTile(index){
-    if(scanMode){ scanAt(index); return; }
-    mineTile(index);
-  }
+  function handleTile(index){ if(scanMode)scanAt(index);else mineTile(index); }
 
   function scanAt(index){
-    if(state.upgrades.surveying===0 || state.face.scanUsesRemaining<=0)return;
+    if(state.upgrades.surveying===0||state.face.scanUsesRemaining<=0)return;
     const indices=scanAreaIndices(index);
     const results=analyzeScan(indices,state.upgrades.surveying);
+    indices.forEach(i=>state.face.scanCounts[i]=(state.face.scanCounts[i]||0)+1);
     state.face.scanUsesRemaining--;
-    state.face.scanHistory.push(index);
+    state.face.scanHistory.push({center:index,indices});
     state.face.lastScan={center:index,indices,results};
     scanMode=false;
     saveState();
@@ -409,12 +522,7 @@
     renderMine();
   }
 
-  function signalStrength(count){
-    if(count>=4)return 'Strong';
-    if(count>=2)return 'Moderate';
-    return 'Trace';
-  }
-
+  function signalStrength(count){ if(count>=4)return 'Strong';if(count>=2)return 'Moderate';return 'Trace'; }
   function depositPattern(types){
     if(types.has('large'))return 'large connected deposit pattern';
     if(types.has('small'))return 'small connected deposit pattern';
@@ -423,47 +531,42 @@
   }
 
   function analyzeScan(indices,level){
-    const tiles=indices.map(i=>state.face.tiles[i]).filter(t=>t&&t.material);
-    if(!tiles.length) return [{html:'No significant mineral signature detected.',plain:'No significant mineral signature detected.'}];
+    const occupied=indices.map(i=>state.face.tiles[i]).filter(t=>t&&t.material);
+    if(!occupied.length)return [{html:'No significant mineral signature detected.',plain:'No significant mineral signature detected.'}];
 
     const results=[];
-    const sideTiles=tiles.filter(t=>['fossil','artifact'].includes(MATERIALS[t.material].family));
-    const geoTiles=tiles.filter(t=>!['fossil','artifact'].includes(MATERIALS[t.material].family));
+    const side=occupied.filter(t=>['fossil','artifact'].includes(MATERIALS[t.material].family));
+    const geo=occupied.filter(t=>!['fossil','artifact'].includes(MATERIALS[t.material].family));
 
     if(level<3){
       const groups=new Map();
-      geoTiles.forEach(tile=>{
-        const m=MATERIALS[tile.material],sig=m.signature;
+      geo.forEach(tile=>{
+        const sig=MATERIALS[tile.material].signature;
         if(!groups.has(sig.id))groups.set(sig.id,{sig,count:0,types:new Set()});
         const g=groups.get(sig.id);g.count++;g.types.add(tile.depositType);
       });
-
       [...groups.values()].sort((a,b)=>b.count-a.count).forEach(g=>{
         const strength=signalStrength(g.count);
         const chemistry=`${g.sig.label}${g.sig.formula&&g.sig.formula!=='variable'?` · ${g.sig.formula}`:''}`;
         const extra=level>=2?` · ${depositPattern(g.types)}`:'';
         results.push({html:`<strong>${strength}</strong> ${chemistry} signature${extra}`,plain:`${strength} ${chemistry} signature${extra}`});
       });
-
-      if(sideTiles.length){
+      if(side.length){
         const msg=level===1?'Unclassified anomaly detected.':'Unusual non-mineral signature detected.';
         results.push({html:`<strong>${msg}</strong>`,plain:msg});
       }
     }else{
       const groups=new Map();
-      geoTiles.forEach(tile=>{
+      geo.forEach(tile=>{
         if(!groups.has(tile.material))groups.set(tile.material,{count:0,types:new Set()});
         const g=groups.get(tile.material);g.count++;g.types.add(tile.depositType);
       });
-
       [...groups.entries()].sort((a,b)=>b[1].count-a[1].count).forEach(([key,g])=>{
         const strength=signalStrength(g.count);
-        const pattern=depositPattern(g.types);
-        results.push({html:`<strong>${strength} ${MATERIALS[key].name}</strong> signal · ${pattern}`,plain:`${strength} ${MATERIALS[key].name} signal · ${pattern}`});
+        results.push({html:`<strong>${strength} ${MATERIALS[key].name}</strong> signal · ${depositPattern(g.types)}`,plain:`${strength} ${MATERIALS[key].name} signal · ${depositPattern(g.types)}`});
       });
-
-      const fossilCount=sideTiles.filter(t=>MATERIALS[t.material].family==='fossil').length;
-      const artifactCount=sideTiles.filter(t=>MATERIALS[t.material].family==='artifact').length;
+      const fossilCount=side.filter(t=>MATERIALS[t.material].family==='fossil').length;
+      const artifactCount=side.filter(t=>MATERIALS[t.material].family==='artifact').length;
       if(fossilCount)results.push({html:'<strong>Fossil signature detected.</strong>',plain:'Fossil signature detected.'});
       if(artifactCount)results.push({html:'<strong>Historical-object signature detected.</strong>',plain:'Historical-object signature detected.'});
     }
@@ -474,7 +577,6 @@
   function mineTile(index){
     const face=state.face,tile=face.tiles[index];
     if(!tile||tile.revealed||face.durability<=0)return;
-
     tile.revealed=true;
     face.durability--;
 
@@ -505,23 +607,18 @@
     const m=MATERIALS[k],stage=m.stages[0];
     state.inventory[k][stage]++;
     state.stats[k].found++;
-    if(state.upgrades.automation>0 && state.settings.autoProcess) autoProcessOne(k);
+    if(canAutoProcess(k) && state.settings.autoProcessByMaterial[k])autoProcessOne(k);
   }
 
-  function museumReserve(k,stage){ return state.collection[k][stage]?0:1; }
-
   function canProcessMaterial(k){ return state.upgrades.workshop >= (MATERIALS[k].workshopRequired||0); }
+  function canAutoProcess(k){ return hasProcessing(k) && isMastered(k) && canProcessMaterial(k); }
 
   function autoProcessOne(k){
+    if(!canAutoProcess(k))return;
     const m=MATERIALS[k];
-    if(!canProcessMaterial(k))return;
-    let current=m.stages[0];
-    let guard=0;
-
-    while(m.process?.[current] && guard<6){
+    let current=m.stages[0],guard=0;
+    while(m.process?.[current] && state.inventory[k][current]>0 && guard<6){
       const next=m.process[current];
-      const available=state.inventory[k][current]-museumReserve(k,current);
-      if(available<=0)break;
       state.inventory[k][current]--;
       state.inventory[k][next]++;
       state.stats[k].processed++;
@@ -550,8 +647,16 @@
       garnet:'A garnet specimen from the Lower Works.',
       topaz:'Topaz. Hard, bright, and worth handling carefully.',
       pyrite:'Pyrite. Metallic, brassy, and absolutely not failed gold.',
+      citrine:'Citrine: warm-coloured quartz from the Deep Gallery.',
+      calcite:'Calcite. Common, important, and much softer than quartz.',
+      fluorite:'Fluorite. Cubic crystals, wild colours, and a future UV-lamp favourite.',
+      aquamarine:'Aquamarine: blue-green beryl. Your cutter will need serious equipment for this one.',
+      sapphire:'Sapphire: gem corundum, and one of the hardest common gemstones.',
+      cassiterite:'Cassiterite: the principal ore of tin.',
       trilobite:'A fossil! The Fossil Wing would like a word.',
-      miningTag:'A historical mining tag. Someone worked this ground before you.'
+      ammonite:'An ammonite! A coiled fossil from an ancient sea.',
+      miningTag:'A historical mining tag. Someone worked this ground before you.',
+      miningLamp:'An old mining lamp. A piece of the mine’s human history survived down here.'
     })[k]||'Something interesting came out of the rock.';
   }
 
@@ -560,13 +665,7 @@
   }
 
   function renderAll(){
-    renderMine();
-    renderWorkbench();
-    renderMuseum();
-    renderUpgrades();
-    renderSoundButton();
-    renderWorkbenchBadge();
-    renderMobileHud();
+    renderMine();renderWorkbench();renderMuseum();renderUpgrades();renderSoundButton();renderMobileHud();
   }
 
   function renderMine(){
@@ -578,30 +677,17 @@
     els.durabilityMeter.style.width=`${Math.max(0,f.durability/max*100)}%`;
     els.surveyLevel.textContent=SURVEY_LEVELS[state.upgrades.surveying].name;
     els.mineBalance.textContent=formatMoney(state.credits);
-
-    if(state.upgrades.surveying>0){
-      els.scanUseSummary.textContent=`${f.scanUsesRemaining}/${currentMaxScans()} scans left`;
-    }else{
-      els.scanUseSummary.textContent='locked';
-    }
-
-    renderDepthSelector();
-    renderSurvey();
-    renderBoard();
-    renderFaceFinds();
-    renderMobileHud();
+    els.scanUseSummary.textContent=state.upgrades.surveying>0?`${f.scanUsesRemaining}/${currentMaxScans()} scans left`:'locked';
+    renderDepthSelector();renderSurvey();renderBoard();renderFaceFinds();renderMobileHud();
   }
 
   function renderDepthSelector(){
     els.depthSelector.innerHTML='';
     Object.keys(DEPTHS).forEach(x=>{
       const d=Number(x),b=document.createElement('button');
-      b.type='button';
-      b.className=`depth-chip ${d===state.currentDepth?'active':''}`;
-      b.disabled=d>state.unlockedDepth;
+      b.type='button';b.className=`depth-chip ${d===state.currentDepth?'active':''}`;b.disabled=d>state.unlockedDepth;
       b.textContent=d<=state.unlockedDepth?`Depth ${d} · ${DEPTHS[d].name}`:`Depth ${d} · Locked`;
-      b.addEventListener('click',()=>setDepth(d));
-      els.depthSelector.appendChild(b);
+      b.addEventListener('click',()=>setDepth(d));els.depthSelector.appendChild(b);
     });
   }
 
@@ -612,9 +698,8 @@
 
     if(level===0){
       els.surveyTitle.textContent='No scanner equipment';
-      els.scanButton.textContent='Locked';
-      els.scanButton.disabled=true;
-      els.surveyReport.innerHTML='<span class="survey-pill">The mine still gives you a few faint visual tells. Upgrade Surveying to analyze a 3×3 area.</span>';
+      els.scanButton.textContent='Locked';els.scanButton.disabled=true;
+      els.surveyReport.innerHTML='<span class="survey-pill">The mine still gives you a few faint visual tells. Upgrade Surveying to analyze 3×3 areas.</span>';
       return;
     }
 
@@ -623,26 +708,24 @@
 
     if(scanMode){
       els.surveyTitle.textContent=`Tap a tile · ${f.scanUsesRemaining} scan${f.scanUsesRemaining===1?'':'s'} left`;
-      els.surveyReport.innerHTML='<span class="survey-pill">The scanner will analyze that tile and its neighbours in a 3×3 area.</span>';
+      els.surveyReport.innerHTML='<span class="survey-pill">Scanned tiles stay marked. Scan the same tile area twice and a hidden occupied tile may show a faint generic density shadow.</span>';
       return;
     }
 
     els.surveyTitle.textContent=`${SURVEY_LEVELS[level].name} · ${f.scanUsesRemaining}/${currentMaxScans()} scans left`;
 
     if(!f.lastScan){
-      const msg=level<3
-        ? 'No area scanned yet. Early scanner levels report chemistry, not exact gem names.'
-        : 'No area scanned yet. This analyzer can identify exact minerals and unusual signatures.';
-      els.surveyReport.innerHTML=`<span class="survey-pill">${msg}</span>`;
+      els.surveyReport.innerHTML=`<span class="survey-pill">${level<3?'Early scanner levels report chemistry, not exact gem names.':'This analyzer can identify exact minerals and unusual signatures.'}</span><span class="survey-pill">All surveyed tiles remain marked for the whole rock face.</span>`;
       return;
     }
 
     f.lastScan.results.forEach(result=>{
-      const line=document.createElement('div');
-      line.className='scan-result-line';
-      line.innerHTML=result.html;
-      els.surveyReport.appendChild(line);
+      const line=document.createElement('div');line.className='scan-result-line';line.innerHTML=result.html;els.surveyReport.appendChild(line);
     });
+    const overlapCount=f.lastScan.indices.filter(i=>(f.scanCounts[i]||0)>=2).length;
+    if(overlapCount){
+      const line=document.createElement('div');line.className='scan-result-line subtle';line.textContent=`${overlapCount} tile${overlapCount===1?'':'s'} in this pass have now been scanned at least twice. Watch for very faint density shadows.`;els.surveyReport.appendChild(line);
+    }
   }
 
   function buildIcon(key,forTile=false,stage=null){
@@ -651,6 +734,7 @@
     m.iconClass.split(' ').forEach(c=>span.classList.add(c));
     if(!forTile&&stage==='refined'&&key==='hematite'){span.classList.remove('hematite');span.classList.add('iron');}
     if(!forTile&&stage==='refined'&&key==='chalcopyrite'){span.classList.remove('chalcopyrite');span.classList.add('copper');}
+    if(!forTile&&stage==='refined'&&key==='cassiterite'){span.classList.remove('cassiterite');span.classList.add('tin');}
     if(forTile&&m.family==='mineral')span.classList.add('gem');
     if(forTile&&m.family==='ore')span.classList.add('ore');
     if(m.iconText)span.textContent=m.iconText;
@@ -659,16 +743,14 @@
 
   function renderBoard(){
     els.mineBoard.innerHTML='';
-    const lastScan=new Set(state.face.lastScan?.indices||[]);
     const hints=new Set(state.face.hints||[]);
 
     state.face.tiles.forEach(t=>{
       const b=document.createElement('button');
-      b.type='button';
-      b.className='rock';
-      b.setAttribute('aria-label',`Mine tile ${t.index+1}`);
-
-      if(lastScan.has(t.index))b.classList.add('scan-area');
+      b.type='button';b.className='rock';b.setAttribute('aria-label',`Mine tile ${t.index+1}`);
+      const scans=state.face.scanCounts?.[t.index]||0;
+      if(scans>=1)b.classList.add('scan-area');
+      if(scans>=2)b.classList.add('scan-overlap');
       if(scanMode)b.classList.add('scan-selectable');
 
       if(t.revealed){
@@ -678,15 +760,17 @@
           const i=buildIcon(t.material,true);i.classList.remove('material-icon');i.classList.add('tile-find');b.appendChild(i);
           b.setAttribute('aria-label',`Revealed ${MATERIALS[t.material].name}`);
         }else{
-          b.classList.add('empty');
-          b.setAttribute('aria-label','Revealed empty rock');
+          b.classList.add('empty');b.setAttribute('aria-label','Revealed empty rock');
         }
         if(!scanMode)b.disabled=true;
       }else{
         if(hints.has(t.index)){
           const mark=document.createElement('span');mark.className='prospect-mark';mark.setAttribute('aria-hidden','true');b.appendChild(mark);
         }
-        b.disabled=!scanMode && state.face.durability<=0;
+        if(scans>=2&&t.material){
+          const shadow=document.createElement('span');shadow.className='scan-anomaly-shadow';shadow.setAttribute('aria-hidden','true');b.appendChild(shadow);
+        }
+        b.disabled=!scanMode&&state.face.durability<=0;
       }
 
       if(!b.disabled)b.addEventListener('click',()=>handleTile(t.index));
@@ -708,67 +792,57 @@
   }
 
   function renderWorkbench(){
-    renderAutomationPanel();
     els.workbenchList.innerHTML='';
-
     Object.entries(MATERIALS).forEach(([k,m])=>{
-      const stock=totalInventory(k);
+      const stock=totalInventory(k),mastered=isMastered(k);
       const card=document.createElement('article');
       card.className=`workbench-card ${openWorkbenchKey===k?'open':''} ${stock>0?'has-stock':''}`;
 
       const toggle=document.createElement('button');
-      toggle.type='button';
-      toggle.className='accordion-toggle';
-      toggle.setAttribute('aria-expanded',openWorkbenchKey===k?'true':'false');
+      toggle.type='button';toggle.className='accordion-toggle';toggle.setAttribute('aria-expanded',openWorkbenchKey===k?'true':'false');
       toggle.appendChild(buildIcon(k));
 
-      const main=document.createElement('div');
-      main.className='accordion-main';
-      const sparkle=stock>0?`<span class="inventory-sparkle">✦ ${stock} in inventory</span>`:'';
-      main.innerHTML=`<h3>${m.name}${sparkle}</h3><div class="summary-chips">${m.stages.map(s=>`<span class="summary-chip">${m.stageLabels[s]} ${state.inventory[k][s]} · ${formatMoney(m.prices[s])}</span>`).join('')}</div>`;
+      const main=document.createElement('div');main.className='accordion-main';
+      const sparkle=stock>0?`<span class="inventory-sparkle">✦ ${stock}</span>`:'';
+      const mastery=mastered?`<span class="mastery-mini-badge">✦ Mastered</span>`:'';
+      main.innerHTML=`<h3>${m.name}${sparkle}${mastery}</h3><div class="summary-chips">${m.stages.map(s=>`<span class="summary-chip">${m.stageLabels[s]} ${state.inventory[k][s]} · ${formatMoney(m.prices[s])}</span>`).join('')}</div>`;
       toggle.appendChild(main);
 
-      const chev=document.createElement('span');
-      chev.className='chevron';chev.textContent='⌄';toggle.appendChild(chev);
+      const chev=document.createElement('span');chev.className='chevron';chev.textContent='⌄';toggle.appendChild(chev);
       toggle.addEventListener('click',()=>{openWorkbenchKey=openWorkbenchKey===k?null:k;renderWorkbench();});
       card.appendChild(toggle);
 
-      const details=document.createElement('div');
-      details.className='workbench-details';
-      details.innerHTML=workbenchDetails(k);
-      card.appendChild(details);
+      const details=document.createElement('div');details.className='workbench-details';details.innerHTML=workbenchDetails(k);card.appendChild(details);
       els.workbenchList.appendChild(card);
     });
 
     els.workbenchList.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',workbenchAction));
-    renderWorkbenchBadge();
-  }
-
-  function renderAutomationPanel(){
-    if(state.upgrades.automation>0){
-      els.automationPanel.innerHTML=`<div class="automation-card"><div><span class="status-label">Automation</span><strong>Auto-process</strong><p>New finds move through the highest processing stage your equipment can handle. One undonated museum specimen is always reserved at each stage.</p></div><button id="autoProcessToggle" class="toggle-switch ${state.settings.autoProcess?'on':''}" type="button" aria-label="Toggle auto-process" aria-pressed="${state.settings.autoProcess?'true':'false'}"></button></div>`;
-      $('autoProcessToggle').addEventListener('click',()=>{
-        state.settings.autoProcess=!state.settings.autoProcess;
-        saveState();
-        renderWorkbench();
-        showToast(`Auto-process ${state.settings.autoProcess?'on':'off'}.`);
-      });
-    }else{
-      els.automationPanel.innerHTML='<div class="automation-card locked"><div><span class="status-label">Automation</span><strong>Auto-process locked</strong><p>Available as an upgrade. Manual processing stays free.</p></div><span>🔒</span></div>';
-    }
   }
 
   function workbenchDetails(k){
-    const m=MATERIALS[k],s=state.stats[k];
+    const m=MATERIALS[k],s=state.stats[k],mastered=isMastered(k);
+    let automation='';
+    if(hasProcessing(k)){
+      if(mastered){
+        const on=!!state.settings.autoProcessByMaterial[k];
+        const equipmentReady=canProcessMaterial(k);
+        automation=`<div class="material-auto-row ${equipmentReady?'':'locked'}"><div><strong>✦ ${m.name} auto-process unlocked</strong><span>${equipmentReady?'New finds can automatically process to the highest stage.':'Mastered, but your current workshop cannot process this material yet.'}</span></div><button class="toggle-switch ${on&&equipmentReady?'on':''}" data-action="toggle-auto" data-material="${k}" type="button" aria-label="Toggle ${m.name} auto-process" aria-pressed="${on&&equipmentReady?'true':'false'}" ${equipmentReady?'':'disabled'}></button></div>`;
+      }else{
+        automation=`<div class="material-auto-row locked"><div><strong>🔒 Auto-process locked</strong><span>Complete the ${m.name} museum set to unlock automation for this material.</span></div></div>`;
+      }
+    }else if(mastered){
+      automation=`<div class="material-auto-row mastery-only"><div><strong>✦ ${m.name} mastered</strong><span>This material has no processing step, so mastery is purely a collection achievement.</span></div></div>`;
+    }
+
     const rows=m.stages.map(stage=>{
       const count=state.inventory[k][stage],next=m.process?.[stage],can=canProcessMaterial(k),donated=state.collection[k][stage];
       const reserve=donated?0:1;
       const safeSell=Math.max(0,count-reserve);
       const sellAllLabel=donated?`Sell all (${count})`:`Sell all extras (${safeSell})`;
-      return `<div class="stage-row"><div class="stage-copy"><strong>${m.stageLabels[stage]} · ${count} owned</strong><span>${formatMoney(m.prices[stage])} each</span>${next&&!can?'<span class="process-lock">Needs Precision Workshop</span>':''}${!donated&&count>0?'<span class="sell-all-note">Sell All reserves one copy for the empty museum slot. The single Sell button can still sell that last copy if you choose.</span>':''}</div><div class="stage-actions">${next?`<button class="mini-button accent" data-action="process" data-material="${k}" data-stage="${stage}" ${count<1||!can?'disabled':''}>${m.processLabels[stage]}</button>`:''}<button class="mini-button donate" data-action="donate" data-material="${k}" data-stage="${stage}" ${count<1||donated?'disabled':''}>${donated?'In museum':'Donate'}</button><button class="mini-button" data-action="sell" data-material="${k}" data-stage="${stage}" ${count<1?'disabled':''}>Sell ${formatMoney(m.prices[stage])}</button><button class="mini-button" data-action="sell-all" data-material="${k}" data-stage="${stage}" ${safeSell<1?'disabled':''}>${sellAllLabel}</button></div></div>`;
+      return `<div class="stage-row"><div class="stage-copy"><strong>${m.stageLabels[stage]} · ${count} owned</strong><span>${formatMoney(m.prices[stage])} each</span>${next&&!can?`<span class="process-lock">Needs ${WORKSHOP_LEVELS[m.workshopRequired||0].name}</span>`:''}${!donated&&count>0?'<span class="sell-all-note">Sell All reserves one copy for the empty museum slot. The single Sell button can still sell that last copy if you choose.</span>':''}</div><div class="stage-actions">${next?`<button class="mini-button accent" data-action="process" data-material="${k}" data-stage="${stage}" ${count<1||!can?'disabled':''}>${m.processLabels[stage]}</button>`:''}<button class="mini-button donate" data-action="donate" data-material="${k}" data-stage="${stage}" ${count<1||donated?'disabled':''}>${donated?'In museum':'Donate'}</button><button class="mini-button" data-action="sell" data-material="${k}" data-stage="${stage}" ${count<1?'disabled':''}>Sell ${formatMoney(m.prices[stage])}</button><button class="mini-button" data-action="sell-all" data-material="${k}" data-stage="${stage}" ${safeSell<1?'disabled':''}>${sellAllLabel}</button></div></div>`;
     }).join('');
 
-    return `<p class="material-subtitle">${m.subtitle}</p><div class="stats-grid"><div class="stat-box"><span>Found</span><strong>${s.found}</strong></div><div class="stat-box"><span>Sold</span><strong>${s.sold}</strong></div><div class="stat-box"><span>Donated</span><strong>${s.donated}</strong></div><div class="stat-box"><span>Processed</span><strong>${s.processed}</strong></div><div class="stat-box"><span>Earned</span><strong>${formatMoney(s.earned)}</strong></div></div>${rows}`;
+    return `<p class="material-subtitle">${m.subtitle}</p>${automation}<div class="stats-grid"><div class="stat-box"><span>Found</span><strong>${s.found}</strong></div><div class="stat-box"><span>Sold</span><strong>${s.sold}</strong></div><div class="stat-box"><span>Donated</span><strong>${s.donated}</strong></div><div class="stat-box"><span>Processed</span><strong>${s.processed}</strong></div><div class="stat-box"><span>Earned</span><strong>${formatMoney(s.earned)}</strong></div></div>${rows}`;
   }
 
   function workbenchAction(e){
@@ -777,32 +851,25 @@
     if(b.dataset.action==='donate')donateOne(k,stage);
     if(b.dataset.action==='sell')sellOne(k,stage);
     if(b.dataset.action==='sell-all')sellAllSafe(k,stage);
+    if(b.dataset.action==='toggle-auto')toggleAutoProcess(k);
   }
 
   function processOne(k,stage){
     const m=MATERIALS[k],next=m.process?.[stage];
     if(!next||!canProcessMaterial(k)||state.inventory[k][stage]<1)return;
-    state.inventory[k][stage]--;
-    state.inventory[k][next]++;
-    state.stats[k].processed++;
-    saveState();
-    playTone('process');
-    renderWorkbench();
-    showToast(`${m.name}: ${m.stageLabels[stage]} → ${m.stageLabels[next]}`);
+    state.inventory[k][stage]--;state.inventory[k][next]++;state.stats[k].processed++;
+    saveState();playTone('process');renderWorkbench();showToast(`${m.name}: ${m.stageLabels[stage]} → ${m.stageLabels[next]}`);
   }
 
   function donateOne(k,stage){
     if(state.collection[k][stage]||state.inventory[k][stage]<1)return;
-    state.inventory[k][stage]--;
-    state.collection[k][stage]=true;
-    state.stats[k].donated++;
-    museumSelection[k]=stage;
-    const mastery=awardMastery(k);
-    saveState();
-    playTone('collection',k);
-    renderAll();
-    if(mastery){
-      showToast(`${MATERIALS[k].name} mastered! +${formatMoney(mastery)} ✦`);
+    const wasMastered=isMastered(k);
+    state.inventory[k][stage]--;state.collection[k][stage]=true;state.stats[k].donated++;
+    const nowMastered=isMastered(k);
+    if(!wasMastered&&nowMastered&&hasProcessing(k))state.settings.autoProcessByMaterial[k]=true;
+    saveState();playTone('collection',k);renderAll();
+    if(!wasMastered&&nowMastered){
+      showToast(hasProcessing(k)?`${MATERIALS[k].name} mastered! Auto-process unlocked ✦`:`${MATERIALS[k].name} mastered! ✦`);
     }else{
       showToast(`${MATERIALS[k].name} added to the museum ✦`);
     }
@@ -811,35 +878,22 @@
   function sellOne(k,stage){
     if(state.inventory[k][stage]<1)return;
     const value=MATERIALS[k].prices[stage];
-    state.inventory[k][stage]--;
-    state.credits+=value;
-    state.stats[k].sold++;
-    state.stats[k].earned+=value;
-    saveState();
-    playTone('coin');
-    renderAll();
-    showToast(`Sold for ${formatMoney(value)}.`);
+    state.inventory[k][stage]--;state.credits+=value;state.stats[k].sold++;state.stats[k].earned+=value;
+    saveState();playTone('coin');renderAll();showToast(`Sold for ${formatMoney(value)}.`);
   }
 
   function sellAllSafe(k,stage){
-    const count=state.inventory[k][stage];
-    const reserve=state.collection[k][stage]?0:1;
-    const qty=Math.max(0,count-reserve);
+    const count=state.inventory[k][stage],reserve=state.collection[k][stage]?0:1,qty=Math.max(0,count-reserve);
     if(qty<1)return;
     const value=qty*MATERIALS[k].prices[stage];
-    state.inventory[k][stage]-=qty;
-    state.credits+=value;
-    state.stats[k].sold+=qty;
-    state.stats[k].earned+=value;
-    saveState();
-    playTone('coin');
-    renderAll();
-    showToast(`Sold ${qty} for ${formatMoney(value)}.`);
+    state.inventory[k][stage]-=qty;state.credits+=value;state.stats[k].sold+=qty;state.stats[k].earned+=value;
+    saveState();playTone('coin');renderAll();showToast(`Sold ${qty} for ${formatMoney(value)}.`);
   }
 
-  function renderWorkbenchBadge(){
-    const hasAnything=totalInventoryAll()>0;
-    els.workbenchBadge.hidden=!hasAnything;
+  function toggleAutoProcess(k){
+    if(!canAutoProcess(k))return;
+    state.settings.autoProcessByMaterial[k]=!state.settings.autoProcessByMaterial[k];
+    saveState();renderWorkbench();showToast(`${MATERIALS[k].name} auto-process ${state.settings.autoProcessByMaterial[k]?'on':'off'}.`);
   }
 
   function isMastered(k){
@@ -847,28 +901,7 @@
     return !!m.mastery && m.stages.every(stage=>state.collection[k][stage]);
   }
 
-  function awardMastery(k){
-    const m=MATERIALS[k];
-    if(!m.mastery || !isMastered(k) || state.masteryClaimed[k])return 0;
-    state.masteryClaimed[k]=true;
-    state.credits+=m.mastery.reward;
-    return m.mastery.reward;
-  }
-
-  function applyRetroMasteryRewards(){
-    let total=0;
-    Object.entries(MATERIALS).forEach(([k,m])=>{
-      if(m.mastery && isMastered(k) && !state.masteryClaimed[k]){
-        state.masteryClaimed[k]=true;
-        state.credits+=m.mastery.reward;
-        total+=m.mastery.reward;
-      }
-    });
-    return total;
-  }
-
-  function renderMuseum(highlightK=null,highlightStage=null){
-    if(highlightK&&highlightStage)museumSelection[highlightK]=highlightStage;
+  function renderMuseum(){
     els.museumWings.innerHTML='';
     let filledTotal=0;
     const total=Object.values(MATERIALS).reduce((a,m)=>a+m.stages.length,0);
@@ -879,54 +912,34 @@
       pairs.forEach(([k,m])=>{wt+=m.stages.length;wf+=m.stages.filter(s=>state.collection[k][s]).length;});
       filledTotal+=wf;
 
-      const wing=document.createElement('section');
-      wing.className='museum-wing';
+      const wing=document.createElement('section');wing.className='museum-wing';
       wing.innerHTML=`<div class="wing-heading"><h3>${w.name}</h3><span>${wf} / ${wt} filled</span></div>`;
 
       pairs.forEach(([k,m])=>{
-        const group=document.createElement('div');
-        group.className='museum-group';
-        const gf=m.stages.filter(s=>state.collection[k][s]).length;
-        const mastered=isMastered(k);
+        const group=document.createElement('div');group.className='museum-group';
+        const gf=m.stages.filter(s=>state.collection[k][s]).length,mastered=isMastered(k);
         group.innerHTML=`<div class="museum-group-title"><strong>${m.name}${mastered?'<span class="mastery-badge">✦ Mastered</span>':''}</strong><span>${gf} / ${m.stages.length}</span></div>`;
 
-        const slots=document.createElement('div');
-        slots.className=`museum-slots ${m.stages.length>=3?'compact-three':m.stages.length===2?'compact-two':'compact-one'}`;
+        const grid=document.createElement('div');
+        grid.className=`museum-specimen-grid ${m.stages.length>=3?'three':m.stages.length===2?'two':'one'}`;
 
         m.stages.forEach(stage=>{
           const filled=state.collection[k][stage];
-          const slot=document.createElement('button');
-          slot.type='button';
-          slot.className=`museum-slot compact ${filled?'filled':''} ${filled&&museumSelection[k]===stage?'selected':''} ${filled&&k===highlightK&&stage===highlightStage?'new-fill':''}`;
-          slot.disabled=!filled;
-          const visual=document.createElement('div');
-          visual.className='slot-visual';
-          visual.appendChild(buildIcon(k,false,stage));
-          slot.appendChild(visual);
-          slot.insertAdjacentHTML('beforeend',`<strong class="slot-stage">${m.stageLabels[stage]}</strong><span class="slot-state">${filled?'Collected':'Not collected'}</span>`);
-          if(filled)slot.addEventListener('click',()=>{museumSelection[k]=stage;renderMuseum();});
-          slots.appendChild(slot);
+          const column=document.createElement('div');column.className=`museum-specimen-column ${filled?'filled':''}`;
+          const specimen=document.createElement('div');specimen.className='museum-specimen';
+          const visual=document.createElement('div');visual.className='slot-visual';visual.appendChild(buildIcon(k,false,stage));specimen.appendChild(visual);
+          specimen.insertAdjacentHTML('beforeend',`<strong class="slot-stage">${m.stageLabels[stage]}</strong><span class="slot-state">${filled?'Collected':'Not collected'}</span>`);
+          const fact=document.createElement('div');fact.className='specimen-fact-card';
+          fact.innerHTML=filled?`<p>${m.facts[stage]}</p>`:'<p class="locked-fact">Donate this form to unlock its fact.</p>';
+          column.appendChild(specimen);column.appendChild(fact);grid.appendChild(column);
         });
 
-        group.appendChild(slots);
-
-        const selected=museumSelection[k];
-        const selectedValid=selected&&state.collection[k][selected];
-        const fact=document.createElement('div');
-        fact.className='museum-fact-panel';
-        if(selectedValid){
-          fact.innerHTML=`<strong>${m.stageLabels[selected]}</strong><p>${m.facts[selected]}</p>`;
-        }else if(gf>0){
-          fact.innerHTML='<strong>Specimen facts</strong><p>Tap a collected specimen above to read its fact.</p>';
-        }else{
-          fact.innerHTML='<strong>Empty display</strong><p>Donate a specimen to unlock its fact.</p>';
-        }
-        group.appendChild(fact);
+        group.appendChild(grid);
 
         if(mastered&&m.mastery){
-          const mastery=document.createElement('div');
-          mastery.className='mastery-panel';
-          mastery.innerHTML=`<strong>✦ Mineral Mastery · ${formatMoney(m.mastery.reward)} collection reward</strong><p>${m.mastery.fact}</p>`;
+          const mastery=document.createElement('div');mastery.className='mastery-panel';
+          const unlock=hasProcessing(k)?`<span class="mastery-unlock">⚙️ Auto-process unlocked for ${m.name}</span>`:'<span class="mastery-unlock">✦ Collection complete</span>';
+          mastery.innerHTML=`<strong>✦ ${m.name} Mastery</strong><p>${m.mastery.fact}</p>${unlock}`;
           group.appendChild(mastery);
         }
 
@@ -941,23 +954,21 @@
   }
 
   function renderUpgrades(){
-    els.shopBalance.textContent=formatMoney(state.credits);
-    els.upgradeList.innerHTML='';
-    [depthCard(),durabilityCard(),surveyCard(),scannerUsesCard(),workshopCard(),automationCard()].forEach(c=>els.upgradeList.appendChild(c));
+    els.shopBalance.textContent=formatMoney(state.credits);els.upgradeList.innerHTML='';
+    [depthCard(),durabilityCard(),surveyCard(),scannerUsesCard(),workshopCard()].forEach(c=>els.upgradeList.appendChild(c));
   }
 
   function upgradeCard({icon,eyebrow,title,description,current,cost,label,disabled,onClick}){
-    const card=document.createElement('article');
-    card.className='upgrade-card';
+    const card=document.createElement('article');card.className='upgrade-card';
     card.innerHTML=`<div class="upgrade-icon">${icon}</div><div class="upgrade-copy"><span class="status-label">${eyebrow}</span><h3>${title}</h3><p>${description}</p><span class="upgrade-current">${current}</span></div><div class="upgrade-action"><span class="price-tag">${cost===null?'MAX':formatMoney(cost)}</span><button class="primary-button" type="button" ${disabled?'disabled':''}>${label}</button></div>`;
-    const b=card.querySelector('button');
-    if(!disabled&&onClick)b.addEventListener('click',onClick);
-    return card;
+    const b=card.querySelector('button');if(!disabled&&onClick)b.addEventListener('click',onClick);return card;
   }
 
   function depthCard(){
-    const max=state.unlockedDepth>=2;
-    return upgradeCard({icon:'🪜',eyebrow:'Mine depth',title:max?'Lower Works unlocked':'Unlock Depth 2',description:max?'Both prototype depths are available.':DEPTH_UPGRADE.description,current:max?'Depths 1–2 available':'Current: Depth 1 only',cost:max?null:DEPTH_UPGRADE.cost,label:max?'Prototype max':'Go deeper',disabled:max||state.credits<DEPTH_UPGRADE.cost,onClick:buyDepth});
+    const nextDepth=state.unlockedDepth+1;
+    if(nextDepth>3)return upgradeCard({icon:'🪜',eyebrow:'Mine depth',title:'Deep Gallery unlocked',description:'All three current prototype depths are available.',current:'Depths 1–3 available',cost:null,label:'Prototype max',disabled:true});
+    const up=DEPTH_UPGRADES[nextDepth];
+    return upgradeCard({icon:'🪜',eyebrow:'Mine depth',title:`Unlock Depth ${nextDepth}`,description:up.description,current:`Current: Depths 1–${state.unlockedDepth}`,cost:up.cost,label:'Go deeper',disabled:state.credits<up.cost,onClick:buyDepth});
   }
 
   function durabilityCard(){
@@ -971,117 +982,75 @@
   }
 
   function scannerUsesCard(){
-    const cur=SCAN_CHARGE_LEVELS[state.upgrades.scannerUses],max=cur.cost===null,next=max?null:SCAN_CHARGE_LEVELS[state.upgrades.scannerUses+1];
-    const scannerLocked=state.upgrades.surveying===0;
+    const cur=SCAN_CHARGE_LEVELS[state.upgrades.scannerUses],max=cur.cost===null,next=max?null:SCAN_CHARGE_LEVELS[state.upgrades.scannerUses+1],locked=state.upgrades.surveying===0;
     return upgradeCard({
-      icon:'📡',
-      eyebrow:'Scanner charges',
-      title:max?cur.label:`${cur.uses} → ${next.uses} scans per face`,
-      description:scannerLocked?'Unlock the Field Scanner first. Scanner charges reset on every fresh rock face.':'Buy more scanner uses per rock face. They reset instantly when you start a fresh face.',
-      current:`Current: ${cur.uses} scan${cur.uses===1?'':'s'} per face`,
-      cost:max?null:cur.cost,
-      label:max?'Prototype max':(scannerLocked?'Scanner locked':'Add scan'),
-      disabled:max||scannerLocked||state.credits<cur.cost,
-      onClick:buyScannerUse
+      icon:'📡',eyebrow:'Scanner charges',title:max?cur.label:`${cur.uses} → ${next.uses} scans per face`,
+      description:locked?'Unlock the Field Scanner first.':'Buy more scanner uses per rock face. Overlapping scans trade coverage for much stronger positional clues.',
+      current:`Current: ${cur.uses} scan${cur.uses===1?'':'s'} per face`,cost:max?null:cur.cost,label:max?'Prototype max':(locked?'Scanner locked':'Add scan'),
+      disabled:max||locked||state.credits<cur.cost,onClick:buyScannerUse
     });
   }
 
   function workshopCard(){
-    const cur=WORKSHOP_LEVELS[state.upgrades.workshop],max=cur.cost===null;
+    const i=state.upgrades.workshop,cur=WORKSHOP_LEVELS[i],max=cur.cost===null;
     return upgradeCard({icon:'🛠️',eyebrow:'Workshop equipment',title:max?cur.name:`Unlock ${cur.next}`,description:cur.description,current:`Current: ${cur.name}`,cost:cur.cost,label:max?'Prototype max':'Upgrade workshop',disabled:max||state.credits<cur.cost,onClick:buyWorkshop});
   }
 
-  function automationCard(){
-    const unlocked=state.upgrades.automation>0;
-    return upgradeCard({icon:'⚙️',eyebrow:'Automation',title:unlocked?'Auto-process unlocked':'Unlock Auto-process',description:unlocked?'Toggle it from the Workbench. Museum reserves are protected automatically.':AUTOMATION_UPGRADE.description,current:unlocked?`Current: ${state.settings.autoProcess?'ON':'OFF'}`:'Current: manual processing',cost:unlocked?null:AUTOMATION_UPGRADE.cost,label:unlocked?'Unlocked':'Unlock automation',disabled:unlocked||state.credits<AUTOMATION_UPGRADE.cost,onClick:buyAutomation});
-  }
-
   function buyDepth(){
-    if(state.unlockedDepth>=2||state.credits<DEPTH_UPGRADE.cost)return;
-    state.credits-=DEPTH_UPGRADE.cost;
-    state.unlockedDepth=2;
-    state.currentDepth=2;
-    state.face=generateFace(2);
-    saveState();playTone('upgrade');renderAll();showToast('Depth 2 unlocked: Lower Works.');
+    const nextDepth=state.unlockedDepth+1,up=DEPTH_UPGRADES[nextDepth];
+    if(!up||state.credits<up.cost)return;
+    state.credits-=up.cost;state.unlockedDepth=nextDepth;state.currentDepth=nextDepth;state.face=generateFace(nextDepth);
+    saveState();playTone('upgrade');renderAll();showToast(`Depth ${nextDepth} unlocked: ${DEPTHS[nextDepth].name}.`);
   }
 
   function buyDurability(){
     const i=state.upgrades.durability,cur=DURABILITY_LEVELS[i];
     if(cur.cost===null||state.credits<cur.cost)return;
-    state.credits-=cur.cost;
-    const old=cur.swings;
-    state.upgrades.durability++;
-    const newer=DURABILITY_LEVELS[state.upgrades.durability].swings;
-    state.face.durability=Math.min(newer,state.face.durability+(newer-old));
+    state.credits-=cur.cost;const old=cur.swings;state.upgrades.durability++;
+    const newer=DURABILITY_LEVELS[state.upgrades.durability].swings;state.face.durability=Math.min(newer,state.face.durability+(newer-old));
     saveState();playTone('upgrade');renderAll();showToast(`Pick durability increased to ${newer} swings.`);
   }
 
   function buySurvey(){
     const cur=SURVEY_LEVELS[state.upgrades.surveying];
     if(cur.cost===null||state.credits<cur.cost)return;
-    state.credits-=cur.cost;
-    state.upgrades.surveying++;
-    if(state.upgrades.surveying===1 && state.face.scanUsesRemaining===0)state.face.scanUsesRemaining=currentMaxScans();
+    state.credits-=cur.cost;state.upgrades.surveying++;
+    if(state.upgrades.surveying===1&&state.face.scanUsesRemaining===0)state.face.scanUsesRemaining=currentMaxScans();
     saveState();playTone('upgrade');renderAll();showToast(`${SURVEY_LEVELS[state.upgrades.surveying].name} unlocked.`);
   }
 
   function buyScannerUse(){
     const i=state.upgrades.scannerUses,cur=SCAN_CHARGE_LEVELS[i];
     if(state.upgrades.surveying===0||cur.cost===null||state.credits<cur.cost)return;
-    state.credits-=cur.cost;
-    const oldUses=cur.uses;
-    state.upgrades.scannerUses++;
-    const newUses=SCAN_CHARGE_LEVELS[state.upgrades.scannerUses].uses;
-    state.face.scanUsesRemaining+=newUses-oldUses;
+    state.credits-=cur.cost;const oldUses=cur.uses;state.upgrades.scannerUses++;
+    const newUses=SCAN_CHARGE_LEVELS[state.upgrades.scannerUses].uses;state.face.scanUsesRemaining+=newUses-oldUses;
     saveState();playTone('upgrade');renderAll();showToast(`${newUses} scans per rock face unlocked.`);
   }
 
   function buyWorkshop(){
     const cur=WORKSHOP_LEVELS[state.upgrades.workshop];
     if(cur.cost===null||state.credits<cur.cost)return;
-    state.credits-=cur.cost;
-    state.upgrades.workshop++;
-    saveState();playTone('upgrade');renderAll();showToast('Precision Workshop unlocked.');
-  }
-
-  function buyAutomation(){
-    if(state.upgrades.automation>0||state.credits<AUTOMATION_UPGRADE.cost)return;
-    state.credits-=AUTOMATION_UPGRADE.cost;
-    state.upgrades.automation=1;
-    state.settings.autoProcess=true;
-    saveState();playTone('upgrade');renderAll();showToast('Auto-process unlocked and switched on.');
+    state.credits-=cur.cost;state.upgrades.workshop++;
+    saveState();playTone('upgrade');renderAll();showToast(`${WORKSHOP_LEVELS[state.upgrades.workshop].name} unlocked.`);
   }
 
   function resetGame(){
-    if(!window.confirm('Reset all Rock Go Crunch v2.1 progress?'))return;
-    localStorage.removeItem(SAVE_KEY);
-    state=defaultState();
-    state.face=generateFace(1);
-    openWorkbenchKey=null;
-    scanMode=false;
-    Object.keys(museumSelection).forEach(k=>delete museumSelection[k]);
-    saveState();renderAll();showToast('v2.1 save reset.');
+    if(!window.confirm('Reset all Rock Go Crunch v3.0 progress?'))return;
+    localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
+    saveState();renderAll();showToast('v3.0 save reset.');
   }
 
   function renderSoundButton(){
-    els.soundToggle.textContent=state.sound?'🔊':'🔇';
-    els.soundToggle.setAttribute('aria-label',state.sound?'Mute sound':'Enable sound');
+    els.soundToggle.textContent=state.sound?'🔊':'🔇';els.soundToggle.setAttribute('aria-label',state.sound?'Mute sound':'Enable sound');
   }
 
   function showToast(msg){
-    clearTimeout(toastTimer);
-    els.toast.textContent=msg;
-    els.toast.classList.add('show');
-    toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1900);
+    clearTimeout(toastTimer);els.toast.textContent=msg;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1900);
   }
 
   function getAudioContext(){
-    if(!state.sound)return null;
-    const Ctx=window.AudioContext||window.webkitAudioContext;
-    if(!Ctx)return null;
-    if(!audioContext)audioContext=new Ctx();
-    if(audioContext.state==='suspended')audioContext.resume();
-    return audioContext;
+    if(!state.sound)return null;const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return null;
+    if(!audioContext)audioContext=new Ctx();if(audioContext.state==='suspended')audioContext.resume();return audioContext;
   }
 
   function playTone(type,key='quartz'){
@@ -1093,7 +1062,7 @@
       src.buffer=buffer;filter.type='lowpass';filter.frequency.value=520;gain.gain.setValueAtTime(.13,now);gain.gain.exponentialRampToValueAtTime(.001,now+.055);
       src.connect(filter).connect(gain).connect(ctx.destination);src.start(now);src.stop(now+.06);return;
     }
-    const base={quartz:440,amethyst:392,garnet:349,topaz:494,pyrite:554,hematite:294,chalcopyrite:330,trilobite:262,miningTag:247}[key]||440;
+    const base={quartz:440,amethyst:392,garnet:349,topaz:494,pyrite:554,citrine:466,calcite:415,fluorite:523,aquamarine:587,sapphire:622,hematite:294,chalcopyrite:330,cassiterite:370,trilobite:262,ammonite:277,miningTag:247,miningLamp:220}[key]||440;
     const sets={gem:[base,base*1.25,base*1.5],process:[260,330],collection:[523,659,784],coin:[660,880],upgrade:[330,440,554,659],soft:[300]},freqs=sets[type]||sets.soft;
     freqs.forEach((freq,i)=>{
       const osc=ctx.createOscillator(),gain=ctx.createGain(),start=now+i*.05,duration=['upgrade','collection'].includes(type)?.17:.105;
