@@ -469,3 +469,251 @@
   .specimen-fact-card p{font-size:.57rem;line-height:1.38}
   .material-auto-row{align-items:flex-start}
 }
+
+
+/* ===== v3.1 polish ===== */
+
+/* Workbench bulk automation */
+.workbench-sell-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 11px;
+  padding:12px 13px;
+  border:1px solid rgba(212,179,105,.28);
+  border-radius:16px;
+  background:linear-gradient(180deg,rgba(212,179,105,.055),rgba(23,27,30,.94));
+  box-shadow:var(--shadow);
+}
+.workbench-sell-bar strong{
+  display:block;
+  margin:3px 0 2px;
+  color:#efd59a;
+  font-size:1rem;
+}
+.workbench-sell-bar .status-note{
+  display:block;
+  max-width:360px;
+}
+.workbench-sell-bar .primary-button{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+/* Inventory attention belongs at the far left of each material card. */
+.accordion-toggle{
+  grid-template-columns:42px auto 1fr auto;
+}
+.inventory-alert{
+  display:grid;
+  place-items:center;
+  width:38px;
+  min-height:27px;
+  padding:3px 4px;
+  border:1px solid transparent;
+  border-radius:999px;
+  color:transparent;
+  background:transparent;
+  font-size:.62rem;
+  font-weight:950;
+  line-height:1;
+}
+.inventory-alert.visible{
+  color:#241d10;
+  border-color:rgba(250,221,151,.7);
+  background:#ecd08c;
+  box-shadow:0 0 16px rgba(236,208,140,.28);
+}
+.inventory-sparkle,
+.mastery-mini-badge{
+  display:none !important;
+}
+
+/* Mastery is a visual state, not repeated copy. */
+.workbench-card.mastered{
+  border-color:rgba(230,204,142,.58);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,236,184,.08),
+    0 0 0 1px rgba(230,204,142,.05),
+    0 10px 30px rgba(0,0,0,.24),
+    0 0 24px rgba(212,179,105,.07);
+}
+.workbench-card.mastered .accordion-toggle{
+  background:
+    linear-gradient(90deg,rgba(212,179,105,.055),transparent 45%),
+    transparent;
+}
+.workbench-card.mastered.has-stock{
+  border-color:rgba(239,211,145,.72);
+}
+.museum-group.mastered{
+  padding:10px;
+  border:1px solid rgba(230,204,142,.5);
+  border-radius:14px;
+  background:
+    linear-gradient(180deg,rgba(230,204,142,.045),rgba(8,10,11,.10));
+  box-shadow:
+    inset 0 0 0 1px rgba(255,236,184,.055),
+    0 0 18px rgba(212,179,105,.045);
+}
+.museum-group.mastered + .museum-group{
+  margin-top:14px;
+}
+.museum-group.mastered .museum-group-title strong{
+  color:#f0dfb2;
+}
+.mastery-badge{display:none !important;}
+.mastery-panel{
+  border-color:rgba(230,204,142,.34);
+  background:linear-gradient(180deg,rgba(230,204,142,.085),rgba(230,204,142,.028));
+}
+.mastery-panel strong{
+  color:#f0d897;
+  letter-spacing:.02em;
+}
+.mastery-unlock{
+  margin-top:7px;
+}
+
+/* No redundant state label on collected specimens. */
+.museum-specimen-column.filled .slot-state{
+  display:none;
+}
+
+/* Readability pass: related minerals share silhouettes, unrelated finds diverge. */
+
+/* Quartz family: same crystal silhouette, different colour. */
+.material-icon.quartz,.tile-find.quartz,
+.material-icon.amethyst,.tile-find.amethyst,
+.material-icon.citrine,.tile-find.citrine{
+  clip-path:polygon(50% 0,72% 22%,91% 42%,78% 82%,57% 100%,40% 77%,18% 92%,8% 53%,26% 26%);
+}
+.quartz{
+  background:linear-gradient(135deg,#ffffff 0%,#dfeff2 38%,#a9c6cb 72%,#6f8e96 100%);
+}
+.amethyst{
+  background:linear-gradient(135deg,#ead9f3 0%,#b98bd0 38%,#7e4a99 72%,#432554 100%);
+}
+.citrine{
+  background:linear-gradient(135deg,#fff1a8 0%,#f2c852 40%,#cb8f22 72%,#825511 100%);
+}
+
+/* Garnet: squat many-faced crystal. */
+.material-icon.garnet,.tile-find.garnet{
+  clip-path:polygon(27% 8%,70% 5%,95% 34%,85% 75%,58% 96%,20% 86%,4% 49%);
+}
+.garnet{
+  background:linear-gradient(135deg,#e2787e 0%,#a63143 45%,#641d2d 76%,#321018 100%);
+}
+
+/* Topaz: long warm prism, visually separate from citrine. */
+.material-icon.topaz,.tile-find.topaz{
+  clip-path:polygon(38% 0,69% 7%,86% 26%,73% 100%,34% 92%,15% 72%,25% 18%);
+}
+.topaz{
+  background:linear-gradient(135deg,#ffd79d 0%,#ec9e45 42%,#c15f2c 74%,#6c341e 100%);
+}
+
+/* Pyrite: crisp metallic cube cluster rather than a yellow gemstone. */
+.material-icon.pyrite,.tile-find.pyrite{
+  clip-path:polygon(10% 17%,43% 6%,62% 19%,88% 15%,96% 57%,72% 93%,37% 86%,8% 66%);
+}
+.pyrite{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.28),transparent 28%),
+    linear-gradient(135deg,#e6cf78 0%,#b69339 42%,#76601f 72%,#423818 100%);
+}
+
+/* Calcite: pale rhombohedral crystal. */
+.material-icon.calcite,.tile-find.calcite{
+  clip-path:polygon(24% 7%,77% 0,96% 36%,74% 92%,20% 100%,3% 61%);
+}
+.calcite{
+  background:linear-gradient(135deg,#fff8e8 0%,#e0d9c0 45%,#aaa78e 78%,#686957 100%);
+}
+
+/* Fluorite: octahedral shape and cool mint-violet palette. */
+.material-icon.fluorite,.tile-find.fluorite{
+  clip-path:polygon(50% 0,94% 50%,50% 100%,6% 50%);
+}
+.fluorite{
+  background:linear-gradient(135deg,#d7f0dc 0%,#84c29d 42%,#7768a5 74%,#403c67 100%);
+}
+
+/* Aquamarine: tall clean beryl prism. */
+.material-icon.aquamarine,.tile-find.aquamarine{
+  clip-path:polygon(34% 0,67% 0,87% 20%,78% 88%,50% 100%,22% 88%,13% 20%);
+}
+.aquamarine{
+  background:linear-gradient(135deg,#ddfbfb 0%,#79d6db 40%,#3397a6 72%,#1d5d6d 100%);
+}
+
+/* Sapphire: compact corundum crystal, saturated royal blue. */
+.material-icon.sapphire,.tile-find.sapphire{
+  clip-path:polygon(29% 5%,71% 5%,91% 30%,83% 76%,59% 96%,26% 89%,8% 56%,14% 24%);
+}
+.sapphire{
+  background:linear-gradient(135deg,#9fc1ff 0%,#4778d4 38%,#23459a 70%,#101e55 100%);
+}
+
+/* Ores: rough silhouettes with more distinct palettes. */
+.material-icon.hematite,.tile-find.hematite{
+  clip-path:polygon(9% 33%,30% 8%,65% 4%,93% 24%,86% 69%,61% 94%,25% 88%,4% 60%);
+}
+.hematite{
+  background:linear-gradient(135deg,#8f7773 0%,#553b3c 42%,#2d2f33 72%,#181a1d 100%);
+}
+.material-icon.chalcopyrite,.tile-find.chalcopyrite{
+  clip-path:polygon(5% 40%,25% 12%,56% 4%,91% 23%,97% 60%,69% 95%,29% 86%,10% 69%);
+}
+.chalcopyrite{
+  background:
+    linear-gradient(125deg,rgba(78,137,115,.42),transparent 38%),
+    linear-gradient(225deg,rgba(125,88,145,.25),transparent 42%),
+    linear-gradient(135deg,#d5b65e 0%,#9d7430 48%,#5b4b2a 78%,#2f3127 100%);
+}
+.material-icon.cassiterite,.tile-find.cassiterite{
+  clip-path:polygon(14% 16%,47% 0,79% 12%,96% 46%,78% 87%,43% 100%,9% 79%,1% 43%);
+}
+.cassiterite{
+  background:linear-gradient(135deg,#9e735b 0%,#66463d 40%,#392d2e 72%,#1d1b1d 100%);
+}
+
+/* Refined metals stay unmistakably metallic. */
+.iron{
+  background:linear-gradient(135deg,#eef1f1 0%,#b8bec0 43%,#737a7d 75%,#43484a 100%);
+}
+.copper{
+  background:linear-gradient(135deg,#f1b08a 0%,#c66f42 44%,#884427 74%,#4f281d 100%);
+}
+.tin{
+  background:linear-gradient(135deg,#f5f5f1 0%,#c9cfce 45%,#888f90 78%,#54595a 100%);
+}
+
+@media(max-width:470px){
+  .workbench-sell-bar{
+    align-items:flex-end;
+  }
+  .workbench-sell-bar .status-note{
+    font-size:.64rem;
+  }
+  .workbench-sell-bar .primary-button{
+    padding-left:10px;
+    padding-right:10px;
+  }
+  .accordion-toggle{
+    grid-template-columns:40px 36px 1fr auto;
+    gap:8px;
+    padding-left:9px;
+    padding-right:9px;
+  }
+  .inventory-alert{
+    width:36px;
+    font-size:.59rem;
+  }
+  .material-icon{
+    width:36px;
+    height:36px;
+  }
+}

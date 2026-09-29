@@ -267,7 +267,7 @@
     depthName:$('depthName'), depthNumber:$('depthNumber'), durability:$('durability'), maxDurability:$('maxDurability'), durabilityMeter:$('durabilityMeter'),
     surveyLevel:$('surveyLevel'), scanUseSummary:$('scanUseSummary'), mineBalance:$('mineBalance'), depthSelector:$('depthSelector'), surveyTitle:$('surveyTitle'), surveyReport:$('surveyReport'), scanButton:$('scanButton'),
     mineBoard:$('mineBoard'), faceFinds:$('faceFinds'), newFaceButton:$('newFaceButton'), surfaceButton:$('surfaceButton'), mineMessage:$('mineMessage'),
-    workbenchList:$('workbenchList'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'),
+    workbenchList:$('workbenchList'), masteredSellValue:$('masteredSellValue'), sellAllMasteredButton:$('sellAllMasteredButton'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'),
     shopBalance:$('shopBalance'), upgradeList:$('upgradeList'), soundToggle:$('soundToggle'), resetButton:$('resetButton'), toast:$('toast'),
     mobileMineHud:$('mobileMineHud'), mobileDurability:$('mobileDurability'), mobileScans:$('mobileScans')
   };
@@ -287,6 +287,7 @@
     els.newFaceButton.addEventListener('click',startNewFace);
     els.surfaceButton.addEventListener('click',startNewFace);
     els.scanButton.addEventListener('click',toggleScanMode);
+    els.sellAllMasteredButton.addEventListener('click',sellAllMastered);
     els.soundToggle.addEventListener('click',() => {state.sound=!state.sound;saveState();renderSoundButton();if(state.sound)playTone('soft');});
     els.resetButton.addEventListener('click',resetGame);
 
@@ -346,6 +347,22 @@
   function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
   function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
   function totalInventory(k){ return Object.values(state.inventory[k]||{}).reduce((a,n)=>a+n,0); }
+  function isBulkSellEligible(k){
+    const m=MATERIALS[k];
+    return (m.family==='mineral'||m.family==='ore') && isMastered(k);
+  }
+  function masteredSellSummary(){
+    let items=0,value=0;
+    Object.entries(MATERIALS).forEach(([k,m])=>{
+      if(!isBulkSellEligible(k))return;
+      m.stages.forEach(stage=>{
+        const count=state.inventory[k][stage]||0;
+        items+=count;
+        value+=count*(m.prices[stage]||0);
+      });
+    });
+    return {items,value};
+  }
   function hasProcessing(k){ return Object.keys(MATERIALS[k].process||{}).length>0; }
   function currentMaxScans(){ return SCAN_CHARGE_LEVELS[state.upgrades.scannerUses].uses; }
 
@@ -792,20 +809,32 @@
   }
 
   function renderWorkbench(){
+    const bulk=masteredSellSummary();
+    if(els.masteredSellValue)els.masteredSellValue.textContent=`${formatMoney(bulk.value)} · ${bulk.items} item${bulk.items===1?'':'s'}`;
+    if(els.sellAllMasteredButton){
+      els.sellAllMasteredButton.disabled=bulk.items<1;
+      els.sellAllMasteredButton.textContent=bulk.items>0?`Sell All · ${formatMoney(bulk.value)}`:'Sell All';
+    }
+
     els.workbenchList.innerHTML='';
     Object.entries(MATERIALS).forEach(([k,m])=>{
       const stock=totalInventory(k),mastered=isMastered(k);
       const card=document.createElement('article');
-      card.className=`workbench-card ${openWorkbenchKey===k?'open':''} ${stock>0?'has-stock':''}`;
+      card.className=`workbench-card ${openWorkbenchKey===k?'open':''} ${stock>0?'has-stock':''} ${mastered?'mastered':''}`;
 
       const toggle=document.createElement('button');
       toggle.type='button';toggle.className='accordion-toggle';toggle.setAttribute('aria-expanded',openWorkbenchKey===k?'true':'false');
+
+      const alert=document.createElement('span');
+      alert.className=`inventory-alert ${stock>0?'visible':''}`;
+      alert.textContent=stock>0?`✦ ${stock}`:'';
+      alert.setAttribute('aria-hidden',stock>0?'false':'true');
+      toggle.appendChild(alert);
+
       toggle.appendChild(buildIcon(k));
 
       const main=document.createElement('div');main.className='accordion-main';
-      const sparkle=stock>0?`<span class="inventory-sparkle">✦ ${stock}</span>`:'';
-      const mastery=mastered?`<span class="mastery-mini-badge">✦ Mastered</span>`:'';
-      main.innerHTML=`<h3>${m.name}${sparkle}${mastery}</h3><div class="summary-chips">${m.stages.map(s=>`<span class="summary-chip">${m.stageLabels[s]} ${state.inventory[k][s]} · ${formatMoney(m.prices[s])}</span>`).join('')}</div>`;
+      main.innerHTML=`<h3>${m.name}</h3><div class="summary-chips">${m.stages.map(s=>`<span class="summary-chip">${m.stageLabels[s]} ${state.inventory[k][s]} · ${formatMoney(m.prices[s])}</span>`).join('')}</div>`;
       toggle.appendChild(main);
 
       const chev=document.createElement('span');chev.className='chevron';chev.textContent='⌄';toggle.appendChild(chev);
@@ -826,20 +855,15 @@
       if(mastered){
         const on=!!state.settings.autoProcessByMaterial[k];
         const equipmentReady=canProcessMaterial(k);
-        automation=`<div class="material-auto-row ${equipmentReady?'':'locked'}"><div><strong>✦ ${m.name} auto-process unlocked</strong><span>${equipmentReady?'New finds can automatically process to the highest stage.':'Mastered, but your current workshop cannot process this material yet.'}</span></div><button class="toggle-switch ${on&&equipmentReady?'on':''}" data-action="toggle-auto" data-material="${k}" type="button" aria-label="Toggle ${m.name} auto-process" aria-pressed="${on&&equipmentReady?'true':'false'}" ${equipmentReady?'':'disabled'}></button></div>`;
+        automation=`<div class="material-auto-row ${equipmentReady?'':'locked'}"><div><strong>Auto-process</strong><span>${equipmentReady?'New finds can automatically process to the highest stage.':'Your collection is complete, but your current workshop cannot process this material yet.'}</span></div><button class="toggle-switch ${on&&equipmentReady?'on':''}" data-action="toggle-auto" data-material="${k}" type="button" aria-label="Toggle ${m.name} auto-process" aria-pressed="${on&&equipmentReady?'true':'false'}" ${equipmentReady?'':'disabled'}></button></div>`;
       }else{
         automation=`<div class="material-auto-row locked"><div><strong>🔒 Auto-process locked</strong><span>Complete the ${m.name} museum set to unlock automation for this material.</span></div></div>`;
       }
-    }else if(mastered){
-      automation=`<div class="material-auto-row mastery-only"><div><strong>✦ ${m.name} mastered</strong><span>This material has no processing step, so mastery is purely a collection achievement.</span></div></div>`;
     }
 
     const rows=m.stages.map(stage=>{
       const count=state.inventory[k][stage],next=m.process?.[stage],can=canProcessMaterial(k),donated=state.collection[k][stage];
-      const reserve=donated?0:1;
-      const safeSell=Math.max(0,count-reserve);
-      const sellAllLabel=donated?`Sell all (${count})`:`Sell all extras (${safeSell})`;
-      return `<div class="stage-row"><div class="stage-copy"><strong>${m.stageLabels[stage]} · ${count} owned</strong><span>${formatMoney(m.prices[stage])} each</span>${next&&!can?`<span class="process-lock">Needs ${WORKSHOP_LEVELS[m.workshopRequired||0].name}</span>`:''}${!donated&&count>0?'<span class="sell-all-note">Sell All reserves one copy for the empty museum slot. The single Sell button can still sell that last copy if you choose.</span>':''}</div><div class="stage-actions">${next?`<button class="mini-button accent" data-action="process" data-material="${k}" data-stage="${stage}" ${count<1||!can?'disabled':''}>${m.processLabels[stage]}</button>`:''}<button class="mini-button donate" data-action="donate" data-material="${k}" data-stage="${stage}" ${count<1||donated?'disabled':''}>${donated?'In museum':'Donate'}</button><button class="mini-button" data-action="sell" data-material="${k}" data-stage="${stage}" ${count<1?'disabled':''}>Sell ${formatMoney(m.prices[stage])}</button><button class="mini-button" data-action="sell-all" data-material="${k}" data-stage="${stage}" ${safeSell<1?'disabled':''}>${sellAllLabel}</button></div></div>`;
+      return `<div class="stage-row"><div class="stage-copy"><strong>${m.stageLabels[stage]} · ${count} owned</strong><span>${formatMoney(m.prices[stage])} each</span>${next&&!can?`<span class="process-lock">Needs ${WORKSHOP_LEVELS[m.workshopRequired||0].name}</span>`:''}</div><div class="stage-actions">${next?`<button class="mini-button accent" data-action="process" data-material="${k}" data-stage="${stage}" ${count<1||!can?'disabled':''}>${m.processLabels[stage]}</button>`:''}<button class="mini-button donate" data-action="donate" data-material="${k}" data-stage="${stage}" ${count<1||donated?'disabled':''}>${donated?'In museum':'Donate'}</button><button class="mini-button" data-action="sell" data-material="${k}" data-stage="${stage}" ${count<1?'disabled':''}>Sell ${formatMoney(m.prices[stage])}</button></div></div>`;
     }).join('');
 
     return `<p class="material-subtitle">${m.subtitle}</p>${automation}<div class="stats-grid"><div class="stat-box"><span>Found</span><strong>${s.found}</strong></div><div class="stat-box"><span>Sold</span><strong>${s.sold}</strong></div><div class="stat-box"><span>Donated</span><strong>${s.donated}</strong></div><div class="stat-box"><span>Processed</span><strong>${s.processed}</strong></div><div class="stat-box"><span>Earned</span><strong>${formatMoney(s.earned)}</strong></div></div>${rows}`;
@@ -850,7 +874,6 @@
     if(b.dataset.action==='process')processOne(k,stage);
     if(b.dataset.action==='donate')donateOne(k,stage);
     if(b.dataset.action==='sell')sellOne(k,stage);
-    if(b.dataset.action==='sell-all')sellAllSafe(k,stage);
     if(b.dataset.action==='toggle-auto')toggleAutoProcess(k);
   }
 
@@ -869,7 +892,7 @@
     if(!wasMastered&&nowMastered&&hasProcessing(k))state.settings.autoProcessByMaterial[k]=true;
     saveState();playTone('collection',k);renderAll();
     if(!wasMastered&&nowMastered){
-      showToast(hasProcessing(k)?`${MATERIALS[k].name} mastered! Auto-process unlocked ✦`:`${MATERIALS[k].name} mastered! ✦`);
+      showToast(hasProcessing(k)?`${MATERIALS[k].name} collection complete — auto-process unlocked ✦`:`${MATERIALS[k].name} collection complete ✦`);
     }else{
       showToast(`${MATERIALS[k].name} added to the museum ✦`);
     }
@@ -882,12 +905,28 @@
     saveState();playTone('coin');renderAll();showToast(`Sold for ${formatMoney(value)}.`);
   }
 
-  function sellAllSafe(k,stage){
-    const count=state.inventory[k][stage],reserve=state.collection[k][stage]?0:1,qty=Math.max(0,count-reserve);
-    if(qty<1)return;
-    const value=qty*MATERIALS[k].prices[stage];
-    state.inventory[k][stage]-=qty;state.credits+=value;state.stats[k].sold+=qty;state.stats[k].earned+=value;
-    saveState();playTone('coin');renderAll();showToast(`Sold ${qty} for ${formatMoney(value)}.`);
+  function sellAllMastered(){
+    const bulk=masteredSellSummary();
+    if(bulk.items<1)return;
+
+    let sold=0,value=0;
+    Object.entries(MATERIALS).forEach(([k,m])=>{
+      if(!isBulkSellEligible(k))return;
+      m.stages.forEach(stage=>{
+        const qty=state.inventory[k][stage]||0;
+        if(qty<1)return;
+        const stageValue=qty*(m.prices[stage]||0);
+        state.inventory[k][stage]=0;
+        state.stats[k].sold+=qty;
+        state.stats[k].earned+=stageValue;
+        sold+=qty;
+        value+=stageValue;
+      });
+    });
+
+    state.credits+=value;
+    saveState();playTone('coin');renderAll();
+    showToast(`Sold ${sold} bulk-sell item${sold===1?'':'s'} for ${formatMoney(value)}.`);
   }
 
   function toggleAutoProcess(k){
@@ -916,9 +955,10 @@
       wing.innerHTML=`<div class="wing-heading"><h3>${w.name}</h3><span>${wf} / ${wt} filled</span></div>`;
 
       pairs.forEach(([k,m])=>{
-        const group=document.createElement('div');group.className='museum-group';
+        const group=document.createElement('div');
         const gf=m.stages.filter(s=>state.collection[k][s]).length,mastered=isMastered(k);
-        group.innerHTML=`<div class="museum-group-title"><strong>${m.name}${mastered?'<span class="mastery-badge">✦ Mastered</span>':''}</strong><span>${gf} / ${m.stages.length}</span></div>`;
+        group.className=`museum-group ${mastered?'mastered':''}`;
+        group.innerHTML=`<div class="museum-group-title"><strong>${m.name}</strong><span>${gf} / ${m.stages.length}</span></div>`;
 
         const grid=document.createElement('div');
         grid.className=`museum-specimen-grid ${m.stages.length>=3?'three':m.stages.length===2?'two':'one'}`;
@@ -928,7 +968,7 @@
           const column=document.createElement('div');column.className=`museum-specimen-column ${filled?'filled':''}`;
           const specimen=document.createElement('div');specimen.className='museum-specimen';
           const visual=document.createElement('div');visual.className='slot-visual';visual.appendChild(buildIcon(k,false,stage));specimen.appendChild(visual);
-          specimen.insertAdjacentHTML('beforeend',`<strong class="slot-stage">${m.stageLabels[stage]}</strong><span class="slot-state">${filled?'Collected':'Not collected'}</span>`);
+          specimen.insertAdjacentHTML('beforeend',`<strong class="slot-stage">${m.stageLabels[stage]}</strong>${filled?'':'<span class="slot-state">Not collected</span>'}`);
           const fact=document.createElement('div');fact.className='specimen-fact-card';
           fact.innerHTML=filled?`<p>${m.facts[stage]}</p>`:'<p class="locked-fact">Donate this form to unlock its fact.</p>';
           column.appendChild(specimen);column.appendChild(fact);grid.appendChild(column);
@@ -938,8 +978,8 @@
 
         if(mastered&&m.mastery){
           const mastery=document.createElement('div');mastery.className='mastery-panel';
-          const unlock=hasProcessing(k)?`<span class="mastery-unlock">⚙️ Auto-process unlocked for ${m.name}</span>`:'<span class="mastery-unlock">✦ Collection complete</span>';
-          mastery.innerHTML=`<strong>✦ ${m.name} Mastery</strong><p>${m.mastery.fact}</p>${unlock}`;
+          const unlock=hasProcessing(k)?`<span class="mastery-unlock">⚙ Auto-process unlocked</span>`:'';
+          mastery.innerHTML=`<strong>✦ Bonus discovery</strong><p>${m.mastery.fact}</p>${unlock}`;
           group.appendChild(mastery);
         }
 
