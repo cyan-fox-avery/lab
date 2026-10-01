@@ -4,18 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111416" />
-  <title>Rockhound — Lab 1.3</title>
+  <title>Rockhound — Lab 1.3.1</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">LAB 1.3</p>
+        <p class="eyebrow">LAB 1.3.1</p>
         <h1 id="gameTitle">ROCKHOUND</h1>
         <p id="gameTagline" class="subtitle">rock go crunch.</p>
       </div>
-      <button id="soundToggle" class="icon-button" type="button" aria-label="Toggle sound">🔊</button>
     </header>
 
     <main>
@@ -40,11 +39,12 @@
           </div>
 
           <div class="mine-feedback">
-            <div id="mineMessage" class="message-card mine-message-inline"><span class="message-icon">⛏️</span><div><strong>Rock go crunch.</strong><p>Faint geological tells can suggest where to begin. Repeated scans can reveal the vaguest hint of something hidden.</p></div></div>
             <div class="face-find-strip"><span class="status-label">Found this face</span><div id="faceFinds" class="face-find-list"><span class="face-find-empty">Nothing yet</span></div></div>
           </div>
 
           <div id="mineBoard" class="mine-board" aria-label="10 by 10 mine grid"></div>
+
+          <div id="mineMessage" class="message-card mine-message-inline"><span class="message-icon">⛏️</span><div><strong>Rock go crunch.</strong><p>Faint geological tells can suggest where to begin. Repeated scans can reveal the vaguest hint of something hidden.</p></div></div>
 
           <div class="mine-tool-buttons" aria-label="Prospecting tools">
             <button id="scanButton" class="mine-tool-button" type="button"><span class="tool-button-icon">⌁</span><span><strong>Scan area</strong><small id="scanButtonStatus">Locked</small></span></button>
@@ -67,7 +67,7 @@
           <div>
             <span class="status-label">Bulk-sell stock</span>
             <strong id="masteredSellValue">0¢ eligible</strong>
-            <span class="status-note">Sell All only touches minerals and ores with complete museum sets.</span>
+            <span class="status-note">Sell All only touches minerals, ores, and fossils whose museum sets are complete.</span>
           </div>
           <button id="sellAllMasteredButton" class="primary-button" type="button">Sell All</button>
         </div>
@@ -113,7 +113,7 @@
         <div class="shop-balance"><span class="status-label">Current balance</span><strong id="shopBalance">0¢</strong></div>
         <div id="upgradeList" class="upgrade-list"></div>
         <div class="design-note"><strong>Fair-play rule</strong><p>Processing is free. Scanner charges and pick durability reset with each fresh rock face. No real-time recharge, premium currency, or pay-to-skip.</p></div>
-        <button id="resetButton" class="danger-button" type="button">Reset Lab 1.3 save</button>
+        <button id="resetButton" class="danger-button" type="button">Reset Lab 1.3.1 save</button>
       </section>
     </main>
 

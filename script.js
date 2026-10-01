@@ -657,7 +657,6 @@ const DURABILITY_LEVELS = [
 
   const defaultState = () => ({
     credits:0,
-    sound:true,
     unlockedDepth:1,
     currentDepth:1,
     upgrades:{durability:0,surveying:0,workshop:0,scannerUses:0,metalDetector:false,uvLamp:false,geothermalGear:false,scannerHeatShield:false,detectorHeatShield:false},
@@ -681,7 +680,6 @@ const DURABILITY_LEVELS = [
   let state = loadState();
   let openWorkbenchKey = null;
   let toastTimer = null;
-  let audioContext = null;
   let scanMode = false;
   let activePanel = 'mine';
 
@@ -694,7 +692,7 @@ const DURABILITY_LEVELS = [
     workbenchList:$('workbenchList'), masteredSellValue:$('masteredSellValue'), sellAllMasteredButton:$('sellAllMasteredButton'), postgameWorkbench:$('postgameWorkbench'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'), completionPlaque:$('completionPlaque'), personalCollectionSection:$('personalCollectionSection'), personalCollectionGrid:$('personalCollectionGrid'),
     museumLighting:$('museumLighting'), normalLightButton:$('normalLightButton'), uvLightButton:$('uvLightButton'),
     achievementGrid:$('achievementGrid'), achievementCount:$('achievementCount'), achievementMeter:$('achievementMeter'),
-    shopBalance:$('shopBalance'), upgradeList:$('upgradeList'), soundToggle:$('soundToggle'), resetButton:$('resetButton'), toast:$('toast'),
+    shopBalance:$('shopBalance'), upgradeList:$('upgradeList'), resetButton:$('resetButton'), toast:$('toast'),
     mobileMineHud:$('mobileMineHud'), mobileDurability:$('mobileDurability'), mobileScans:$('mobileScans'),
     gameTitle:$('gameTitle'), gameTagline:$('gameTagline'), completionModal:$('completionModal'), completionBody:$('completionBody'), keepMiningButton:$('keepMiningButton')
   };
@@ -719,7 +717,6 @@ const DURABILITY_LEVELS = [
     els.normalLightButton.addEventListener('click',()=>setMuseumLighting(false));
     els.uvLightButton.addEventListener('click',()=>setMuseumLighting(true));
     els.sellAllMasteredButton.addEventListener('click',sellAllMastered);
-    els.soundToggle.addEventListener('click',() => {state.sound=!state.sound;saveState();renderSoundButton();if(state.sound)playTone('soft');});
     els.resetButton.addEventListener('click',resetGame);
     if(els.keepMiningButton)els.keepMiningButton.addEventListener('click',closeCompletionModal);
     if(els.gameTagline)els.gameTagline.addEventListener('click',()=>{state.meta.taglineTaps++;checkAchievements();saveState();});
@@ -845,6 +842,7 @@ const DURABILITY_LEVELS = [
   }
   function isBulkSellEligible(k){
     const m=MATERIALS[k];
+    if(m.family==='fossil')return m.stages.every(stage=>!!state.collection[k]?.[stage]);
     return (m.family==='mineral'||m.family==='ore') && isMastered(k);
   }
   function masteredSellSummary(){
@@ -937,22 +935,15 @@ const DURABILITY_LEVELS = [
   }
 
   function generateProspectHints(face){
-    const count=randInt(1,3),chosen=new Set();
-    const geological=face.tiles.filter(t=>t.material && !['fossil','artifact'].includes(MATERIALS[t.material].family));
-    for(let i=0;i<count;i++){
-      let candidate;
-      if(geological.length && Math.random()<.82){
-        const target=geological[randInt(0,geological.length-1)].index;
-        const nearby=[target,...neighbors(target)];
-        candidate=nearby[randInt(0,nearby.length-1)];
-      }else{
-        candidate=randInt(0,face.tiles.length-1);
-      }
-      let guard=0;
-      while(chosen.has(candidate)&&guard<30){candidate=randInt(0,face.tiles.length-1);guard++;}
-      chosen.add(candidate);
+    const occupied=face.tiles.filter(t=>t.material||t.special==='geode');
+    if(!occupied.length)return [];
+    const count=Math.min(randInt(1,3),occupied.length);
+    const pool=[...occupied];
+    for(let i=pool.length-1;i>0;i--){
+      const j=randInt(0,i);
+      [pool[i],pool[j]]=[pool[j],pool[i]];
     }
-    return [...chosen];
+    return pool.slice(0,count).map(t=>t.index);
   }
 
   function generateFace(depth){
@@ -1024,7 +1015,6 @@ const DURABILITY_LEVELS = [
     state.face=generateFace(state.currentDepth);
     saveState();
     setMineMessage('⛏️','Fresh rock face.','Read the faint geological tells, survey where it seems worthwhile, then start crunching.');
-    playTone('soft');
     renderMine();
     showToast('Fresh rock face.');
   }
@@ -1072,7 +1062,6 @@ const DURABILITY_LEVELS = [
     scanMode=false;
     checkAchievements();
     saveState();
-    playTone('soft');
     setMineMessage('⌁','Scan complete.',results.length?results.map(r=>r.plain).join(' · '):'No significant signature detected.');
     renderMine();
   }
@@ -1120,7 +1109,6 @@ const DURABILITY_LEVELS = [
 
     checkAchievements();
     saveState();
-    playTone('soft');
     if(selected.length){
       setMineMessage('🧲','Metal sweep complete.',`${selected.length} broad signal zone${selected.length===1?'':'s'} detected. The highlighted areas are intentionally imprecise.`);
       showToast(`${selected.length} metal signal zone${selected.length===1?'':'s'} detected.`);
@@ -1203,7 +1191,6 @@ const DURABILITY_LEVELS = [
     if(tile.special==='geode'){
       state.postgame.uncrackedGeodes++;
       face.finds.__geode=(face.finds.__geode||0)+1;
-      playTone('gem','quartz');
       setMineMessage('🪨','Geode found.','Something is rattling inside. Take it back to the Workbench and crack it open.');
       showToast('Geode found 🪨');
     }else if(tile.material){
@@ -1213,7 +1200,6 @@ const DURABILITY_LEVELS = [
       if(inMetalZone&&isMetalTarget(tile.material))state.meta.metalSignalFinds++;
       if(face.durability===0)state.meta.lastSwingFinds++;
       const m=MATERIALS[tile.material];
-      playTone('gem',tile.material);
       if(exceptional){
         setMineMessage('✨','Exceptional specimen!',exceptional.label);
         showToast(`Exceptional specimen: ${exceptional.label} ✨`);
@@ -1223,7 +1209,6 @@ const DURABILITY_LEVELS = [
       }
       maybeAnnounceDeposit(tile.depositId);
     }else{
-      playTone('crunch');
       setMineMessage('🪨','Crunch.','Nothing in that tile. Pick another spot.');
     }
 
@@ -1342,7 +1327,7 @@ const DURABILITY_LEVELS = [
   }
 
   function renderAll(){
-    renderMine();renderWorkbench();renderMuseum();renderAchievements();renderUpgrades();renderSoundButton();renderMobileHud();
+    renderMine();renderWorkbench();renderMuseum();renderAchievements();renderUpgrades();renderMobileHud();
   }
 
   function renderMine(){
@@ -1581,7 +1566,7 @@ const DURABILITY_LEVELS = [
     state.postgame.vault.push(item);
     state.postgame.geodesCracked++;
     state.postgame.lastGeode=item;
-    checkAchievements();saveState();playTone('collection');renderWorkbench();renderAchievements();showToast(`${interior.label}! ✦`);
+    checkAchievements();saveState();renderWorkbench();renderAchievements();showToast(`${interior.label}! ✦`);
   }
 
   function displayRegularSpecimen(k,stage){
@@ -1715,7 +1700,7 @@ const DURABILITY_LEVELS = [
     const m=MATERIALS[k],next=m.process?.[stage];
     if(!next||!canProcessMaterial(k)||state.inventory[k][stage]<1)return;
     state.inventory[k][stage]--;state.inventory[k][next]++;state.stats[k].processed++;
-    checkAchievements();saveState();playTone('process');renderWorkbench();renderAchievements();showToast(`${m.name}: ${m.stageLabels[stage]} → ${m.stageLabels[next]}`);
+    checkAchievements();saveState();renderWorkbench();renderAchievements();showToast(`${m.name}: ${m.stageLabels[stage]} → ${m.stageLabels[next]}`);
   }
 
   function donateOne(k,stage){
@@ -1726,7 +1711,7 @@ const DURABILITY_LEVELS = [
     if(!wasMastered&&nowMastered&&hasProcessing(k))state.settings.autoProcessByMaterial[k]=true;
     checkAchievements();
     const justCompleted=checkGameCompletion();
-    saveState();playTone('collection',k);renderAll();
+    saveState();renderAll();
     if(justCompleted){openCompletionModal();return;}
     if(!wasMastered&&nowMastered){
       showToast(hasProcessing(k)?`${MATERIALS[k].name} collection complete — auto-process unlocked ✦`:`${MATERIALS[k].name} collection complete ✦`);
@@ -1739,7 +1724,7 @@ const DURABILITY_LEVELS = [
     if(state.inventory[k][stage]<1)return;
     const value=MATERIALS[k].prices[stage];
     state.inventory[k][stage]--;state.credits+=value;state.stats[k].sold++;state.stats[k].earned+=value;
-    checkAchievements();saveState();playTone('coin');renderAll();showToast(`Sold for ${formatMoney(value)}.`);
+    checkAchievements();saveState();renderAll();showToast(`Sold for ${formatMoney(value)}.`);
   }
 
   function sellAllMastered(){
@@ -1764,7 +1749,7 @@ const DURABILITY_LEVELS = [
     state.credits+=value;
     state.meta.sellAllUses++;
     checkAchievements();
-    saveState();playTone('coin');renderAll();
+    saveState();renderAll();
     showToast(`Sold ${sold} bulk-sell item${sold===1?'':'s'} for ${formatMoney(value)}.`);
   }
 
@@ -1787,7 +1772,6 @@ const DURABILITY_LEVELS = [
     checkAchievements();
     saveState();
     renderMuseum();
-    if(useUv)playTone('soft');
   }
 
   function renderMuseum(){
@@ -1870,7 +1854,6 @@ const DURABILITY_LEVELS = [
     if(newlyUnlocked.length&&!silent){
       const a=newlyUnlocked[newlyUnlocked.length-1];
       showToast(`Achievement unlocked: ${a.name} 🏆`);
-      playTone('collection');
     }
     if(newlyUnlocked.length)saveState();
     return newlyUnlocked;
@@ -1904,8 +1887,8 @@ const DURABILITY_LEVELS = [
     const cards=[depthCard()];
     if(state.unlockedDepth>=5)cards.push(geothermalGearCard());
     cards.push(durabilityCard(),surveyCard(),scannerUsesCard(),metalDetectorCard());
-    if(state.unlockedDepth>=5)cards.push(scannerHeatShieldCard(),detectorHeatShieldCard());
-    cards.push(uvLampCard(),workshopCard());
+    if(state.unlockedDepth>=5)cards.push(scannerHeatShieldCard(),detectorHeatShieldCard(),uvLampCard());
+    cards.push(workshopCard());
     cards.forEach(c=>els.upgradeList.appendChild(c));
   }
 
@@ -1994,22 +1977,22 @@ const DURABILITY_LEVELS = [
     if(nextDepth===6&&!state.upgrades.geothermalGear){showToast('Equip Geothermal Protective Gear first.');return;}
     if(!up||state.credits<up.cost)return;
     state.credits-=up.cost;state.unlockedDepth=nextDepth;state.currentDepth=nextDepth;state.face=generateFace(nextDepth);
-    checkAchievements();saveState();playTone('upgrade');renderAll();showToast(`Depth ${nextDepth} unlocked: ${DEPTHS[nextDepth].name}.`);
+    checkAchievements();saveState();renderAll();showToast(`Depth ${nextDepth} unlocked: ${DEPTHS[nextDepth].name}.`);
   }
 
   function buyGeothermalGear(){
     const cost=2400;if(state.upgrades.geothermalGear||state.unlockedDepth<5||state.credits<cost)return;
-    state.credits-=cost;state.upgrades.geothermalGear=true;checkAchievements();saveState();playTone('upgrade');renderAll();showToast('Geothermal Protective Gear equipped.');
+    state.credits-=cost;state.upgrades.geothermalGear=true;checkAchievements();saveState();renderAll();showToast('Geothermal Protective Gear equipped.');
   }
 
   function buyScannerHeatShield(){
     const cost=800;if(state.upgrades.scannerHeatShield||!state.upgrades.geothermalGear||state.upgrades.surveying===0||state.credits<cost)return;
-    state.credits-=cost;state.upgrades.scannerHeatShield=true;saveState();playTone('upgrade');renderAll();showToast('Scanner heat shielding installed.');
+    state.credits-=cost;state.upgrades.scannerHeatShield=true;saveState();renderAll();showToast('Scanner heat shielding installed.');
   }
 
   function buyDetectorHeatShield(){
     const cost=650;if(state.upgrades.detectorHeatShield||!state.upgrades.geothermalGear||!state.upgrades.metalDetector||state.credits<cost)return;
-    state.credits-=cost;state.upgrades.detectorHeatShield=true;saveState();playTone('upgrade');renderAll();showToast('Detector heat shielding installed.');
+    state.credits-=cost;state.upgrades.detectorHeatShield=true;saveState();renderAll();showToast('Detector heat shielding installed.');
   }
 
   function buyDurability(){
@@ -2017,7 +2000,7 @@ const DURABILITY_LEVELS = [
     if(cur.cost===null||state.credits<cur.cost)return;
     state.credits-=cur.cost;const old=cur.swings;state.upgrades.durability++;
     const newer=DURABILITY_LEVELS[state.upgrades.durability].swings;state.face.durability=Math.min(newer,state.face.durability+(newer-old));
-    checkAchievements();saveState();playTone('upgrade');renderAll();showToast(`Pick durability increased to ${newer} swings.`);
+    checkAchievements();saveState();renderAll();showToast(`Pick durability increased to ${newer} swings.`);
   }
 
   function buySurvey(){
@@ -2025,7 +2008,7 @@ const DURABILITY_LEVELS = [
     if(cur.cost===null||state.credits<cur.cost)return;
     state.credits-=cur.cost;state.upgrades.surveying++;
     if(state.upgrades.surveying===1&&state.face.scanUsesRemaining===0)state.face.scanUsesRemaining=currentMaxScans();
-    checkAchievements();saveState();playTone('upgrade');renderAll();showToast(`${SURVEY_LEVELS[state.upgrades.surveying].name} unlocked.`);
+    checkAchievements();saveState();renderAll();showToast(`${SURVEY_LEVELS[state.upgrades.surveying].name} unlocked.`);
   }
 
   function buyScannerUse(){
@@ -2033,7 +2016,7 @@ const DURABILITY_LEVELS = [
     if(state.upgrades.surveying===0||cur.cost===null||state.credits<cur.cost)return;
     state.credits-=cur.cost;const oldUses=cur.uses;state.upgrades.scannerUses++;
     const newUses=SCAN_CHARGE_LEVELS[state.upgrades.scannerUses].uses;state.face.scanUsesRemaining+=newUses-oldUses;
-    checkAchievements();saveState();playTone('upgrade');renderAll();showToast(`${newUses} scans per rock face unlocked.`);
+    checkAchievements();saveState();renderAll();showToast(`${newUses} scans per rock face unlocked.`);
   }
 
 
@@ -2043,57 +2026,31 @@ const DURABILITY_LEVELS = [
     state.credits-=cost;
     state.upgrades.metalDetector=true;
     checkAchievements();
-    saveState();playTone('upgrade');renderAll();showToast('Metal Detector unlocked.');
+    saveState();renderAll();showToast('Metal Detector unlocked.');
   }
 
   function buyUvLamp(){
     const cost=950;
     if(state.upgrades.uvLamp||state.unlockedDepth<5||state.credits<cost)return;
     state.credits-=cost;state.upgrades.uvLamp=true;
-    saveState();playTone('upgrade');renderAll();showToast('UV Fluorescence Lamp installed in the museum.');
+    saveState();renderAll();showToast('UV Fluorescence Lamp installed in the museum.');
   }
 
   function buyWorkshop(){
     const cur=WORKSHOP_LEVELS[state.upgrades.workshop];
     if(cur.cost===null||state.credits<cur.cost)return;
     state.credits-=cur.cost;state.upgrades.workshop++;
-    checkAchievements();saveState();playTone('upgrade');renderAll();showToast(`${WORKSHOP_LEVELS[state.upgrades.workshop].name} unlocked.`);
+    checkAchievements();saveState();renderAll();showToast(`${WORKSHOP_LEVELS[state.upgrades.workshop].name} unlocked.`);
   }
 
   function resetGame(){
-    if(!window.confirm('Reset all Rockhound Lab 1.3 progress?'))return;
+    if(!window.confirm('Reset all Rockhound Lab 1.3.1 progress?'))return;
     localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
-    saveState();renderAll();showToast('Lab 1.3 save reset.');
-  }
-
-  function renderSoundButton(){
-    els.soundToggle.textContent=state.sound?'🔊':'🔇';els.soundToggle.setAttribute('aria-label',state.sound?'Mute sound':'Enable sound');
+    saveState();renderAll();showToast('Lab 1.3.1 save reset.');
   }
 
   function showToast(msg){
     clearTimeout(toastTimer);els.toast.textContent=msg;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1900);
   }
 
-  function getAudioContext(){
-    if(!state.sound)return null;const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return null;
-    if(!audioContext)audioContext=new Ctx();if(audioContext.state==='suspended')audioContext.resume();return audioContext;
-  }
-
-  function playTone(type,key='quartz'){
-    const ctx=getAudioContext();if(!ctx)return;const now=ctx.currentTime;
-    if(type==='crunch'){
-      const len=Math.floor(ctx.sampleRate*.05),buffer=ctx.createBuffer(1,len,ctx.sampleRate),data=buffer.getChannelData(0);
-      for(let i=0;i<len;i++)data[i]=(Math.random()*2-1)*(1-i/len);
-      const src=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
-      src.buffer=buffer;filter.type='lowpass';filter.frequency.value=520;gain.gain.setValueAtTime(.13,now);gain.gain.exponentialRampToValueAtTime(.001,now+.055);
-      src.connect(filter).connect(gain).connect(ctx.destination);src.start(now);src.stop(now+.06);return;
-    }
-    const base={quartz:440,amethyst:392,garnet:349,topaz:494,pyrite:554,citrine:466,calcite:415,fluorite:523,aquamarine:587,sapphire:622,roseQuartz:430,malachite:360,ruby:680,emerald:560,willemite:610,hackmanite:575,apatite:640,opal:720,diamond:760,obsidian:310,olivine:600,nativeSulfur:690,rhodochrosite:540,adularia:510,hematite:294,chalcopyrite:330,cassiterite:370,galena:250,sphalerite:315,scheelite:405,acanthite:285,nativeGold:740,trilobite:262,ammonite:277,crinoidStem:286,brachiopod:240,belemnite:255,fernImpression:268,miningTag:247,miningLamp:220,surveyMarker:232,drillBit:205,railSpike:198,surveyCompass:225}[key]||440;
-    const sets={gem:[base,base*1.25,base*1.5],process:[260,330],collection:[523,659,784],coin:[660,880],upgrade:[330,440,554,659],soft:[300]},freqs=sets[type]||sets.soft;
-    freqs.forEach((freq,i)=>{
-      const osc=ctx.createOscillator(),gain=ctx.createGain(),start=now+i*.05,duration=['upgrade','collection'].includes(type)?.17:.105;
-      osc.type=type==='soft'?'sine':'triangle';osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.05,start+.015);gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
-      osc.connect(gain).connect(ctx.destination);osc.start(start);osc.stop(start+duration+.02);
-    });
-  }
 })();
