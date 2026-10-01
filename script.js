@@ -2071,9 +2071,9 @@ const DURABILITY_LEVELS = [
   }
 
   function resetGame(){
-    if(!window.confirm('Reset all Rockhound Lab 1.3.2 progress?'))return;
+    if(!window.confirm('Reset all Rockhound Beta 1.3.3 progress?'))return;
     localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
-    saveState();renderAll();showToast('Lab 1.3.2 save reset.');
+    saveState();renderAll();showToast('Beta 1.3.3 save reset.');
   }
 
   function showToast(msg){

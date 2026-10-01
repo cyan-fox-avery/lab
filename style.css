@@ -1430,9 +1430,10 @@
     linear-gradient(320deg,rgba(0,0,0,.20),transparent 40%),
     #413b38;
 }
-.mine-board.epithermal-board .rock:nth-child(3n){background-color:#49403c}
-.mine-board.epithermal-board .rock:nth-child(5n){background-color:#382f2c}
-.mine-board.epithermal-board .rock:nth-child(7n){background-color:#4d423c}
+.mine-board.epithermal-board .rock:not(.revealed):nth-child(3n){background-color:#49403c}
+.mine-board.epithermal-board .rock:not(.revealed):nth-child(5n){background-color:#382f2c}
+.mine-board.epithermal-board .rock:not(.revealed):nth-child(7n){background-color:#4d423c}
+.mine-board.epithermal-board .rock.revealed{background:#1a1e20}
 
 /* Lab 1.3 final-roster placeholder art. Final custom sprites come later. */
 .material-icon.diamond,.tile-find.diamond{
@@ -1555,7 +1556,7 @@ body.modal-open{overflow:hidden}
 .mine-board + .mine-message-inline{margin-top:8px}
 
 
-/* ===== Lab 1.3.2 polish ===== */
+/* ===== Beta 1.3.3 polish ===== */
 .workbench-discovery-card{
   display:flex;
   align-items:center;

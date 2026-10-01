@@ -1,6 +1,6 @@
 # Rockhound
 
-**Lab 1.3.2 — content-complete full-game prototype**
+**Beta 1.3.3 — content-complete full-game beta**
 
 > rock go crunch.
 
@@ -27,7 +27,7 @@ Each depth includes a short **Field Note** explaining the geology behind its the
 
 ## Final collection roster
 
-Lab 1.3.2 contains **44 core collection subjects** across four museum wings:
+Beta 1.3.3 contains **44 core collection subjects** across four museum wings:
 
 - **24 minerals, gems, and mineraloids**, including quartz varieties, corundum and beryl families, opal, diamond, obsidian, olivine/peridot, native sulfur, rhodochrosite, and adularia.
 - **8 ore/metal subjects**, including hematite → iron, chalcopyrite → copper, cassiterite → tin, galena → lead, sphalerite → zinc, scheelite → tungsten, acanthite → silver, and native gold.
@@ -69,20 +69,17 @@ Geodes and exceptional specimens are optional postgame toys, not a second mandat
 
 ## Achievements
 
-Lab 1.3.2 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
+Beta 1.3.3 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
 
-## Lab 1.3.2 status
+## Beta 1.3.3 status
 
 This build is the content-complete development version being tested in the lab before the public Rockhound repository is updated. The full six-depth progression, final core roster, completion sequence, and postgame systems are implemented.
 
 The remaining major polish passes are the final custom specimen sprite set and the illustrated **Rockhound's Field Guide**, which will use appropriately licensed real-world photographs and expanded educational entries.
 
 
-## Lab 1.3.2 patch
+## Beta 1.3.3 patch
 
-- Adds a Workbench discovery counter showing unique specimens found out of the complete 44-subject roster.
-- Unlocking Depth 6 now happens before geothermal safety equipment appears; attempting to mine there without protective gear produces an in-grid heat warning.
-- Heat-shielded scanner and detector housings remain hidden until Depth 6 is unlocked.
-- Fossil Wing and History Wing use compact two-column display cards on normal mobile widths.
-- Removes repeated monetization / fair-play disclaimers from the Upgrades screen while retaining useful per-face reset information in the Mine.
-- Replaces meta development wording on end-tier equipment with in-world descriptions.
+- Fixed Epithermal Zone rock tiles so mined tiles always visually clear, including when they contain a specimen.
+- Removed the redundant “one currency only” note from the mine balance card.
+- Rebranded the in-game build label from Lab to Beta; the lab repository is now only a testing location.
