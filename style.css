@@ -1655,3 +1655,74 @@ body.modal-open{overflow:hidden}
 @media(max-width:350px){
   .museum-wing.compact-wing .museum-groups-grid{grid-template-columns:1fr}
 }
+
+
+/* ============================================================
+   Beta 1.4.0 — Personal Collection postgame room
+   ============================================================ */
+.bottom-nav.postgame-nav{grid-template-columns:repeat(6,1fr)}
+#collectionNavButton small{line-height:1.02}
+@media(max-width:470px){
+  .bottom-nav.postgame-nav .nav-button{padding-left:2px;padding-right:2px}
+  .bottom-nav.postgame-nav .nav-button small{font-size:.47rem;line-height:1.02}
+}
+
+/* Geodes now read as actual rough nodules and opened crystal cavities. */
+.geode-find{display:grid;place-items:center;width:78%;height:78%;clip-path:none!important;border-radius:0;background:none;box-shadow:none;color:inherit}
+.geode-sprite{display:inline-block;position:relative;flex:0 0 auto}
+.geode-closed{
+  width:44px;height:39px;border-radius:47% 53% 44% 56% / 54% 43% 57% 46%;
+  background:
+    radial-gradient(circle at 28% 30%,rgba(255,255,255,.18) 0 5%,transparent 6%),
+    radial-gradient(circle at 70% 65%,rgba(0,0,0,.22) 0 7%,transparent 8%),
+    radial-gradient(circle at 58% 25%,#697174 0 8%,transparent 9%),
+    linear-gradient(145deg,#71797b 0%,#50585b 42%,#343b3e 72%,#23292b 100%);
+  border:2px solid #202629;
+  box-shadow:inset -5px -5px 9px rgba(0,0,0,.25),inset 4px 4px 7px rgba(255,255,255,.08),0 2px 4px rgba(0,0,0,.25);
+  transform:rotate(-5deg)
+}
+.geode-closed::before{content:"";position:absolute;left:8%;right:10%;top:45%;height:3px;border-radius:50%;background:linear-gradient(90deg,transparent,#9ca5a6 24%,#42494c 52%,#8d9698 76%,transparent);opacity:.72;transform:rotate(9deg)}
+.geode-closed::after{content:"";position:absolute;width:7px;height:5px;right:8px;top:7px;border-radius:50%;background:#303638;box-shadow:-20px 14px 0 #60686a,-8px 22px 0 #2e3436;opacity:.75}
+.geode-find .geode-closed{width:100%;height:100%;min-width:0;min-height:0;border-width:1px}
+.geode-station-visual .geode-closed{width:76px;height:66px}
+
+.geode-open{--core1:#f2f0e8;--core2:#bfc9c8;display:inline-flex;align-items:center;justify-content:center;gap:2px;width:48px;height:42px}
+.geode-half{position:relative;display:block;width:22px;height:39px;overflow:hidden;background:linear-gradient(145deg,#777f81,#474f52 60%,#252b2d);border:2px solid #262c2e;box-shadow:inset 0 0 0 2px rgba(255,255,255,.05),0 2px 4px rgba(0,0,0,.24)}
+.geode-half.left{border-radius:85% 16% 18% 76% / 52% 18% 20% 50%;transform:rotate(-7deg)}
+.geode-half.right{border-radius:16% 85% 76% 18% / 18% 52% 50% 20%;transform:rotate(7deg)}
+.geode-cavity{position:absolute;inset:5px 3px;background:radial-gradient(circle at 50% 45%,var(--core1) 0 18%,var(--core2) 22% 53%,#5e6668 57% 69%,transparent 72%);filter:saturate(1.05);box-shadow:inset 0 0 7px rgba(255,255,255,.24)}
+.geode-half.left .geode-cavity{border-radius:78% 10% 12% 69% / 48% 15% 18% 45%}
+.geode-half.right .geode-cavity{border-radius:10% 78% 69% 12% / 15% 48% 45% 18%}
+.geode-amethyst{--core1:#ead8f2;--core2:#8656a0}
+.geode-calcite{--core1:#fff3d0;--core2:#d6c28e}
+.geode-bandedAgate{--core1:#f1d2aa;--core2:#a96957}
+.geode-chalcedony{--core1:#d7eef0;--core2:#76a9af}
+.geode-quartzDruzy{--core1:#f7fbfb;--core2:#b9d0d2}
+.geode-reveal-icon .geode-open,.vault-item-icon .geode-open,.personal-slot-visual .geode-open{width:46px;height:40px}
+
+.collection-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.collection-mini-stat{padding:10px 11px;border:1px solid var(--line);border-radius:14px;background:rgba(23,27,30,.94)}
+.collection-mini-stat strong{display:block;margin-top:4px;color:#ead6a0;font-size:1.05rem}
+.geode-cracker-station{grid-template-columns:auto 1fr auto}
+.geode-station-visual{display:grid;place-items:center;width:88px;min-height:82px;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(8,10,11,.34)}
+.geode-action-buttons{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px}
+.vault-help{margin:-2px 0 9px;color:var(--muted);font-size:.68rem;line-height:1.42}
+.vault-item{grid-template-columns:auto 1fr auto}
+.vault-item-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}
+.vault-sell{border-color:rgba(212,179,105,.24);color:#e5ce96}
+
+.personal-collection{margin-top:0}
+.personal-collection-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.personal-slot{min-height:122px}
+.cartridge-card .cartridge-actions{gap:7px}
+.cartridge-card .cartridge-actions button{min-width:108px}
+
+@media(max-width:560px){
+  .collection-overview{grid-template-columns:1fr 1fr 1fr}
+  .collection-mini-stat{padding:8px}.collection-mini-stat .status-label{font-size:.55rem}.collection-mini-stat strong{font-size:.9rem}
+  .geode-cracker-station{grid-template-columns:auto 1fr}.geode-action{grid-column:1/-1;align-items:stretch}.geode-action-buttons{justify-content:stretch}.geode-action-buttons button{flex:1 1 140px}
+  .vault-item{grid-template-columns:auto 1fr}.vault-item-actions{grid-column:1/-1;justify-content:stretch}.vault-item-actions button{flex:1}
+  .personal-collection-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .personal-slot{min-height:112px;padding:7px}
+  .personal-slot-copy strong{font-size:.6rem}.personal-slot-copy span{font-size:.52rem}
+}

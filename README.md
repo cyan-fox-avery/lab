@@ -1,6 +1,6 @@
 # Rockhound
 
-**Beta 1.3.7 — content-complete full-game beta**
+**Beta 1.4.0 — content-complete full-game beta with expanded postgame**
 
 > rock go crunch.
 
@@ -27,7 +27,7 @@ Each depth includes a short **Field Note** explaining the geology behind its the
 
 ## Final collection roster
 
-Beta 1.3.7 contains **44 core collection subjects** across four museum wings:
+Beta 1.4.0 contains **44 core collection subjects** across four museum wings:
 
 - **24 minerals, gems, and mineraloids**, including quartz varieties, corundum and beryl families, opal, diamond, obsidian, olivine/peridot, native sulfur, rhodochrosite, and adularia.
 - **8 ore/metal subjects**, including hematite → iron, chalcopyrite → copper, cassiterite → tin, galena → lead, sphalerite → zinc, scheelite → tungsten, acanthite → silver, and native gold.
@@ -60,26 +60,28 @@ The completion reward includes:
 
 - a permanent **Completion Plaque**
 - the effectively unbreakable **Gilded Steel Pickaxe**
-- **Your Collection**, a 12-space freeform display with no checklist or completion percentage
+- **Personal Collection**, a dedicated postgame tab with 30 freeform display spaces and no completion percentage
 - **Exceptional Specimens**, rare curated versions of familiar finds
 - postgame **Geodes**, a **Geode Cracker**, and the museum-loaned **Geode Finder**
 - unrestricted postgame prospecting across the completed mine
 
-Geodes and exceptional specimens are optional postgame toys, not a second mandatory progression ladder. The museum-loaned Geode Finder uses paid cartridges to make postgame geode hunting easier, but geodes can still appear without it. The game is finished when the museum is finished; continued mining exists because the player wants to keep finding rocks.
+Geodes and exceptional specimens are optional postgame toys, not a second mandatory progression ladder. Both can be sold individually if the player would rather turn a special find back into money, while displayed items remain protected. The museum-loaned Geode Finder uses paid cartridges to make postgame geode hunting easier, but geodes can still appear without it. The game is finished when the museum is finished; continued mining exists because the player wants to keep finding rocks.
 
 ## Achievements
 
-Beta 1.3.7 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
+Beta 1.4.0 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
 
-## Beta 1.3.7 status
+## Beta 1.4.0 status
 
-This build is the content-complete beta under active testing. The full six-depth progression, final core roster, completion sequence, and postgame systems are implemented.
+This build keeps the complete six-depth game intact and gives the postgame its own proper home. Existing Beta 1.3.x saves continue to use the same save key and migrate the old 12-space display into the expanded 30-space Personal Collection.
 
-The remaining major polish passes are the final custom specimen sprite set and the illustrated **Rockhound's Field Guide**, which will use appropriately licensed real-world photographs and expanded educational entries.
+## Beta 1.4.0 changes
 
-## Beta 1.3.7 patch
-
-- Fixed the postgame Upgrades screen disappearing after museum completion.
-- Hardened the Upgrades renderer so an optional postgame card cannot blank the entire shop.
-- Added versioned CSS/JavaScript asset URLs to prevent GitHub Pages or mobile Safari from serving a stale pre-fix script after an update.
-- Preserves the existing Beta 1.3.x save.
+- Added a dedicated **Personal Collection** tab that appears only after museum completion.
+- Moved the **Geode Cracking Station**, special-find storage, and freeform display out of the Workbench and Museum.
+- Expanded the Personal Collection from 12 spaces to **30**, shown three across on mobile.
+- Redesigned placeholder geode visuals so unopened geodes read as rough nodules and opened geodes show distinct crystal interiors.
+- Added individual selling for unopened geodes, opened geodes, and exceptional specimens. Displayed items remain protected until removed.
+- Rebalanced Geode Finder cartridges to **$25 for one** or **$100 for five**.
+- Updated the 30-slot collection achievement and completion-reward text.
+- Preserves existing Beta 1.3.x progress.

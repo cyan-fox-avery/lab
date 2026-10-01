@@ -464,12 +464,17 @@
   };
 
 
+  const UNCRACKED_GEODE_SELL_VALUE = 600;
+  const GEODE_CARTRIDGE_SINGLE_COST = 2500;
+  const GEODE_CARTRIDGE_BULK_COST = 10000;
+  const GEODE_CARTRIDGE_BULK_SIZE = 5;
+
   const GEODE_INTERIORS = [
-    {id:'quartzDruzy',label:'Druzy Quartz Geode',icon:'✧',weight:30,detail:'A cavity lined with a sparkling crust of tiny quartz crystals.'},
-    {id:'amethyst',label:'Amethyst Geode',icon:'◆',weight:24,detail:'Purple quartz crystals grew inward from the walls of the cavity.'},
-    {id:'calcite',label:'Calcite-lined Geode',icon:'◇',weight:18,detail:'Later calcite crystals coated part of the cavity after it formed.'},
-    {id:'bandedAgate',label:'Banded Agate Geode',icon:'◎',weight:18,detail:'Layer after layer of microcrystalline silica produced concentric bands.'},
-    {id:'chalcedony',label:'Chalcedony Geode',icon:'◉',weight:10,detail:'A smooth lining of microcrystalline quartz formed before the cavity fully filled.'}
+    {id:'quartzDruzy',label:'Druzy Quartz Geode',icon:'✧',weight:30,sellValue:800,detail:'A cavity lined with a sparkling crust of tiny quartz crystals.'},
+    {id:'amethyst',label:'Amethyst Geode',icon:'◆',weight:24,sellValue:1200,detail:'Purple quartz crystals grew inward from the walls of the cavity.'},
+    {id:'calcite',label:'Calcite-lined Geode',icon:'◇',weight:18,sellValue:1400,detail:'Later calcite crystals coated part of the cavity after it formed.'},
+    {id:'bandedAgate',label:'Banded Agate Geode',icon:'◎',weight:18,sellValue:1800,detail:'Layer after layer of microcrystalline silica produced concentric bands.'},
+    {id:'chalcedony',label:'Chalcedony Geode',icon:'◉',weight:10,sellValue:2400,detail:'A smooth lining of microcrystalline quartz formed before the cavity fully filled.'}
   ];
 
   const EXCEPTIONAL_VARIANTS = {
@@ -641,8 +646,8 @@ const DURABILITY_LEVELS = [
     {id:'geodeFound',icon:'🪨',name:'Something Rattled',description:'Find your first postgame geode.',condition:s=>(s.postgame?.uncrackedGeodes||0)+(s.postgame?.geodesCracked||0)>=1},
     {id:'crackAttack',icon:'💥',name:'CRACK',description:'Open your first geode.',condition:s=>(s.postgame?.geodesCracked||0)>=1},
     {id:'exceptionalTaste',icon:'✨',name:'Now THAT Is a Specimen',description:'Find your first exceptional specimen.',condition:s=>(s.postgame?.exceptionalFound||0)>=1},
-    {id:'curator',icon:'🖼️',name:'Your Turn, Curator',description:'Place your first item in Your Collection.',condition:s=>(s.postgame?.personalSlots||[]).some(Boolean)},
-    {id:'fullHouse',icon:'▦',name:'Full House',description:'Fill all twelve spaces in Your Collection. Rearranging is still allowed.',condition:s=>(s.postgame?.personalSlots||[]).filter(Boolean).length>=12},
+    {id:'curator',icon:'🖼️',name:'Your Turn, Curator',description:'Place your first item in Personal Collection.',condition:s=>(s.postgame?.personalSlots||[]).some(Boolean)},
+    {id:'fullHouse',icon:'▦',name:'Full House',description:'Fill all thirty spaces in Personal Collection. Rearranging is still allowed.',condition:s=>(s.postgame?.personalSlots||[]).filter(Boolean).length>=30},
     {id:'tenGeodes',icon:'◎',name:'Just One More',description:'Crack ten geodes.',condition:s=>(s.postgame?.geodesCracked||0)>=10},
     {id:'allMetals',icon:'🔩',name:'Heavy Metal',description:'Refine iron, copper, tin, lead, zinc, tungsten, and silver.',condition:s=>['hematite','chalcopyrite','cassiterite','galena','sphalerite','scheelite','acanthite'].every(k=>(s.stats[k]?.processed||0)>0)},
     {id:'finalVein',icon:'🌋',name:'Epithermal Set',description:'Complete every new core specimen introduced by the Epithermal Zone.',condition:s=>['diamond','obsidian','olivine','nativeSulfur','rhodochrosite','adularia','acanthite','nativeGold'].every(k=>isMastered(k))},
@@ -668,7 +673,7 @@ const DURABILITY_LEVELS = [
     achievements:{},
     postgame:{
       completed:false,completedAt:null,completionSeen:false,uncrackedGeodes:0,geodesCracked:0,exceptionalFound:0,nextCollectibleId:1,
-      geodeCartridges:0,vault:[],personalSlots:Array(12).fill(null),lastGeode:null
+      geodeCartridges:0,vault:[],personalSlots:Array(30).fill(null),lastGeode:null
     },
     meta:{
       tilesMined:0,scansUsed:0,doubleScans:0,anomalyFinds:0,metalSweeps:0,metalSignalFinds:0,
@@ -690,7 +695,7 @@ const DURABILITY_LEVELS = [
     surveyLevel:$('surveyLevel'), scanUseSummary:$('scanUseSummary'), mineBalance:$('mineBalance'), depthSelector:$('depthSelector'), depthFieldNote:$('depthFieldNote'), scanButton:$('scanButton'), scanButtonStatus:$('scanButtonStatus'),
     metalDetectorButton:$('metalDetectorButton'), detectorButtonStatus:$('detectorButtonStatus'), geodeFinderButton:$('geodeFinderButton'), geodeFinderStatus:$('geodeFinderStatus'),
     mineBoard:$('mineBoard'), faceFinds:$('faceFinds'), newFaceButton:$('newFaceButton'), surfaceButton:$('surfaceButton'), mineMessage:$('mineMessage'),
-    workbenchList:$('workbenchList'), workbenchDiscoveryCount:$('workbenchDiscoveryCount'), masteredSellValue:$('masteredSellValue'), sellAllMasteredButton:$('sellAllMasteredButton'), postgameWorkbench:$('postgameWorkbench'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'), completionPlaque:$('completionPlaque'), personalCollectionSection:$('personalCollectionSection'), personalCollectionGrid:$('personalCollectionGrid'),
+    workbenchList:$('workbenchList'), workbenchDiscoveryCount:$('workbenchDiscoveryCount'), masteredSellValue:$('masteredSellValue'), sellAllMasteredButton:$('sellAllMasteredButton'), postgameWorkbench:$('postgameWorkbench'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'), completionPlaque:$('completionPlaque'), personalCollectionPanel:$('personalCollectionPanel'), personalCollectionSection:$('personalCollectionSection'), personalCollectionGrid:$('personalCollectionGrid'), collectionNavButton:$('collectionNavButton'), bottomNav:document.querySelector('.bottom-nav'),
     museumLighting:$('museumLighting'), normalLightButton:$('normalLightButton'), uvLightButton:$('uvLightButton'),
     achievementGrid:$('achievementGrid'), achievementCount:$('achievementCount'), achievementMeter:$('achievementMeter'),
     shopBalance:$('shopBalance'), upgradeList:$('upgradeList'), resetButton:$('resetButton'), toast:$('toast'),
@@ -745,7 +750,7 @@ const DURABILITY_LEVELS = [
         discovery:fresh.discovery,
         achievements:{...(parsed.achievements||{})},
         meta:{...fresh.meta,...(parsed.meta||{}),depthsMined:{...(fresh.meta.depthsMined||{}),...(parsed.meta?.depthsMined||{})}},
-        postgame:{...fresh.postgame,...(parsed.postgame||{}),vault:Array.isArray(parsed.postgame?.vault)?parsed.postgame.vault:[],personalSlots:Array.isArray(parsed.postgame?.personalSlots)?parsed.postgame.personalSlots.slice(0,12):Array(12).fill(null)}
+        postgame:{...fresh.postgame,...(parsed.postgame||{}),vault:Array.isArray(parsed.postgame?.vault)?parsed.postgame.vault:[],personalSlots:Array.isArray(parsed.postgame?.personalSlots)?parsed.postgame.personalSlots.slice(0,30):Array(30).fill(null)}
       };
 
       Object.entries(MATERIALS).forEach(([k,m]) => {
@@ -800,7 +805,7 @@ const DURABILITY_LEVELS = [
       merged.postgame.nextCollectibleId = Math.max(1,merged.postgame.nextCollectibleId||1);
       merged.postgame.geodeCartridges = Math.max(0,merged.postgame.geodeCartridges||0);
       if(merged.postgame.completed && parsed.postgame?.geodeCartridges === undefined) merged.postgame.geodeCartridges = Math.max(merged.postgame.geodeCartridges,3);
-      while(merged.postgame.personalSlots.length<12)merged.postgame.personalSlots.push(null);
+      while(merged.postgame.personalSlots.length<30)merged.postgame.personalSlots.push(null);
       merged.settings.museumUv = !!merged.settings.museumUv && merged.upgrades.uvLamp;
 
       return merged;
@@ -880,10 +885,37 @@ const DURABILITY_LEVELS = [
   function weightedGeodeInterior(){ return weightedChoice(GEODE_INTERIORS.map(x=>({key:x.id,weight:x.weight}))); }
   function geodeById(id){ return GEODE_INTERIORS.find(x=>x.id===id); }
   function exceptionalEligible(k){ return !!EXCEPTIONAL_VARIANTS[k] && MATERIALS[k]?.family!=='artifact'; }
+  function exceptionalSellValue(k){
+    const prices=Object.values(MATERIALS[k]?.prices||{});
+    const best=prices.length?Math.max(...prices):0;
+    return Math.max(500,Math.ceil((best*6)/50)*50);
+  }
+  function specialItemSellValue(item){
+    if(!item)return 0;
+    if(item.kind==='geode')return item.sellValue||geodeById(item.subtype)?.sellValue||800;
+    if(item.kind==='exceptional'&&item.key)return item.sellValue||exceptionalSellValue(item.key);
+    return 0;
+  }
   function makeExceptional(k){
     const choices=EXCEPTIONAL_VARIANTS[k]||[];
     const label=choices.length?choices[randInt(0,choices.length-1)]:`Exceptional ${MATERIALS[k].name} Specimen`;
-    return {id:postgameItemId(),kind:'exceptional',key:k,label,icon:'✦'};
+    return {id:postgameItemId(),kind:'exceptional',key:k,label,icon:'✦',sellValue:exceptionalSellValue(k)};
+  }
+  function buildGeodeVisual(subtype=null,opened=false){
+    const visual=document.createElement('span');
+    if(!opened){
+      visual.className='geode-sprite geode-closed';
+      visual.setAttribute('aria-hidden','true');
+      return visual;
+    }
+    visual.className=`geode-sprite geode-open geode-${subtype||'quartzDruzy'}`;
+    visual.setAttribute('aria-hidden','true');
+    ['left','right'].forEach(side=>{
+      const half=document.createElement('span');half.className=`geode-half ${side}`;
+      const cavity=document.createElement('span');cavity.className='geode-cavity';
+      half.appendChild(cavity);visual.appendChild(half);
+    });
+    return visual;
   }
 
   function totalFound(){ return Object.values(state.stats).reduce((sum,x)=>sum+(x.found||0),0); }
@@ -1014,15 +1046,24 @@ const DURABILITY_LEVELS = [
 
   function switchPanel(btn){
     const target=btn.dataset.target;
+    if(target==='collection'&&!state.postgame?.completed)return;
     activePanel=target;
     scanMode=false;
     document.querySelectorAll('.nav-button').forEach(b=>b.classList.toggle('active',b===btn));
     document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===target));
     if(target==='workbench')renderWorkbench();
     if(target==='museum')renderMuseum();
+    if(target==='collection'){renderPostgameWorkbench();renderPersonalCollection();}
     if(target==='achievements')renderAchievements();
     if(target==='upgrades')renderUpgrades();
     renderMobileHud();
+  }
+
+  function renderPostgameAccess(){
+    const unlocked=!!state.postgame?.completed;
+    els.collectionNavButton?.classList.toggle('hidden',!unlocked);
+    els.personalCollectionPanel?.classList.toggle('hidden',!unlocked);
+    els.bottomNav?.classList.toggle('postgame-nav',unlocked);
   }
 
   function startNewFace(){
@@ -1372,7 +1413,7 @@ const DURABILITY_LEVELS = [
   }
 
   function renderAll(){
-    renderMine();renderWorkbench();renderMuseum();renderAchievements();renderUpgrades();renderMobileHud();
+    renderPostgameAccess();renderMine();renderWorkbench();renderMuseum();renderPostgameWorkbench();renderPersonalCollection();renderAchievements();renderUpgrades();renderMobileHud();
   }
 
   function renderMine(){
@@ -1500,7 +1541,7 @@ const DURABILITY_LEVELS = [
         b.classList.add('revealed');
         if(t.special==='geode'){
           b.classList.add('find','geode-tile');
-          const i=document.createElement('span');i.className='tile-find geode-find';i.textContent='◉';b.appendChild(i);
+          const i=document.createElement('span');i.className='tile-find geode-find';i.appendChild(buildGeodeVisual(null,false));b.appendChild(i);
           b.setAttribute('aria-label','Revealed geode');
         }else if(t.material){
           b.classList.add('find');
@@ -1556,7 +1597,6 @@ const DURABILITY_LEVELS = [
   }
 
   function renderWorkbench(){
-    renderPostgameWorkbench();
     const discoveredCount=Object.keys(MATERIALS).filter(k=>isDiscovered(k)).length;
     const totalSubjects=Object.keys(MATERIALS).length;
     if(els.workbenchDiscoveryCount){
@@ -1614,25 +1654,42 @@ const DURABILITY_LEVELS = [
     const vault=state.postgame.vault||[];
     const last=state.postgame.lastGeode;
     els.postgameWorkbench.innerHTML=`
-      <div class="postgame-station">
-        <div class="postgame-station-copy"><span class="status-label">Postgame tool</span><strong>🪨 Geode Cracker</strong><p>Geodes are surprises, not another checklist. Crack them because you want to know what's inside.</p></div>
-        <div class="geode-action"><span>${state.postgame.uncrackedGeodes} uncracked · ${state.postgame.geodeCartridges||0} finder cartridge${(state.postgame.geodeCartridges||0)===1?'':'s'}</span><button id="crackGeodeButton" class="primary-button" type="button" ${state.postgame.uncrackedGeodes<1?'disabled':''}>CRACK</button></div>
-        ${last?`<div class="geode-reveal"><span class="geode-reveal-icon">${last.icon}</span><div><span class="status-label">Last reveal</span><strong>${last.label}</strong><p>${last.detail}</p></div></div>`:''}
+      <div class="collection-overview">
+        <div class="collection-mini-stat"><span class="status-label">Finder cartridges</span><strong>${state.postgame.geodeCartridges||0}</strong></div>
+        <div class="collection-mini-stat"><span class="status-label">Uncracked geodes</span><strong>${state.postgame.uncrackedGeodes||0}</strong></div>
+        <div class="collection-mini-stat"><span class="status-label">Special finds stored</span><strong>${vault.length}</strong></div>
+      </div>
+      <div class="postgame-station geode-cracker-station">
+        <div class="geode-station-visual" id="closedGeodePreview"></div>
+        <div class="postgame-station-copy"><span class="status-label">Geode Cracking Station</span><strong>Crack it or keep the mystery.</strong><p>Unopened geodes can be sold as-is, or cracked for a reveal. Opened geodes can then be displayed or sold individually.</p></div>
+        <div class="geode-action"><span>${state.postgame.uncrackedGeodes} uncracked</span><div class="geode-action-buttons"><button id="crackGeodeButton" class="primary-button" type="button" ${state.postgame.uncrackedGeodes<1?'disabled':''}>CRACK ONE</button><button id="sellUncrackedGeodeButton" class="secondary-button" type="button" ${state.postgame.uncrackedGeodes<1?'disabled':''}>SELL ONE · ${formatMoney(UNCRACKED_GEODE_SELL_VALUE)}</button></div></div>
+        ${last?`<div class="geode-reveal"><span id="lastGeodeVisual" class="geode-reveal-icon"></span><div><span class="status-label">Last cracked</span><strong>${last.label}</strong><p>${last.detail||geodeById(last.subtype)?.detail||''}</p></div></div>`:''}
       </div>
       <div class="postgame-vault">
         <div class="postgame-vault-heading"><div><span class="status-label">Special finds</span><strong>Collection Vault</strong></div><span>${vault.length} waiting</span></div>
-        <div id="postgameVaultList" class="postgame-vault-list">${vault.length?'':'<div class="vault-empty">Exceptional specimens and opened geodes you are not displaying will wait here.</div>'}</div>
+        <p class="vault-help">Exceptional specimens and opened geodes stay here until you display or sell them. Items on display are protected.</p>
+        <div id="postgameVaultList" class="postgame-vault-list">${vault.length?'':'<div class="vault-empty">Nothing waiting right now. Time to make more rocks go crunch.</div>'}</div>
       </div>`;
-    const crack=els.postgameWorkbench.querySelector('#crackGeodeButton');if(crack)crack.addEventListener('click',crackGeode);
+
+    els.postgameWorkbench.querySelector('#closedGeodePreview')?.appendChild(buildGeodeVisual(null,false));
+    if(last)els.postgameWorkbench.querySelector('#lastGeodeVisual')?.appendChild(buildGeodeVisual(last.subtype,true));
+    els.postgameWorkbench.querySelector('#crackGeodeButton')?.addEventListener('click',crackGeode);
+    els.postgameWorkbench.querySelector('#sellUncrackedGeodeButton')?.addEventListener('click',sellUncrackedGeode);
+
     const list=els.postgameWorkbench.querySelector('#postgameVaultList');
     if(list&&vault.length){
       vault.forEach(item=>{
+        const value=specialItemSellValue(item);
         const card=document.createElement('div');card.className=`vault-item ${item.kind}`;
         const icon=document.createElement('div');icon.className='vault-item-icon';
-        if(item.kind==='exceptional'&&item.key)icon.appendChild(buildIcon(item.key));else icon.textContent=item.icon||'🪨';
-        const copy=document.createElement('div');copy.className='vault-item-copy';copy.innerHTML=`<strong>${item.label}</strong><span>${item.kind==='exceptional'?'Exceptional specimen':'Opened geode'}</span>`;
-        const button=document.createElement('button');button.type='button';button.className='mini-button personal-display';button.textContent='Display';button.disabled=firstEmptyPersonalSlot()<0;button.addEventListener('click',()=>displayVaultItem(item.id));
-        card.append(icon,copy,button);list.appendChild(card);
+        if(item.kind==='exceptional'&&item.key)icon.appendChild(buildIcon(item.key));
+        else if(item.kind==='geode')icon.appendChild(buildGeodeVisual(item.subtype,true));
+        else icon.textContent=item.icon||'🪨';
+        const copy=document.createElement('div');copy.className='vault-item-copy';copy.innerHTML=`<strong>${item.label}</strong><span>${item.kind==='exceptional'?'Exceptional specimen':'Opened geode'} · sells for ${formatMoney(value)}</span>`;
+        const actions=document.createElement('div');actions.className='vault-item-actions';
+        const display=document.createElement('button');display.type='button';display.className='mini-button personal-display';display.textContent='Display';display.disabled=firstEmptyPersonalSlot()<0;display.addEventListener('click',()=>displayVaultItem(item.id));
+        const sell=document.createElement('button');sell.type='button';sell.className='mini-button vault-sell';sell.textContent=`Sell · ${formatMoney(value)}`;sell.addEventListener('click',()=>sellVaultItem(item.id));
+        actions.append(display,sell);card.append(icon,copy,actions);list.appendChild(card);
       });
     }
   }
@@ -1641,26 +1698,41 @@ const DURABILITY_LEVELS = [
     if(!state.postgame?.completed||state.postgame.uncrackedGeodes<1)return;
     state.postgame.uncrackedGeodes--;
     const interior=geodeById(weightedGeodeInterior());
-    const item={id:postgameItemId(),kind:'geode',subtype:interior.id,label:interior.label,icon:interior.icon,detail:interior.detail};
+    const item={id:postgameItemId(),kind:'geode',subtype:interior.id,label:interior.label,icon:interior.icon,detail:interior.detail,sellValue:interior.sellValue};
     state.postgame.vault.push(item);
     state.postgame.geodesCracked++;
     state.postgame.lastGeode=item;
-    checkAchievements();saveState();renderWorkbench();renderAchievements();showToast(`${interior.label}! ✦`);
+    checkAchievements();saveState();renderAll();showToast(`${interior.label}! ✦`);
+  }
+
+  function sellUncrackedGeode(){
+    if(!state.postgame?.completed||state.postgame.uncrackedGeodes<1)return;
+    state.postgame.uncrackedGeodes--;
+    state.credits+=UNCRACKED_GEODE_SELL_VALUE;
+    saveState();renderAll();showToast(`Unopened geode sold for ${formatMoney(UNCRACKED_GEODE_SELL_VALUE)}.`);
+  }
+
+  function sellVaultItem(id){
+    const i=(state.postgame.vault||[]).findIndex(x=>x.id===id);if(i<0)return;
+    const item=state.postgame.vault[i],value=specialItemSellValue(item);if(value<1)return;
+    state.postgame.vault.splice(i,1);
+    state.credits+=value;
+    saveState();renderAll();showToast(`${item.label} sold for ${formatMoney(value)}.`);
   }
 
   function displayRegularSpecimen(k,stage){
     if(!state.postgame?.completed||state.inventory[k]?.[stage]<1)return;
-    const slot=firstEmptyPersonalSlot();if(slot<0){showToast('Your Collection is full. Remove something first.');return;}
+    const slot=firstEmptyPersonalSlot();if(slot<0){showToast('Personal Collection is full. Remove something first.');return;}
     state.inventory[k][stage]--;
     state.postgame.personalSlots[slot]={id:postgameItemId(),kind:'regular',key:k,stage,label:`${MATERIALS[k].name} · ${MATERIALS[k].stageLabels[stage]}`};
-    checkAchievements();saveState();renderAll();showToast(`${MATERIALS[k].name} placed in Your Collection.`);
+    checkAchievements();saveState();renderAll();showToast(`${MATERIALS[k].name} placed in Personal Collection.`);
   }
 
   function displayVaultItem(id){
-    const slot=firstEmptyPersonalSlot();if(slot<0){showToast('Your Collection is full. Remove something first.');return;}
+    const slot=firstEmptyPersonalSlot();if(slot<0){showToast('Personal Collection is full. Remove something first.');return;}
     const i=state.postgame.vault.findIndex(x=>x.id===id);if(i<0)return;
     state.postgame.personalSlots[slot]=state.postgame.vault.splice(i,1)[0];
-    checkAchievements();saveState();renderAll();showToast('Added to Your Collection.');
+    checkAchievements();saveState();renderAll();showToast('Added to Personal Collection.');
   }
 
   function removePersonalSlot(index){
@@ -1681,8 +1753,10 @@ const DURABILITY_LEVELS = [
       if(!item){slot.innerHTML=`<span class="personal-slot-number">${String(index+1).padStart(2,'0')}</span><span class="personal-empty">Empty display</span>`;}
       else{
         const visual=document.createElement('div');visual.className='personal-slot-visual';
-        if((item.kind==='regular'||item.kind==='exceptional')&&item.key)visual.appendChild(buildIcon(item.key,false,item.stage||MATERIALS[item.key].stages[0]));else visual.textContent=item.icon||'🪨';
-        const copy=document.createElement('div');copy.className='personal-slot-copy';copy.innerHTML=`<strong>${item.label}</strong><span>${item.kind==='regular'?'Museum favourite':item.kind==='exceptional'?'Exceptional specimen':'Opened geode'}</span>`;
+        if((item.kind==='regular'||item.kind==='exceptional')&&item.key)visual.appendChild(buildIcon(item.key,false,item.stage||MATERIALS[item.key].stages[0]));
+        else if(item.kind==='geode')visual.appendChild(buildGeodeVisual(item.subtype,true));
+        else visual.textContent=item.icon||'🪨';
+        const copy=document.createElement('div');copy.className='personal-slot-copy';copy.innerHTML=`<strong>${item.label}</strong><span>${item.kind==='regular'?'Favourite specimen':item.kind==='exceptional'?'Exceptional specimen':'Opened geode'}</span>`;
         const remove=document.createElement('button');remove.type='button';remove.className='mini-button';remove.textContent='Remove';remove.addEventListener('click',()=>removePersonalSlot(index));
         slot.append(visual,copy,remove);
       }
@@ -1726,9 +1800,9 @@ const DURABILITY_LEVELS = [
       <div class="completion-rewards">
         <div>🏆 <strong>Museum Completion Plaque</strong><span>A permanent record that you actually finished.</span></div>
         <div>⛏️ <strong>Gilded Steel Pickaxe</strong><span>Effectively unbreakable. We considered solid gold. Gold is soft, heavy, and a terrible pickaxe material.</span></div>
-        <div>🖼️ <strong>Your Collection</strong><span>Twelve display spaces. No checklist. No percentage. Your rocks, your rules.</span></div>
+        <div>🖼️ <strong>Personal Collection</strong><span>A new postgame tab with thirty display spaces. No checklist. No percentage. Your rocks, your rules.</span></div>
         <div>✨ <strong>Exceptional Specimens</strong><span>Unusually beautiful finds can now appear throughout every depth.</span></div>
-        <div>🪨 <strong>Geodes, Geode Cracker & Geode Finder</strong><span>Mystery cavities can now turn up in fresh rock faces, and the museum lends you a finder with starter cartridges.</span></div>
+        <div>🪨 <strong>Geodes, Geode Cracker & Geode Finder</strong><span>Mystery cavities can now turn up in fresh rock faces. Crack, display, or sell them from Personal Collection, and use the museum-loaned finder when you want help hunting.</span></div>
         <div>🌋 <strong>Postgame Prospecting</strong><span>Every depth stays open. There is nothing left you have to find.</span></div>
       </div>
       <p class="completion-line"><strong>There's nothing left you have to find.</strong><br>But there's always another rock.</p>
@@ -1922,7 +1996,6 @@ const DURABILITY_LEVELS = [
     els.museumCount.textContent=`${filledTotal} / ${total}`;
     els.museumMeter.style.width=`${filledTotal/total*100}%`;
     renderCompletionPlaque();
-    renderPersonalCollection();
   }
 
 
@@ -2076,10 +2149,12 @@ const DURABILITY_LEVELS = [
   }
 
   function geodeFinderCard(){
-    const packCost=360,packSize=3;
     const cartridges=Math.max(0,Number(state.postgame?.geodeCartridges)||0);
-    const description='The museum lends you a Geode Finder after completion. Each cartridge performs one whole-face hollow-cavity scan and marks a geode tile if a geode is present. It does not create geodes, and some faces will still come up empty.';
-    return upgradeCard({icon:'🪨',eyebrow:'Postgame prospecting',title:'Museum Geode Finder',description,current:`Current: ${cartridges} cartridge${cartridges===1?'':'s'} on hand`,cost:packCost,label:`Buy ${packSize} cartridges`,disabled:state.credits<packCost,onClick:()=>buyGeodeCartridges()});
+    const card=document.createElement('article');card.className='upgrade-card cartridge-card';
+    card.innerHTML=`<div class="upgrade-icon">🪨</div><div class="upgrade-copy"><span class="status-label">Postgame prospecting</span><h3>Museum Geode Finder</h3><p>The museum lends you the finder; cartridges are the consumable part. One cartridge checks one whole rock face. Geodes still appear naturally without it.</p><span class="upgrade-current">Current: ${cartridges} cartridge${cartridges===1?'':'s'} on hand</span></div><div class="upgrade-action cartridge-actions"><button class="secondary-button" data-pack="1" type="button" ${state.credits<GEODE_CARTRIDGE_SINGLE_COST?'disabled':''}>1 · ${formatMoney(GEODE_CARTRIDGE_SINGLE_COST)}</button><button class="primary-button" data-pack="bulk" type="button" ${state.credits<GEODE_CARTRIDGE_BULK_COST?'disabled':''}>5 · ${formatMoney(GEODE_CARTRIDGE_BULK_COST)}</button></div>`;
+    card.querySelector('[data-pack="1"]')?.addEventListener('click',()=>buyGeodeCartridges(1,GEODE_CARTRIDGE_SINGLE_COST));
+    card.querySelector('[data-pack="bulk"]')?.addEventListener('click',()=>buyGeodeCartridges(GEODE_CARTRIDGE_BULK_SIZE,GEODE_CARTRIDGE_BULK_COST));
+    return card;
   }
 
   function buyDepth(){
@@ -2152,20 +2227,19 @@ const DURABILITY_LEVELS = [
     checkAchievements();saveState();renderAll();showToast(`${WORKSHOP_LEVELS[state.upgrades.workshop].name} unlocked.`);
   }
 
-  function buyGeodeCartridges(){
-    const packCost=360,packSize=3;
-    if(!state.postgame?.completed||state.credits<packCost)return;
-    state.credits-=packCost;
+  function buyGeodeCartridges(packSize,cost){
+    if(!state.postgame?.completed||!packSize||!cost||state.credits<cost)return;
+    state.credits-=cost;
     state.postgame.geodeCartridges=(state.postgame.geodeCartridges||0)+packSize;
     saveState();
     renderAll();
-    showToast(`Bought ${packSize} Geode Finder cartridges.`);
+    showToast(`Bought ${packSize} Geode Finder cartridge${packSize===1?'':'s'} for ${formatMoney(cost)}.`);
   }
 
   function resetGame(){
-    if(!window.confirm('Reset all Rockhound Beta 1.3.7 progress?'))return;
+    if(!window.confirm('Reset all Rockhound Beta 1.4.0 progress?'))return;
     localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
-    saveState();renderAll();showToast('Beta 1.3.7 save reset.');
+    saveState();renderAll();showToast('Beta 1.4.0 save reset.');
   }
 
   function showToast(msg){
