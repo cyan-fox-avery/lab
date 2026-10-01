@@ -1,6 +1,6 @@
 # Rockhound
 
-**Beta 1.4.0 — content-complete full-game beta with expanded postgame**
+**Beta 1.4.1 — content-complete full-game beta with expanded postgame**
 
 > rock go crunch.
 
@@ -27,7 +27,7 @@ Each depth includes a short **Field Note** explaining the geology behind its the
 
 ## Final collection roster
 
-Beta 1.4.0 contains **44 core collection subjects** across four museum wings:
+Beta 1.4.1 contains **44 core collection subjects** across four museum wings:
 
 - **24 minerals, gems, and mineraloids**, including quartz varieties, corundum and beryl families, opal, diamond, obsidian, olivine/peridot, native sulfur, rhodochrosite, and adularia.
 - **8 ore/metal subjects**, including hematite → iron, chalcopyrite → copper, cassiterite → tin, galena → lead, sphalerite → zinc, scheelite → tungsten, acanthite → silver, and native gold.
@@ -69,13 +69,13 @@ Geodes and exceptional specimens are optional postgame toys, not a second mandat
 
 ## Achievements
 
-Beta 1.4.0 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
+Beta 1.4.1 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
 
-## Beta 1.4.0 status
+## Beta 1.4.1 status
 
 This build keeps the complete six-depth game intact and gives the postgame its own proper home. Existing Beta 1.3.x saves continue to use the same save key and migrate the old 12-space display into the expanded 30-space Personal Collection.
 
-## Beta 1.4.0 changes
+## Beta 1.4.1 changes
 
 - Added a dedicated **Personal Collection** tab that appears only after museum completion.
 - Moved the **Geode Cracking Station**, special-find storage, and freeform display out of the Workbench and Museum.
@@ -85,3 +85,10 @@ This build keeps the complete six-depth game intact and gives the postgame its o
 - Rebalanced Geode Finder cartridges to **$25 for one** or **$100 for five**.
 - Updated the 30-slot collection achievement and completion-reward text.
 - Preserves existing Beta 1.3.x progress.
+
+## Beta 1.4.1 patch
+
+- Replaced the old 13-tap hidden achievement with **ROCKAHOLIC**.
+- ROCKAHOLIC is the true 100% completion achievement: finish the museum, discover every core subject, max every permanent upgrade, and earn every other achievement.
+- Removed the old tagline-tapping trigger.
+- Existing Beta 1.3/1.4 save data is preserved.

@@ -652,7 +652,22 @@ const DURABILITY_LEVELS = [
     {id:'allMetals',icon:'🔩',name:'Heavy Metal',description:'Refine iron, copper, tin, lead, zinc, tungsten, and silver.',condition:s=>['hematite','chalcopyrite','cassiterite','galena','sphalerite','scheelite','acanthite'].every(k=>(s.stats[k]?.processed||0)>0)},
     {id:'finalVein',icon:'🌋',name:'Epithermal Set',description:'Complete every new core specimen introduced by the Epithermal Zone.',condition:s=>['diamond','obsidian','olivine','nativeSulfur','rhodochrosite','adularia','acanthite','nativeGold'].every(k=>isMastered(k))},
     {id:'trueRockhound',icon:'🏆',name:'TRUE ROCKHOUND',description:'Complete the entire museum. No reset. No prestige. You finished the game.',condition:s=>!!s.postgame?.completed},
-    {id:'rockGoCrunch',icon:'🪨',name:'Rock Go Crunch',description:'You remembered the old name.',hidden:true,condition:s=>s.meta.taglineTaps>=13}
+    {id:'rockaholic',icon:'💎',name:'ROCKAHOLIC',description:'Complete the museum, max every permanent upgrade, discover every core subject, and earn every other achievement.',hidden:true,condition:s=>{
+      const upgradesMaxed =
+        s.unlockedDepth>=6 &&
+        s.upgrades.durability>=DURABILITY_LEVELS.length-1 &&
+        s.upgrades.surveying>=SURVEY_LEVELS.length-1 &&
+        s.upgrades.scannerUses>=SCAN_CHARGE_LEVELS.length-1 &&
+        s.upgrades.workshop>=WORKSHOP_LEVELS.length-1 &&
+        !!s.upgrades.metalDetector &&
+        !!s.upgrades.uvLamp &&
+        !!s.upgrades.geothermalGear &&
+        !!s.upgrades.scannerHeatShield &&
+        !!s.upgrades.detectorHeatShield;
+      const everythingDiscovered=Object.keys(MATERIALS).every(k=>!!s.discovery[k]?.discovered);
+      const everyOtherAchievement=ACHIEVEMENTS.filter(a=>a.id!=='rockaholic').every(a=>!!s.achievements[a.id]);
+      return !!s.postgame?.completed&&upgradesMaxed&&everythingDiscovered&&everyOtherAchievement;
+    }}
   ];
 
   const emptyInventory = () => Object.fromEntries(Object.entries(MATERIALS).map(([k,m]) => [k,Object.fromEntries(m.stages.map(s => [s,0]))]));
@@ -726,7 +741,6 @@ const DURABILITY_LEVELS = [
     els.sellAllMasteredButton.addEventListener('click',sellAllMastered);
     els.resetButton.addEventListener('click',resetGame);
     if(els.keepMiningButton)els.keepMiningButton.addEventListener('click',closeCompletionModal);
-    if(els.gameTagline)els.gameTagline.addEventListener('click',()=>{state.meta.taglineTaps++;checkAchievements();saveState();});
 
     renderAll();
     if(state.postgame?.completed&&!state.postgame.completionSeen)setTimeout(openCompletionModal,120);
@@ -2027,7 +2041,7 @@ const DURABILITY_LEVELS = [
     els.achievementGrid.innerHTML='';
 
     const featured=new Set(['sio2Enjoyer','familyResemblance','berylBuddies','metalhead','lastSwingLuck','fourFloorsDown','allThatGlitters','glowShow','epithermal','diamondRough','actualGold','fossilRecord','historyBuff','mineralHall','oreHall','finalVein','tenGeodes']);
-    const special=new Set(['rockGoCrunch','trueRockhound']);
+    const special=new Set(['rockaholic','trueRockhound']);
 
     ACHIEVEMENTS.forEach(a=>{
       const earned=!!state.achievements[a.id];
@@ -2237,9 +2251,9 @@ const DURABILITY_LEVELS = [
   }
 
   function resetGame(){
-    if(!window.confirm('Reset all Rockhound Beta 1.4.0 progress?'))return;
+    if(!window.confirm('Reset all Rockhound Beta 1.4.1 progress?'))return;
     localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
-    saveState();renderAll();showToast('Beta 1.4.0 save reset.');
+    saveState();renderAll();showToast('Beta 1.4.1 save reset.');
   }
 
   function showToast(msg){

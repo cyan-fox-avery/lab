@@ -1658,7 +1658,7 @@ body.modal-open{overflow:hidden}
 
 
 /* ============================================================
-   Beta 1.4.0 — Personal Collection postgame room
+   Beta 1.4.1 — Personal Collection postgame room
    ============================================================ */
 .bottom-nav.postgame-nav{grid-template-columns:repeat(6,1fr)}
 #collectionNavButton small{line-height:1.02}
