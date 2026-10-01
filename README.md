@@ -1,129 +1,78 @@
-# Rock Go Crunch — v3.1
+# Rockhound
 
-A mobile-first static browser prototype about mining, prospecting, processing, collecting, and building a geology museum.
+**Lab 1.3 — content-complete full-game prototype**
 
-## Install on GitHub Pages
+> rock go crunch.
 
-Replace the repository root with these four files:
+Rockhound is a finite, collection-focused incremental mining game for the browser. Mine a fixed 10×10 rock face, follow geological hints, use prospecting tools, process finds at the workbench, fill a museum, improve your equipment, and work your way through six distinct mine depths.
 
-- `index.html`
-- `style.css`
-- `script.js`
-- `README.md`
+Rockhound is designed around active discovery rather than timers or monetized friction. There is one in-game currency, processing is free, tool charges reset on a fresh rock face, and there is no premium currency, energy timer, pay-to-skip system, prestige reset, or real-money progression.
 
-No build step, package manager, backend, or external asset folder is required.
+## Core loop
 
-The game stores progress in browser `localStorage`. v3.1 keeps the same save key as v2, v2.1, and v3.0 so existing prototype progress can migrate forward.
+**Dig → discover → process, donate, or sell → improve the museum and equipment → go deeper → find stranger rocks.**
 
-## v3.1 focus
+Common specimens remain relevant throughout the game. Deeper does not automatically mean “better,” and the collection is built around real mineral relationships rather than a generic rarity ladder.
 
-v3.1 is a polish pass on the v3.0 systems rather than another content expansion.
+## Six mine depths
 
-### Workbench readability
+1. **Upper Seam** — introductory minerals, ores, and early historical finds.
+2. **Lower Works** — broader mineral variety plus the first fossils.
+3. **Deep Gallery** — richer crystal chemistry, deeper ores, fossils, and mining history.
+4. **Crystal Veins** — major gem families and additional metal-bearing ores.
+5. **Luminous Zone** — fluorescent minerals and the UV museum system.
+6. **Epithermal Zone** — the volcanic-hydrothermal finale, where hot mineral-rich fluids left unusual veins, native metals, and late-game specimens.
 
-- inventory notifications now sit at the far left of the specific material card
-- the notification disappears immediately when that material's inventory reaches zero
-- mastered material cards use a subtle gilded frame instead of repeatedly displaying `MASTERED`
-- the old global Workbench notification remains removed
+Each depth includes a short **Field Note** explaining the geology behind its theme.
 
-### Mastery-gated Sell All
+## Final collection roster
 
-A new **Sell All** control appears at the top of the Workbench.
+Lab 1.3 contains **44 core collection subjects** across four museum wings:
 
-It only sells inventory belonging to **mastered minerals and ores**.
+- **24 minerals, gems, and mineraloids**, including quartz varieties, corundum and beryl families, opal, diamond, obsidian, olivine/peridot, native sulfur, rhodochrosite, and adularia.
+- **8 ore/metal subjects**, including hematite → iron, chalcopyrite → copper, cassiterite → tin, galena → lead, sphalerite → zinc, scheelite → tungsten, acanthite → silver, and native gold.
+- **6 fossils**, including trilobite, ammonite, crinoid stem, brachiopod, belemnite, and fern impression.
+- **6 historical artifacts** from the fictional mine's working history.
 
-That means:
-- unmastered materials are never bulk-sold
-- fossils and historical artifacts are never touched by the global Sell All button
-- completing a museum set gradually expands how much of the selling loop can be automated
-- manual single-item selling is still available inside each material card
+Processing follows the material: gems commonly progress through **Raw → Tumbled → Cut**, ores refine into metals, diamond uses **Rough → Cleaved → Cut**, and gem-quality cut olivine becomes **Peridot**.
 
-The Workbench shows the current value and number of items eligible for bulk selling.
+## Prospecting and equipment
 
-### Museum cleanup
+The **Area Scanner** surveys a 3×3 neighbourhood and becomes more informative as it is upgraded. Repeated scans can reveal faint generic density anomalies without simply solving the rock face.
 
-The museum keeps the compact v3 layout:
+The **Metal Detector** provides one deliberately vague whole-face sweep for metallic or conductive targets.
 
-- Raw / Tumbled / Cut stay three-across where applicable
-- each specimen keeps its own always-visible fact card underneath
-- empty specimens still say `Not collected`
-- completed specimens no longer redundantly say `Collected`
-- completed material sets use a gilded frame as the visual mastery indicator
-- the repeated `MASTERED` labels have been removed
-- the completion panel now focuses on genuinely new information: a **Bonus discovery** fact
-- processable materials also show that auto-processing has been unlocked
+The final **Epithermal Zone** requires **Geothermal Protective Gear**. The scanner and detector also need their own heat-shielded housings before they can operate there. There is no heat meter or survival timer; the equipment is an access requirement rather than a punishment mechanic.
 
-### Mastery and auto-processing
+## Museum and mastery
 
-Auto-processing remains per-material.
+The museum contains Mineral Hall, Ores & Metals, Fossil Wing, and History Wing. Undiscovered specimens remain obscured until the player has actually found them.
 
-Examples:
-- Quartz 3/3 → Quartz auto-process unlocks
-- Amethyst 3/3 → Amethyst auto-process unlocks
-- Hematite 2/2 → Hematite-to-Iron auto-refining unlocks
+Completing a processable material's museum set unlocks automation for that material. The Workbench also acts as a discovery notebook, recording the mine depths where the player has personally encountered each known specimen.
 
-Because automation only unlocks after a material's museum set is complete, the game never has to hold a specimen back for that material.
+The **UV Fluorescence Lamp** adds a museum-wide Normal / UV view so fluorescent specimens can reveal their glow without becoming a separate completion checklist.
 
-### Visual readability pass
+## A real ending
 
-v3.1 improves the placeholder item art without attempting the full custom-sprite overhaul planned for a future major version.
+Completing the entire museum finishes Rockhound. Nothing is reset and nothing is taken away.
 
-- Quartz, Amethyst, and Citrine now deliberately share the same base crystal silhouette because they are all quartz varieties
-- Garnet, Topaz, Pyrite, Calcite, Fluorite, Aquamarine, and Sapphire use more distinct silhouettes
-- ores have more visibly different shapes and palettes
-- Topaz, Citrine, Pyrite, and Chalcopyrite are separated more clearly instead of occupying nearly the same yellow-gold visual space
-- refined Iron, Copper, and Tin remain visually metallic and distinct
+The completion reward includes:
 
-## Current content
+- a permanent **Completion Plaque**
+- the effectively unbreakable **Gilded Steel Pickaxe**
+- **Your Collection**, a 12-space freeform display with no checklist or completion percentage
+- **Exceptional Specimens**, rare curated versions of familiar finds
+- postgame **Geodes** and a **Geode Cracker**
+- unrestricted postgame prospecting across the completed mine
 
-### Depth 1 — Upper Seam
-- Quartz
-- Amethyst
-- Hematite → Iron
-- Chalcopyrite → Copper
-- rare Trilobite / Mining Tag finds
+Geodes and exceptional specimens are optional postgame toys, not a second mandatory progression ladder. The game is finished when the museum is finished; continued mining exists because the player wants to keep finding rocks.
 
-### Depth 2 — Lower Works
-- earlier finds continue at different rates
-- Garnet
-- Topaz
-- Pyrite
+## Achievements
 
-### Depth 3 — Deep Gallery
-- earlier finds continue at different rates
-- Citrine
-- Calcite
-- Fluorite
-- Aquamarine
-- Sapphire
-- Cassiterite → Tin
-- Ammonite fossil
-- Old Mining Lamp artifact
+Lab 1.3 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
 
-## Scanner
+## Lab 1.3 status
 
-The v3 scanner design is preserved:
+This build is the large content-complete development version being tested in the lab before the public Rockhound repository is updated. The full six-depth progression, final core roster, completion sequence, and postgame systems are implemented.
 
-- each scan covers a 3×3 area
-- scanned tiles stay marked for the whole rock face
-- overlapping scans accumulate
-- a hidden occupied tile scanned at least twice gets a very faint generic density outline
-- the outline does not reveal identity or colour
-- lower scanner levels report chemistry before exact mineral identity
-- later upgrades improve analysis
-- scan-use upgrades increase the number of scans per face
-- scanner uses and pick durability reset on a fresh face without real-time waiting
-
-## Currency
-
-Money is stored internally as integer cents.
-
-Display rule:
-- under 100 cents: `47¢`
-- 100 cents and above: `$1.00`, `$1.01`, `$12.47`, etc.
-
-There is one currency only. No premium currency or real-money purchases.
-
-## Prototype geology note
-
-The mine is intentionally a fictional composite mine. Mineral names, chemistry, processing relationships, and museum facts are grounded in real geology and gemology, but the game does not pretend that every included mineral would naturally occur together in one real deposit.
+The remaining major polish passes are the final custom specimen sprite set and the illustrated **Rockhound's Field Guide**, which will use appropriately licensed real-world photographs and expanded educational entries.
