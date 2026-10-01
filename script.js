@@ -826,6 +826,15 @@ const DURABILITY_LEVELS = [
     const prefix=depths.length===1?'Depth':'Depths';
     return `${prefix} ${depths.join(', ')}`;
   }
+  function museumSearchHint(k){
+    const material=MATERIALS[k];
+    if(!material || !['fossil','artifact'].includes(material.family))return '';
+    const eligible=spawnDepthsFor(k);
+    const available=eligible.filter(d=>d<=state.unlockedDepth);
+    if(!available.length)return '<span class="museum-search-hint">Search deeper…</span>';
+    const labels=available.map(d=>`Depth ${d} · ${DEPTHS[d].name}`);
+    return `<span class="museum-search-hint">Search in: ${labels.join(', ')}</span>`;
+  }
   function maskUndiscoveredNames(text){
     let out=String(text||'');
     Object.entries(MATERIALS).forEach(([k,m])=>{
@@ -1842,7 +1851,8 @@ const DURABILITY_LEVELS = [
           specimen.appendChild(visual);
           specimen.insertAdjacentHTML('beforeend',obscured?'<strong class="slot-stage">Unknown specimen</strong><span class="slot-state">Not identified</span>':`<strong class="slot-stage">${m.stageLabels[stage]}</strong>${filled?'':'<span class="slot-state">Not collected</span>'}`);
           const fact=document.createElement('div');fact.className='specimen-fact-card';
-          fact.innerHTML=obscured?'<p class="locked-fact">Find this specimen in the mine to identify it.</p>':filled?`<p>${m.facts[stage]}</p>`:'<p class="locked-fact">Donate this form to unlock its fact.</p>';
+          const searchHint=!filled?museumSearchHint(k):'';
+          fact.innerHTML=obscured?`<p class="locked-fact">Find this specimen in the mine to identify it.${searchHint}</p>`:filled?`<p>${m.facts[stage]}</p>`:`<p class="locked-fact">Donate this form to unlock its fact.${searchHint}</p>`;
           column.appendChild(specimen);column.appendChild(fact);grid.appendChild(column);
         });
 
@@ -2071,9 +2081,9 @@ const DURABILITY_LEVELS = [
   }
 
   function resetGame(){
-    if(!window.confirm('Reset all Rockhound Beta 1.3.3 progress?'))return;
+    if(!window.confirm('Reset all Rockhound Beta 1.3.4 progress?'))return;
     localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
-    saveState();renderAll();showToast('Beta 1.3.3 save reset.');
+    saveState();renderAll();showToast('Beta 1.3.4 save reset.');
   }
 
   function showToast(msg){

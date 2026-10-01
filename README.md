@@ -1,6 +1,6 @@
 # Rockhound
 
-**Beta 1.3.3 — content-complete full-game beta**
+**Beta 1.3.4 — content-complete full-game beta**
 
 > rock go crunch.
 
@@ -27,7 +27,7 @@ Each depth includes a short **Field Note** explaining the geology behind its the
 
 ## Final collection roster
 
-Beta 1.3.3 contains **44 core collection subjects** across four museum wings:
+Beta 1.3.4 contains **44 core collection subjects** across four museum wings:
 
 - **24 minerals, gems, and mineraloids**, including quartz varieties, corundum and beryl families, opal, diamond, obsidian, olivine/peridot, native sulfur, rhodochrosite, and adularia.
 - **8 ore/metal subjects**, including hematite → iron, chalcopyrite → copper, cassiterite → tin, galena → lead, sphalerite → zinc, scheelite → tungsten, acanthite → silver, and native gold.
@@ -69,17 +69,17 @@ Geodes and exceptional specimens are optional postgame toys, not a second mandat
 
 ## Achievements
 
-Beta 1.3.3 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
+Beta 1.3.4 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
 
-## Beta 1.3.3 status
+## Beta 1.3.4 status
 
-This build is the content-complete development version being tested in the lab before the public Rockhound repository is updated. The full six-depth progression, final core roster, completion sequence, and postgame systems are implemented.
+This build is the content-complete beta under active testing. The full six-depth progression, final core roster, completion sequence, and postgame systems are implemented.
 
 The remaining major polish passes are the final custom specimen sprite set and the illustrated **Rockhound's Field Guide**, which will use appropriately licensed real-world photographs and expanded educational entries.
 
 
-## Beta 1.3.3 patch
+## Beta 1.3.4 patch
 
-- Fixed Epithermal Zone rock tiles so mined tiles always visually clear, including when they contain a specimen.
-- Removed the redundant “one currency only” note from the mine balance card.
-- Rebranded the in-game build label from Lab to Beta; the lab repository is now only a testing location.
+- Added location hints to missing Fossil Wing and History Wing specimens so late-game completion does not become blind depth-hopping.
+- Hints reveal only currently accessible depths; specimens that only occur deeper simply say **Search deeper…** until the relevant depth is unlocked.
+- Kept specimen identities hidden where appropriate, so the hint tells you where to prospect without spoiling what you are looking for.
