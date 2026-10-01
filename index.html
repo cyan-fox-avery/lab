@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#111416" />
-  <title>Rockhound — Lab 1.3.1</title>
+  <title>Rockhound — Lab 1.3.2</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">LAB 1.3.1</p>
+        <p class="eyebrow">LAB 1.3.2</p>
         <h1 id="gameTitle">ROCKHOUND</h1>
         <p id="gameTagline" class="subtitle">rock go crunch.</p>
       </div>
@@ -63,6 +63,10 @@
           <div><p class="eyebrow">SURFACE WORKSHOP</p><h2>Workbench</h2></div>
           <p>Your field notebook fills in as you discover specimens. Each known entry records the depths where you have encountered it.</p>
         </div>
+        <div class="workbench-discovery-card" aria-live="polite">
+          <span class="status-label">Field notebook</span>
+          <strong id="workbenchDiscoveryCount">0 / 44 specimens discovered</strong>
+        </div>
         <div class="workbench-sell-bar">
           <div>
             <span class="status-label">Bulk-sell stock</span>
@@ -109,11 +113,10 @@
       </section>
 
       <section class="panel" data-panel="upgrades">
-        <div class="section-heading"><div><p class="eyebrow">GEAR & OPERATIONS</p><h2>Upgrades</h2></div><p>Better equipment is earned in-game. Nothing costs real money.</p></div>
+        <div class="section-heading"><div><p class="eyebrow">GEAR & OPERATIONS</p><h2>Upgrades</h2></div><p>Upgrade your tools and open deeper workings as you progress.</p></div>
         <div class="shop-balance"><span class="status-label">Current balance</span><strong id="shopBalance">0¢</strong></div>
         <div id="upgradeList" class="upgrade-list"></div>
-        <div class="design-note"><strong>Fair-play rule</strong><p>Processing is free. Scanner charges and pick durability reset with each fresh rock face. No real-time recharge, premium currency, or pay-to-skip.</p></div>
-        <button id="resetButton" class="danger-button" type="button">Reset Lab 1.3.1 save</button>
+        <button id="resetButton" class="danger-button" type="button">Reset Lab 1.3.2 save</button>
       </section>
     </main>
 

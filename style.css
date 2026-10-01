@@ -1553,3 +1553,84 @@ body.modal-open{overflow:hidden}
 
 /* ===== Lab 1.3.1 patch ===== */
 .mine-board + .mine-message-inline{margin-top:8px}
+
+
+/* ===== Lab 1.3.2 polish ===== */
+.workbench-discovery-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 0 10px;
+  padding:9px 12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(23,27,30,.78);
+}
+.workbench-discovery-card strong{
+  color:#ddd8cf;
+  font-size:.76rem;
+  text-align:right;
+}
+.workbench-discovery-card.complete{
+  border-color:rgba(230,204,142,.5);
+  background:linear-gradient(180deg,rgba(230,204,142,.05),rgba(23,27,30,.78));
+}
+.workbench-discovery-card.complete strong{color:#f0d897}
+
+.mine-board{position:relative}
+.mine-heat-warning{
+  position:absolute;
+  z-index:12;
+  left:50%;
+  bottom:9px;
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:calc(100% - 18px);
+  padding:7px 10px;
+  border:1px solid rgba(212,179,105,.5);
+  border-radius:10px;
+  color:var(--text);
+  background:rgba(20,22,22,.95);
+  box-shadow:0 8px 24px rgba(0,0,0,.32);
+  text-align:center;
+  pointer-events:none;
+}
+.mine-heat-warning strong,
+.mine-heat-warning span{display:block}
+.mine-heat-warning strong{font-size:.69rem}
+.mine-heat-warning span{margin-top:2px;color:var(--muted);font-size:.58rem}
+
+.museum-wing.compact-wing .museum-groups-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.museum-wing.compact-wing .museum-group,
+.museum-wing.compact-wing .museum-group + .museum-group{
+  min-width:0;
+  margin:0;
+  padding:9px;
+  border:1px solid rgba(55,61,65,.72);
+  border-radius:13px;
+  background:rgba(10,12,13,.28);
+}
+.museum-wing.compact-wing .museum-group.mastered{
+  border-color:rgba(230,204,142,.5);
+  background:linear-gradient(180deg,rgba(230,204,142,.045),rgba(8,10,11,.10));
+}
+.museum-wing.compact-wing .museum-group-title{
+  align-items:flex-start;
+  margin-bottom:7px;
+}
+.museum-wing.compact-wing .museum-group-title strong{font-size:.76rem;line-height:1.25}
+.museum-wing.compact-wing .museum-group-title span{flex:0 0 auto;font-size:.59rem}
+.museum-wing.compact-wing .museum-specimen{min-height:86px}
+.museum-wing.compact-wing .museum-specimen .slot-visual{height:39px}
+.museum-wing.compact-wing .museum-specimen .slot-visual .material-icon{width:32px;height:32px}
+.museum-wing.compact-wing .specimen-fact-card{min-height:0;padding:7px}
+.museum-wing.compact-wing .specimen-fact-card p{font-size:.62rem;line-height:1.42}
+
+@media(max-width:350px){
+  .museum-wing.compact-wing .museum-groups-grid{grid-template-columns:1fr}
+}

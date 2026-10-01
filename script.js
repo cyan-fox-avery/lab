@@ -585,7 +585,7 @@ const DURABILITY_LEVELS = [
     {name:'Advanced Lapidary',cost:1250,next:'Master Lapidary',description:'Handles tougher gemstones and deeper metal-bearing ores.'},
     {name:'Master Lapidary',cost:2400,next:'Specialist Lapidary',description:'Handles demanding deep-zone gemstones and prepares the workshop for unusual material.'},
     {name:'Specialist Lapidary',cost:4200,next:'Master Cutter’s Bench',description:'Adds the precision and abrasives needed for the final-zone gemstones, mineraloids, and metal-bearing ores.'},
-    {name:'Master Cutter’s Bench',cost:null,next:null,description:'The finished main-game workshop. Processing remains free.'}
+    {name:'Master Cutter’s Bench',cost:null,next:null,description:'A precision bench built to handle every processable specimen in the mine.'}
   ];
 
   const DEPTH_UPGRADES = {
@@ -682,6 +682,7 @@ const DURABILITY_LEVELS = [
   let toastTimer = null;
   let scanMode = false;
   let activePanel = 'mine';
+  let heatWarningVisible = false;
 
   const $ = id => document.getElementById(id);
   const els = {
@@ -689,7 +690,7 @@ const DURABILITY_LEVELS = [
     surveyLevel:$('surveyLevel'), scanUseSummary:$('scanUseSummary'), mineBalance:$('mineBalance'), depthSelector:$('depthSelector'), depthFieldNote:$('depthFieldNote'), scanButton:$('scanButton'), scanButtonStatus:$('scanButtonStatus'),
     metalDetectorButton:$('metalDetectorButton'), detectorButtonStatus:$('detectorButtonStatus'),
     mineBoard:$('mineBoard'), faceFinds:$('faceFinds'), newFaceButton:$('newFaceButton'), surfaceButton:$('surfaceButton'), mineMessage:$('mineMessage'),
-    workbenchList:$('workbenchList'), masteredSellValue:$('masteredSellValue'), sellAllMasteredButton:$('sellAllMasteredButton'), postgameWorkbench:$('postgameWorkbench'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'), completionPlaque:$('completionPlaque'), personalCollectionSection:$('personalCollectionSection'), personalCollectionGrid:$('personalCollectionGrid'),
+    workbenchList:$('workbenchList'), workbenchDiscoveryCount:$('workbenchDiscoveryCount'), masteredSellValue:$('masteredSellValue'), sellAllMasteredButton:$('sellAllMasteredButton'), postgameWorkbench:$('postgameWorkbench'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'), completionPlaque:$('completionPlaque'), personalCollectionSection:$('personalCollectionSection'), personalCollectionGrid:$('personalCollectionGrid'),
     museumLighting:$('museumLighting'), normalLightButton:$('normalLightButton'), uvLightButton:$('uvLightButton'),
     achievementGrid:$('achievementGrid'), achievementCount:$('achievementCount'), achievementMeter:$('achievementMeter'),
     shopBalance:$('shopBalance'), upgradeList:$('upgradeList'), resetButton:$('resetButton'), toast:$('toast'),
@@ -1012,6 +1013,7 @@ const DURABILITY_LEVELS = [
 
   function startNewFace(){
     scanMode=false;
+    heatWarningVisible=false;
     state.face=generateFace(state.currentDepth);
     saveState();
     setMineMessage('⛏️','Fresh rock face.','Read the faint geological tells, survey where it seems worthwhile, then start crunching.');
@@ -1022,6 +1024,7 @@ const DURABILITY_LEVELS = [
   function setDepth(d){
     if(d>state.unlockedDepth||d===state.currentDepth)return;
     scanMode=false;
+    heatWarningVisible=false;
     state.currentDepth=d;
     state.face=generateFace(d);
     saveState();
@@ -1179,6 +1182,12 @@ const DURABILITY_LEVELS = [
   function mineTile(index){
     const face=state.face,tile=face.tiles[index];
     if(!tile||tile.revealed||face.durability<=0)return;
+    if(state.currentDepth===6&&!state.upgrades.geothermalGear){
+      heatWarningVisible=true;
+      setMineMessage('🌡️','Too hot to work safely.','You’ll need Geothermal Protective Gear before you can mine in the Epithermal Zone.');
+      renderMine();
+      return;
+    }
     tile.revealed=true;
     if(!state.postgame?.completed)face.durability--;
     state.meta.tilesMined++;
@@ -1214,8 +1223,8 @@ const DURABILITY_LEVELS = [
 
     if(face.durability<=0){
       state.meta.facesFinished++;
-      setMineMessage('⛏️','Pick worn out.','That face is finished. Return to the surface for a fresh one; there is no recharge timer.');
-      showToast('Face finished. No waiting required.');
+      setMineMessage('⛏️','Pick worn out.','That face is finished. Return to the surface for a fresh one.');
+      showToast('Face finished.');
     }
 
     checkAchievements();
@@ -1461,6 +1470,14 @@ const DURABILITY_LEVELS = [
       if(!b.disabled)b.addEventListener('click',()=>handleTile(t.index));
       els.mineBoard.appendChild(b);
     });
+
+    if(heatWarningVisible&&state.currentDepth===6&&!state.upgrades.geothermalGear){
+      const warning=document.createElement('div');
+      warning.className='mine-heat-warning';
+      warning.setAttribute('role','status');
+      warning.innerHTML='<strong>🌡️ Too hot to mine safely</strong><span>Geothermal Protective Gear required.</span>';
+      els.mineBoard.appendChild(warning);
+    }
   }
 
   function renderFaceFinds(){
@@ -1484,6 +1501,12 @@ const DURABILITY_LEVELS = [
 
   function renderWorkbench(){
     renderPostgameWorkbench();
+    const discoveredCount=Object.keys(MATERIALS).filter(k=>isDiscovered(k)).length;
+    const totalSubjects=Object.keys(MATERIALS).length;
+    if(els.workbenchDiscoveryCount){
+      els.workbenchDiscoveryCount.textContent=`${discoveredCount} / ${totalSubjects} specimens discovered${discoveredCount===totalSubjects?' ✦':''}`;
+      els.workbenchDiscoveryCount.closest('.workbench-discovery-card')?.classList.toggle('complete',discoveredCount===totalSubjects);
+    }
     const bulk=masteredSellSummary();
     if(els.masteredSellValue)els.masteredSellValue.textContent=`${formatMoney(bulk.value)} · ${bulk.items} item${bulk.items===1?'':'s'}`;
     if(els.sellAllMasteredButton){
@@ -1791,8 +1814,13 @@ const DURABILITY_LEVELS = [
       pairs.forEach(([k,m])=>{wt+=m.stages.length;wf+=m.stages.filter(s=>state.collection[k][s]).length;});
       filledTotal+=wf;
 
-      const wing=document.createElement('section');wing.className='museum-wing';
+      const wing=document.createElement('section');
+      const compactWing=w.id==='fossils'||w.id==='history';
+      wing.className=`museum-wing ${compactWing?'compact-wing':''}`;
       wing.innerHTML=`<div class="wing-heading"><h3>${w.name}</h3><span>${wf} / ${wt} filled</span></div>`;
+      const groupHost=document.createElement('div');
+      groupHost.className=compactWing?'museum-groups-grid':'';
+      wing.appendChild(groupHost);
 
       pairs.forEach(([k,m])=>{
         const group=document.createElement('div');
@@ -1827,7 +1855,7 @@ const DURABILITY_LEVELS = [
           group.appendChild(mastery);
         }
 
-        wing.appendChild(group);
+        groupHost.appendChild(group);
       });
 
       els.museumWings.appendChild(wing);
@@ -1885,9 +1913,10 @@ const DURABILITY_LEVELS = [
   function renderUpgrades(){
     els.shopBalance.textContent=formatMoney(state.credits);els.upgradeList.innerHTML='';
     const cards=[depthCard()];
-    if(state.unlockedDepth>=5)cards.push(geothermalGearCard());
+    if(state.unlockedDepth>=6)cards.push(geothermalGearCard());
     cards.push(durabilityCard(),surveyCard(),scannerUsesCard(),metalDetectorCard());
-    if(state.unlockedDepth>=5)cards.push(scannerHeatShieldCard(),detectorHeatShieldCard(),uvLampCard());
+    if(state.unlockedDepth>=6)cards.push(scannerHeatShieldCard(),detectorHeatShieldCard());
+    if(state.unlockedDepth>=5)cards.push(uvLampCard());
     cards.push(workshopCard());
     cards.forEach(c=>els.upgradeList.appendChild(c));
   }
@@ -1905,22 +1934,21 @@ const DURABILITY_LEVELS = [
     const nextDepth=state.unlockedDepth+1;
     if(nextDepth>6)return upgradeCard({icon:'🪜',eyebrow:'Mine depth',title:'All depths unlocked',description:'The Upper Seam through the Epithermal Zone are all available.',current:'Depths 1–6 available',maxText:'MAX'});
     const up=DEPTH_UPGRADES[nextDepth];
-    const needsGear=nextDepth===6&&!state.upgrades.geothermalGear;
-    return upgradeCard({icon:'🪜',eyebrow:'Mine depth',title:`Unlock Depth ${nextDepth}`,description:needsGear?'The Epithermal Zone is too hot to enter safely. Geothermal Protective Gear is required first.':up.description,current:`Current: Depths 1–${state.unlockedDepth}`,cost:up.cost,label:needsGear?'Protective gear required':'Go deeper',disabled:needsGear||state.credits<up.cost,onClick:buyDepth});
+    return upgradeCard({icon:'🪜',eyebrow:'Mine depth',title:`Unlock Depth ${nextDepth}`,description:up.description,current:`Current: Depths 1–${state.unlockedDepth}`,cost:up.cost,label:'Go deeper',disabled:state.credits<up.cost,onClick:buyDepth});
   }
 
   function geothermalGearCard(){
-    const owned=!!state.upgrades.geothermalGear,ready=state.unlockedDepth>=5,cost=2400;
-    const description='Heat-resistant protective clothing and equipment for working safely in the final volcanic-hydrothermal zone. No heat meter, no survival timer: this is an access requirement, not a punishment mechanic.';
+    const owned=!!state.upgrades.geothermalGear,cost=2400;
+    const description='Heat-resistant protective clothing and equipment for working safely in the Epithermal Zone.';
     if(owned)return upgradeCard({icon:'🥽',eyebrow:'Depth 6 access',title:'Geothermal Protective Gear',description,current:'Current: rated for Epithermal Zone work',maxText:'MAX'});
-    return upgradeCard({icon:'🥽',eyebrow:'Depth 6 access',title:'Geothermal Protective Gear',description,current:ready?'Available after reaching the Luminous Zone':'Reach Depth 5 first',cost,label:ready?'Equip gear':'Depth 5 required',disabled:!ready||state.credits<cost,onClick:buyGeothermalGear});
+    return upgradeCard({icon:'🥽',eyebrow:'Depth 6 access',title:'Geothermal Protective Gear',description,current:'Required to mine in the Epithermal Zone',cost,label:'Equip gear',disabled:state.unlockedDepth<6||state.credits<cost,onClick:buyGeothermalGear});
   }
 
   function durabilityCard(){
     if(state.postgame?.completed)return upgradeCard({icon:'⛏️',eyebrow:'Completion reward',title:'Gilded Steel Pickaxe',description:'Effectively unbreakable. Solid gold would have been soft, heavy, and an objectively terrible material for a working pickaxe.',current:'Current: Gilded Steel Pickaxe · ∞ durability',maxText:'YOURS'});
     const i=state.upgrades.durability,cur=DURABILITY_LEVELS[i],max=cur.cost===null,next=max?null:DURABILITY_LEVELS[i+1];
-    if(max)return upgradeCard({icon:'⛏️',eyebrow:'Pick durability',title:cur.label,description:'The strongest regular pick in the finished main game.',current:`Current: ${cur.label} · ${cur.swings} swings`,maxText:'MAX'});
-    return upgradeCard({icon:'⛏️',eyebrow:'Pick durability',title:`${cur.swings} → ${next.swings} swings`,description:'More swings per rock face. No energy or recharge timer.',current:`Current: ${cur.label} · ${cur.swings} swings`,cost:cur.cost,label:'Upgrade pick',disabled:state.credits<cur.cost,onClick:buyDurability});
+    if(max)return upgradeCard({icon:'⛏️',eyebrow:'Pick durability',title:cur.label,description:'Built for the toughest rock in the deepest workings.',current:`Current: ${cur.label} · ${cur.swings} swings`,maxText:'MAX'});
+    return upgradeCard({icon:'⛏️',eyebrow:'Pick durability',title:`${cur.swings} → ${next.swings} swings`,description:'More swings per rock face.',current:`Current: ${cur.label} · ${cur.swings} swings`,cost:cur.cost,label:'Upgrade pick',disabled:state.credits<cur.cost,onClick:buyDurability});
   }
 
   function surveyCard(){
@@ -1932,8 +1960,8 @@ const DURABILITY_LEVELS = [
 
   function scannerUsesCard(){
     const cur=SCAN_CHARGE_LEVELS[state.upgrades.scannerUses],max=cur.cost===null,next=max?null:SCAN_CHARGE_LEVELS[state.upgrades.scannerUses+1],locked=state.upgrades.surveying===0;
-    if(max)return upgradeCard({icon:'📡',eyebrow:'Scanner charges',title:cur.label,description:'Each charge scans one selected 3×3 area. Charges reset immediately on every fresh rock face.',current:`Current: ${cur.uses} scans per face`,maxText:'MAX'});
-    return upgradeCard({icon:'📡',eyebrow:'Scanner charges',title:`${cur.uses} → ${next.uses} scans per face`,description:locked?'Unlock the Field Scanner first.':'Add another 3×3 scan per rock face. Charges reset on a fresh face; there is no real-time recharge.',current:`Current: ${cur.uses} scan${cur.uses===1?'':'s'} per face`,cost:cur.cost,label:locked?'Scanner locked':'Add scan',disabled:locked||state.credits<cur.cost,onClick:buyScannerUse});
+    if(max)return upgradeCard({icon:'📡',eyebrow:'Scanner charges',title:cur.label,description:'Each charge scans one selected 3×3 area.',current:`Current: ${cur.uses} scans per face`,maxText:'MAX'});
+    return upgradeCard({icon:'📡',eyebrow:'Scanner charges',title:`${cur.uses} → ${next.uses} scans per face`,description:locked?'Unlock the Field Scanner first.':'Add another 3×3 scan per rock face.',current:`Current: ${cur.uses} scan${cur.uses===1?'':'s'} per face`,cost:cur.cost,label:locked?'Scanner locked':'Add scan',disabled:locked||state.credits<cur.cost,onClick:buyScannerUse});
   }
 
   function metalDetectorCard(){
@@ -1974,15 +2002,14 @@ const DURABILITY_LEVELS = [
 
   function buyDepth(){
     const nextDepth=state.unlockedDepth+1,up=DEPTH_UPGRADES[nextDepth];
-    if(nextDepth===6&&!state.upgrades.geothermalGear){showToast('Equip Geothermal Protective Gear first.');return;}
     if(!up||state.credits<up.cost)return;
-    state.credits-=up.cost;state.unlockedDepth=nextDepth;state.currentDepth=nextDepth;state.face=generateFace(nextDepth);
+    state.credits-=up.cost;state.unlockedDepth=nextDepth;state.currentDepth=nextDepth;heatWarningVisible=false;state.face=generateFace(nextDepth);
     checkAchievements();saveState();renderAll();showToast(`Depth ${nextDepth} unlocked: ${DEPTHS[nextDepth].name}.`);
   }
 
   function buyGeothermalGear(){
-    const cost=2400;if(state.upgrades.geothermalGear||state.unlockedDepth<5||state.credits<cost)return;
-    state.credits-=cost;state.upgrades.geothermalGear=true;checkAchievements();saveState();renderAll();showToast('Geothermal Protective Gear equipped.');
+    const cost=2400;if(state.upgrades.geothermalGear||state.unlockedDepth<6||state.credits<cost)return;
+    state.credits-=cost;state.upgrades.geothermalGear=true;heatWarningVisible=false;checkAchievements();saveState();renderAll();showToast('Geothermal Protective Gear equipped.');
   }
 
   function buyScannerHeatShield(){
@@ -2044,9 +2071,9 @@ const DURABILITY_LEVELS = [
   }
 
   function resetGame(){
-    if(!window.confirm('Reset all Rockhound Lab 1.3.1 progress?'))return;
+    if(!window.confirm('Reset all Rockhound Lab 1.3.2 progress?'))return;
     localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
-    saveState();renderAll();showToast('Lab 1.3.1 save reset.');
+    saveState();renderAll();showToast('Lab 1.3.2 save reset.');
   }
 
   function showToast(msg){

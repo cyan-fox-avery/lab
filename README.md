@@ -1,6 +1,6 @@
 # Rockhound
 
-**Lab 1.3.1 — content-complete full-game prototype**
+**Lab 1.3.2 — content-complete full-game prototype**
 
 > rock go crunch.
 
@@ -27,7 +27,7 @@ Each depth includes a short **Field Note** explaining the geology behind its the
 
 ## Final collection roster
 
-Lab 1.3.1 contains **44 core collection subjects** across four museum wings:
+Lab 1.3.2 contains **44 core collection subjects** across four museum wings:
 
 - **24 minerals, gems, and mineraloids**, including quartz varieties, corundum and beryl families, opal, diamond, obsidian, olivine/peridot, native sulfur, rhodochrosite, and adularia.
 - **8 ore/metal subjects**, including hematite → iron, chalcopyrite → copper, cassiterite → tin, galena → lead, sphalerite → zinc, scheelite → tungsten, acanthite → silver, and native gold.
@@ -42,7 +42,7 @@ The **Area Scanner** surveys a 3×3 neighbourhood and becomes more informative a
 
 The **Metal Detector** provides one deliberately vague whole-face sweep for metallic or conductive targets.
 
-The final **Epithermal Zone** requires **Geothermal Protective Gear**. The scanner and detector also need their own heat-shielded housings before they can operate there. There is no heat meter or survival timer; the equipment is an access requirement rather than a punishment mechanic.
+Mining in the final **Epithermal Zone** requires **Geothermal Protective Gear** after the depth is unlocked. The scanner and detector also need their own heat-shielded housings before they can operate there. There is no heat meter or survival timer; the equipment is an access requirement rather than a punishment mechanic.
 
 ## Museum and mastery
 
@@ -69,19 +69,20 @@ Geodes and exceptional specimens are optional postgame toys, not a second mandat
 
 ## Achievements
 
-Lab 1.3.1 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
+Lab 1.3.2 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
 
-## Lab 1.3.1 status
+## Lab 1.3.2 status
 
 This build is the content-complete development version being tested in the lab before the public Rockhound repository is updated. The full six-depth progression, final core roster, completion sequence, and postgame systems are implemented.
 
 The remaining major polish passes are the final custom specimen sprite set and the illustrated **Rockhound's Field Guide**, which will use appropriately licensed real-world photographs and expanded educational entries.
 
 
-## Lab 1.3.1 patch
+## Lab 1.3.2 patch
 
-- UV Fluorescence Lamp stays hidden from Upgrades until Depth 5 is unlocked.
-- The latest-find message now appears below the rock grid so changing copy cannot shift the face during mining.
-- Fresh faces now contain **1–3 subtle natural clue tiles**, and every clue is guaranteed to have a real find directly underneath. The clue does not indicate rarity or value.
-- Experimental sound has been removed for now.
-- **Sell All** now includes surplus fossil specimens once that fossil has been donated to the museum.
+- Adds a Workbench discovery counter showing unique specimens found out of the complete 44-subject roster.
+- Unlocking Depth 6 now happens before geothermal safety equipment appears; attempting to mine there without protective gear produces an in-grid heat warning.
+- Heat-shielded scanner and detector housings remain hidden until Depth 6 is unlocked.
+- Fossil Wing and History Wing use compact two-column display cards on normal mobile widths.
+- Removes repeated monetization / fair-play disclaimers from the Upgrades screen while retaining useful per-face reset information in the Mine.
+- Replaces meta development wording on end-tier equipment with in-world descriptions.
