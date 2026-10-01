@@ -1,12 +1,12 @@
 # Rockhound
 
-**Beta 1.3.4 — content-complete full-game beta**
+**Beta 1.3.5 — content-complete full-game beta**
 
 > rock go crunch.
 
 Rockhound is a finite, collection-focused incremental mining game for the browser. Mine a fixed 10×10 rock face, follow geological hints, use prospecting tools, process finds at the workbench, fill a museum, improve your equipment, and work your way through six distinct mine depths.
 
-Rockhound is designed around active discovery rather than timers or monetized friction. There is one in-game currency, processing is free, tool charges reset on a fresh rock face, and there is no premium currency, energy timer, pay-to-skip system, prestige reset, or real-money progression.
+Rockhound is designed around active discovery rather than timers or monetized friction. Processing is free, tool charges reset on a fresh rock face, and there is no premium currency, energy timer, pay-to-skip system, prestige reset, or real-money progression.
 
 ## Core loop
 
@@ -27,7 +27,7 @@ Each depth includes a short **Field Note** explaining the geology behind its the
 
 ## Final collection roster
 
-Beta 1.3.4 contains **44 core collection subjects** across four museum wings:
+Beta 1.3.5 contains **44 core collection subjects** across four museum wings:
 
 - **24 minerals, gems, and mineraloids**, including quartz varieties, corundum and beryl families, opal, diamond, obsidian, olivine/peridot, native sulfur, rhodochrosite, and adularia.
 - **8 ore/metal subjects**, including hematite → iron, chalcopyrite → copper, cassiterite → tin, galena → lead, sphalerite → zinc, scheelite → tungsten, acanthite → silver, and native gold.
@@ -62,24 +62,25 @@ The completion reward includes:
 - the effectively unbreakable **Gilded Steel Pickaxe**
 - **Your Collection**, a 12-space freeform display with no checklist or completion percentage
 - **Exceptional Specimens**, rare curated versions of familiar finds
-- postgame **Geodes** and a **Geode Cracker**
+- postgame **Geodes**, a **Geode Cracker**, and the museum-loaned **Geode Finder**
 - unrestricted postgame prospecting across the completed mine
 
-Geodes and exceptional specimens are optional postgame toys, not a second mandatory progression ladder. The game is finished when the museum is finished; continued mining exists because the player wants to keep finding rocks.
+Geodes and exceptional specimens are optional postgame toys, not a second mandatory progression ladder. The museum-loaned Geode Finder uses paid cartridges to make postgame geode hunting easier, but geodes can still appear without it. The game is finished when the museum is finished; continued mining exists because the player wants to keep finding rocks.
 
 ## Achievements
 
-Beta 1.3.4 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
+Beta 1.3.5 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
 
-## Beta 1.3.4 status
+## Beta 1.3.5 status
 
 This build is the content-complete beta under active testing. The full six-depth progression, final core roster, completion sequence, and postgame systems are implemented.
 
 The remaining major polish passes are the final custom specimen sprite set and the illustrated **Rockhound's Field Guide**, which will use appropriately licensed real-world photographs and expanded educational entries.
 
 
-## Beta 1.3.4 patch
+## Beta 1.3.5 patch
 
-- Added location hints to missing Fossil Wing and History Wing specimens so late-game completion does not become blind depth-hopping.
-- Hints reveal only currently accessible depths; specimens that only occur deeper simply say **Search deeper…** until the relevant depth is unlocked.
-- Kept specimen identities hidden where appropriate, so the hint tells you where to prospect without spoiling what you are looking for.
+- Added the postgame **Geode Finder**. The museum now loans the tool on completion, and its hollow-cavity scans are powered by paid **finder cartridges**.
+- Every completed save receives a small starter set of cartridges so the new tool can be tried immediately.
+- Geode Finder scans mark a geode tile when a geode is present, but do not create geodes or replace ordinary prospecting.
+- Softened the museum-completion text so the ending stays celebratory without taking a swipe at other games.

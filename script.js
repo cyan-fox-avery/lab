@@ -668,7 +668,7 @@ const DURABILITY_LEVELS = [
     achievements:{},
     postgame:{
       completed:false,completedAt:null,completionSeen:false,uncrackedGeodes:0,geodesCracked:0,exceptionalFound:0,nextCollectibleId:1,
-      vault:[],personalSlots:Array(12).fill(null),lastGeode:null
+      geodeCartridges:0,vault:[],personalSlots:Array(12).fill(null),lastGeode:null
     },
     meta:{
       tilesMined:0,scansUsed:0,doubleScans:0,anomalyFinds:0,metalSweeps:0,metalSignalFinds:0,
@@ -688,7 +688,7 @@ const DURABILITY_LEVELS = [
   const els = {
     depthName:$('depthName'), depthNumber:$('depthNumber'), durability:$('durability'), maxDurability:$('maxDurability'), durabilityMeter:$('durabilityMeter'),
     surveyLevel:$('surveyLevel'), scanUseSummary:$('scanUseSummary'), mineBalance:$('mineBalance'), depthSelector:$('depthSelector'), depthFieldNote:$('depthFieldNote'), scanButton:$('scanButton'), scanButtonStatus:$('scanButtonStatus'),
-    metalDetectorButton:$('metalDetectorButton'), detectorButtonStatus:$('detectorButtonStatus'),
+    metalDetectorButton:$('metalDetectorButton'), detectorButtonStatus:$('detectorButtonStatus'), geodeFinderButton:$('geodeFinderButton'), geodeFinderStatus:$('geodeFinderStatus'),
     mineBoard:$('mineBoard'), faceFinds:$('faceFinds'), newFaceButton:$('newFaceButton'), surfaceButton:$('surfaceButton'), mineMessage:$('mineMessage'),
     workbenchList:$('workbenchList'), workbenchDiscoveryCount:$('workbenchDiscoveryCount'), masteredSellValue:$('masteredSellValue'), sellAllMasteredButton:$('sellAllMasteredButton'), postgameWorkbench:$('postgameWorkbench'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'), completionPlaque:$('completionPlaque'), personalCollectionSection:$('personalCollectionSection'), personalCollectionGrid:$('personalCollectionGrid'),
     museumLighting:$('museumLighting'), normalLightButton:$('normalLightButton'), uvLightButton:$('uvLightButton'),
@@ -715,6 +715,7 @@ const DURABILITY_LEVELS = [
     els.surfaceButton.addEventListener('click',startNewFace);
     els.scanButton.addEventListener('click',toggleScanMode);
     els.metalDetectorButton.addEventListener('click',useMetalDetector);
+    if(els.geodeFinderButton)els.geodeFinderButton.addEventListener('click',useGeodeFinder);
     els.normalLightButton.addEventListener('click',()=>setMuseumLighting(false));
     els.uvLightButton.addEventListener('click',()=>setMuseumLighting(true));
     els.sellAllMasteredButton.addEventListener('click',sellAllMastered);
@@ -797,6 +798,8 @@ const DURABILITY_LEVELS = [
       merged.postgame.geodesCracked = Math.max(0,merged.postgame.geodesCracked||0);
       merged.postgame.exceptionalFound = Math.max(0,merged.postgame.exceptionalFound||0);
       merged.postgame.nextCollectibleId = Math.max(1,merged.postgame.nextCollectibleId||1);
+      merged.postgame.geodeCartridges = Math.max(0,merged.postgame.geodeCartridges||0);
+      if(merged.postgame.completed && parsed.postgame?.geodeCartridges === undefined) merged.postgame.geodeCartridges = Math.max(merged.postgame.geodeCartridges,3);
       while(merged.postgame.personalSlots.length<12)merged.postgame.personalSlots.push(null);
       merged.settings.museumUv = !!merged.settings.museumUv && merged.upgrades.uvLamp;
 
@@ -923,6 +926,8 @@ const DURABILITY_LEVELS = [
     if(face.lastScan === undefined) face.lastScan = null;
     if(face.metalDetectorUsed === undefined) face.metalDetectorUsed = false;
     if(!Array.isArray(face.metalSignalTiles)) face.metalSignalTiles = [];
+    if(face.geodeFinderUsed === undefined) face.geodeFinderUsed = false;
+    if(face.geodeHintTile === undefined) face.geodeHintTile = null;
     if(face.fullCoverageAwarded === undefined) face.fullCoverageAwarded = false;
 
     if(!Array.isArray(face.scanCounts) || face.scanCounts.length!==GRID_SIZE*GRID_SIZE){
@@ -1001,7 +1006,7 @@ const DURABILITY_LEVELS = [
       finds:{},tiles,deposits,hints:[],
       scanUsesRemaining:state.upgrades.surveying>0?currentMaxScans():0,
       scanHistory:[],scanCounts:Array(GRID_SIZE*GRID_SIZE).fill(0),lastScan:null,
-      metalDetectorUsed:false,metalSignalTiles:[],fullCoverageAwarded:false
+      metalDetectorUsed:false,metalSignalTiles:[],geodeFinderUsed:false,geodeHintTile:null,fullCoverageAwarded:false
     };
     face.hints=generateProspectHints(face);
     return face;
@@ -1129,6 +1134,28 @@ const DURABILITY_LEVELS = [
       showToast('No strong metal signals detected.');
     }
     renderMine();
+  }
+
+
+  function useGeodeFinder(){
+    if(!state.postgame?.completed){showToast('The Geode Finder unlocks after museum completion.');return;}
+    if(state.face.geodeFinderUsed){showToast('The Geode Finder has already checked this face.');return;}
+    if((state.postgame.geodeCartridges||0)<1){showToast('No Geode Finder cartridges left.');return;}
+    state.postgame.geodeCartridges--;
+    state.face.geodeFinderUsed=true;
+    const target=state.face.tiles.find(t=>!t.revealed&&t.special==='geode');
+    if(target){
+      state.face.geodeHintTile=target.index;
+      setMineMessage('🪨','Geode resonance detected.','A hollow cavity is likely at the marked tile.');
+      showToast('Geode signal found.');
+    }else{
+      state.face.geodeHintTile=null;
+      setMineMessage('🪨','No geode resonance.','No hollow cavity appears to be hiding in this rock face.');
+      showToast('No geode detected on this face.');
+    }
+    saveState();
+    renderMine();
+    renderUpgrades();
   }
 
 
@@ -1360,7 +1387,7 @@ const DURABILITY_LEVELS = [
     els.surveyLevel.textContent=SURVEY_LEVELS[state.upgrades.surveying].name;
     els.mineBalance.textContent=formatMoney(state.credits);
     els.scanUseSummary.textContent=state.currentDepth===6&&!state.upgrades.scannerHeatShield?'heat shield required':state.upgrades.surveying>0?`${f.scanUsesRemaining}/${currentMaxScans()} scans left`:'locked';
-    renderDepthSelector();renderSurvey();renderMetalDetector();renderBoard();renderFaceFinds();renderMobileHud();
+    renderDepthSelector();renderSurvey();renderMetalDetector();renderGeodeFinder();renderBoard();renderFaceFinds();renderMobileHud();
   }
 
   function renderDepthSelector(){
@@ -1416,6 +1443,22 @@ const DURABILITY_LEVELS = [
     els.detectorButtonStatus.textContent=used?'Used this face':'1/1 sweep';
   }
 
+  function renderGeodeFinder(){
+    if(!els.geodeFinderButton)return;
+    if(!state.postgame?.completed){
+      els.geodeFinderButton.classList.add('hidden');
+      return;
+    }
+    els.geodeFinderButton.classList.remove('hidden');
+    const cartridges=state.postgame.geodeCartridges||0;
+    const used=!!state.face.geodeFinderUsed;
+    els.geodeFinderButton.disabled=used||cartridges<1;
+    els.geodeFinderButton.querySelector('strong').textContent='Find geode';
+    if(used)els.geodeFinderStatus.textContent='Used this face';
+    else if(cartridges<1)els.geodeFinderStatus.textContent='No cartridges';
+    else els.geodeFinderStatus.textContent=`${cartridges} cartridge${cartridges===1?'':'s'} left`;
+  }
+
   function buildIcon(key,forTile=false,stage=null){
     const m=MATERIALS[key],span=document.createElement('span');
     if(!forTile)span.classList.add('material-icon');
@@ -1450,6 +1493,7 @@ const DURABILITY_LEVELS = [
       if(scans>=1)b.classList.add('scan-area');
       if(scans>=2)b.classList.add('scan-overlap');
       if((state.face.metalSignalTiles||[]).includes(t.index)&&!t.revealed)b.classList.add('metal-signal');
+      if(state.face.geodeHintTile===t.index&&!t.revealed)b.classList.add('geode-hint');
       if(scanMode)b.classList.add('scan-selectable');
 
       if(t.revealed){
@@ -1469,6 +1513,9 @@ const DURABILITY_LEVELS = [
       }else{
         if(hints.has(t.index)){
           const mark=document.createElement('span');mark.className='prospect-mark';mark.setAttribute('aria-hidden','true');b.appendChild(mark);
+        }
+        if(state.face.geodeHintTile===t.index){
+          const mark=document.createElement('span');mark.className='geode-hint-mark';mark.setAttribute('aria-hidden','true');mark.textContent='◉';b.appendChild(mark);
         }
         if(scans>=2&&t.material){
           const shadow=document.createElement('span');shadow.className='scan-anomaly-shadow';shadow.setAttribute('aria-hidden','true');b.appendChild(shadow);
@@ -1569,7 +1616,7 @@ const DURABILITY_LEVELS = [
     els.postgameWorkbench.innerHTML=`
       <div class="postgame-station">
         <div class="postgame-station-copy"><span class="status-label">Postgame tool</span><strong>🪨 Geode Cracker</strong><p>Geodes are surprises, not another checklist. Crack them because you want to know what's inside.</p></div>
-        <div class="geode-action"><span>${state.postgame.uncrackedGeodes} uncracked</span><button id="crackGeodeButton" class="primary-button" type="button" ${state.postgame.uncrackedGeodes<1?'disabled':''}>CRACK</button></div>
+        <div class="geode-action"><span>${state.postgame.uncrackedGeodes} uncracked · ${state.postgame.geodeCartridges||0} finder cartridge${(state.postgame.geodeCartridges||0)===1?'':'s'}</span><button id="crackGeodeButton" class="primary-button" type="button" ${state.postgame.uncrackedGeodes<1?'disabled':''}>CRACK</button></div>
         ${last?`<div class="geode-reveal"><span class="geode-reveal-icon">${last.icon}</span><div><span class="status-label">Last reveal</span><strong>${last.label}</strong><p>${last.detail}</p></div></div>`:''}
       </div>
       <div class="postgame-vault">
@@ -1648,6 +1695,7 @@ const DURABILITY_LEVELS = [
     state.postgame.completed=true;
     state.postgame.completedAt=new Date().toISOString();
     state.postgame.completionSeen=false;
+    state.postgame.geodeCartridges=Math.max(state.postgame.geodeCartridges||0,3);
     state.upgrades.scannerHeatShield=true;
     state.upgrades.detectorHeatShield=true;
     state.face=generateFace(state.currentDepth);
@@ -1674,13 +1722,13 @@ const DURABILITY_LEVELS = [
     els.completionBody.innerHTML=`
       <p>Every required museum specimen has been collected. Every depth has been opened.</p>
       <p><strong>You are officially a true Rockhound.</strong></p>
-      <p>And unlike certain other incremental games, we are not taking any of your stuff away.</p>
+      <p><strong>You earned every bit of this. Nothing resets. Nothing gets taken away.</strong></p>
       <div class="completion-rewards">
         <div>🏆 <strong>Museum Completion Plaque</strong><span>A permanent record that you actually finished.</span></div>
         <div>⛏️ <strong>Gilded Steel Pickaxe</strong><span>Effectively unbreakable. We considered solid gold. Gold is soft, heavy, and a terrible pickaxe material.</span></div>
         <div>🖼️ <strong>Your Collection</strong><span>Twelve display spaces. No checklist. No percentage. Your rocks, your rules.</span></div>
         <div>✨ <strong>Exceptional Specimens</strong><span>Unusually beautiful finds can now appear throughout every depth.</span></div>
-        <div>🪨 <strong>Geodes & Geode Cracker</strong><span>Mystery cavities can now turn up in fresh rock faces.</span></div>
+        <div>🪨 <strong>Geodes, Geode Cracker & Geode Finder</strong><span>Mystery cavities can now turn up in fresh rock faces, and the museum lends you a finder with starter cartridges.</span></div>
         <div>🌋 <strong>Postgame Prospecting</strong><span>Every depth stays open. There is nothing left you have to find.</span></div>
       </div>
       <p class="completion-line"><strong>There's nothing left you have to find.</strong><br>But there's always another rock.</p>
@@ -1928,6 +1976,7 @@ const DURABILITY_LEVELS = [
     if(state.unlockedDepth>=6)cards.push(scannerHeatShieldCard(),detectorHeatShieldCard());
     if(state.unlockedDepth>=5)cards.push(uvLampCard());
     cards.push(workshopCard());
+    if(state.postgame?.completed)cards.push(geodeFinderCard());
     cards.forEach(c=>els.upgradeList.appendChild(c));
   }
 
@@ -2008,6 +2057,12 @@ const DURABILITY_LEVELS = [
     const i=state.upgrades.workshop,cur=WORKSHOP_LEVELS[i],max=cur.cost===null;
     if(max)return upgradeCard({icon:'🛠️',eyebrow:'Workshop equipment',title:cur.name,description:cur.description,current:`Current: ${cur.name}`,maxText:'MAX'});
     return upgradeCard({icon:'🛠️',eyebrow:'Workshop equipment',title:`Unlock ${cur.next}`,description:cur.description,current:`Current: ${cur.name}`,cost:cur.cost,label:'Upgrade workshop',disabled:state.credits<cur.cost,onClick:buyWorkshop});
+  }
+
+  function geodeFinderCard(){
+    const packCost=360,packSize=3,cartridges=state.postgame?.geodeCartridges||0;
+    const description='The museum lends you a Geode Finder after completion. Each cartridge performs one whole-face hollow-cavity scan and marks a geode tile if a geode is present. It does not create geodes, and some faces will still come up empty.';
+    return upgradeCard({icon:'🪨',eyebrow:'Postgame prospecting',title:'Museum Geode Finder',description,current:`Current: ${cartridges} cartridge${cartridges===1?'':'s'} on hand`,cost:packCost,label:`Buy ${packSize} cartridges`,disabled:state.credits<packCost,onClick:buyGeodeCartridges});
   }
 
   function buyDepth(){
