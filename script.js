@@ -2135,6 +2135,16 @@ const DURABILITY_LEVELS = [
     checkAchievements();saveState();renderAll();showToast(`${WORKSHOP_LEVELS[state.upgrades.workshop].name} unlocked.`);
   }
 
+  function buyGeodeCartridges(){
+    const packCost=360,packSize=3;
+    if(!state.postgame?.completed||state.credits<packCost)return;
+    state.credits-=packCost;
+    state.postgame.geodeCartridges=(state.postgame.geodeCartridges||0)+packSize;
+    saveState();
+    renderAll();
+    showToast(`Bought ${packSize} Geode Finder cartridges.`);
+  }
+
   function resetGame(){
     if(!window.confirm('Reset all Rockhound Beta 1.3.4 progress?'))return;
     localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;

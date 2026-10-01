@@ -1,6 +1,6 @@
 # Rockhound
 
-**Beta 1.3.5 — content-complete full-game beta**
+**Beta 1.3.6 — content-complete full-game beta**
 
 > rock go crunch.
 
@@ -27,7 +27,7 @@ Each depth includes a short **Field Note** explaining the geology behind its the
 
 ## Final collection roster
 
-Beta 1.3.5 contains **44 core collection subjects** across four museum wings:
+Beta 1.3.6 contains **44 core collection subjects** across four museum wings:
 
 - **24 minerals, gems, and mineraloids**, including quartz varieties, corundum and beryl families, opal, diamond, obsidian, olivine/peridot, native sulfur, rhodochrosite, and adularia.
 - **8 ore/metal subjects**, including hematite → iron, chalcopyrite → copper, cassiterite → tin, galena → lead, sphalerite → zinc, scheelite → tungsten, acanthite → silver, and native gold.
@@ -69,18 +69,16 @@ Geodes and exceptional specimens are optional postgame toys, not a second mandat
 
 ## Achievements
 
-Beta 1.3.5 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
+Beta 1.3.6 contains **50 achievements**, mixing progression milestones, geology jokes, unusual player behaviour, collection goals, and postgame discoveries. Achievements are not required to finish the game. Museum completion earns the deliberately excessive **TRUE ROCKHOUND** trophy.
 
-## Beta 1.3.5 status
+## Beta 1.3.6 status
 
 This build is the content-complete beta under active testing. The full six-depth progression, final core roster, completion sequence, and postgame systems are implemented.
 
 The remaining major polish passes are the final custom specimen sprite set and the illustrated **Rockhound's Field Guide**, which will use appropriately licensed real-world photographs and expanded educational entries.
 
+## Beta 1.3.6 patch
 
-## Beta 1.3.5 patch
-
-- Added the postgame **Geode Finder**. The museum now loans the tool on completion, and its hollow-cavity scans are powered by paid **finder cartridges**.
-- Every completed save receives a small starter set of cartridges so the new tool can be tried immediately.
-- Geode Finder scans mark a geode tile when a geode is present, but do not create geodes or replace ordinary prospecting.
-- Softened the museum-completion text so the ending stays celebratory without taking a swipe at other games.
+- Fixed a postgame regression that caused the entire Upgrades list to disappear after museum completion.
+- Restored the Geode Finder cartridge purchase action.
+- No save reset is required; existing Beta 1.3.x lab progress is preserved.
