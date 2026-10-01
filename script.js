@@ -1969,15 +1969,31 @@ const DURABILITY_LEVELS = [
   }
 
   function renderUpgrades(){
-    els.shopBalance.textContent=formatMoney(state.credits);els.upgradeList.innerHTML='';
-    const cards=[depthCard()];
-    if(state.unlockedDepth>=6)cards.push(geothermalGearCard());
-    cards.push(durabilityCard(),surveyCard(),scannerUsesCard(),metalDetectorCard());
-    if(state.unlockedDepth>=6)cards.push(scannerHeatShieldCard(),detectorHeatShieldCard());
-    if(state.unlockedDepth>=5)cards.push(uvLampCard());
-    cards.push(workshopCard());
-    if(state.postgame?.completed)cards.push(geodeFinderCard());
-    cards.forEach(c=>els.upgradeList.appendChild(c));
+    els.shopBalance.textContent=formatMoney(state.credits);
+    els.upgradeList.innerHTML='';
+
+    const addCard=(builder,label)=>{
+      try{
+        const card=builder();
+        if(card)els.upgradeList.appendChild(card);
+      }catch(err){
+        console.error(`Upgrade card failed: ${label}`,err);
+      }
+    };
+
+    addCard(depthCard,'mine depth');
+    if(state.unlockedDepth>=6)addCard(geothermalGearCard,'geothermal gear');
+    addCard(durabilityCard,'pick durability');
+    addCard(surveyCard,'scanner analysis');
+    addCard(scannerUsesCard,'scanner charges');
+    addCard(metalDetectorCard,'metal detector');
+    if(state.unlockedDepth>=6){
+      addCard(scannerHeatShieldCard,'scanner heat shielding');
+      addCard(detectorHeatShieldCard,'detector heat shielding');
+    }
+    if(state.unlockedDepth>=5)addCard(uvLampCard,'UV lamp');
+    addCard(workshopCard,'workshop');
+    if(state.postgame?.completed)addCard(geodeFinderCard,'geode finder');
   }
 
   function upgradeCard({icon,eyebrow,title,description,current,cost,label,disabled,onClick,maxText=null}){
@@ -2060,9 +2076,10 @@ const DURABILITY_LEVELS = [
   }
 
   function geodeFinderCard(){
-    const packCost=360,packSize=3,cartridges=state.postgame?.geodeCartridges||0;
+    const packCost=360,packSize=3;
+    const cartridges=Math.max(0,Number(state.postgame?.geodeCartridges)||0);
     const description='The museum lends you a Geode Finder after completion. Each cartridge performs one whole-face hollow-cavity scan and marks a geode tile if a geode is present. It does not create geodes, and some faces will still come up empty.';
-    return upgradeCard({icon:'🪨',eyebrow:'Postgame prospecting',title:'Museum Geode Finder',description,current:`Current: ${cartridges} cartridge${cartridges===1?'':'s'} on hand`,cost:packCost,label:`Buy ${packSize} cartridges`,disabled:state.credits<packCost,onClick:buyGeodeCartridges});
+    return upgradeCard({icon:'🪨',eyebrow:'Postgame prospecting',title:'Museum Geode Finder',description,current:`Current: ${cartridges} cartridge${cartridges===1?'':'s'} on hand`,cost:packCost,label:`Buy ${packSize} cartridges`,disabled:state.credits<packCost,onClick:()=>buyGeodeCartridges()});
   }
 
   function buyDepth(){
@@ -2146,9 +2163,9 @@ const DURABILITY_LEVELS = [
   }
 
   function resetGame(){
-    if(!window.confirm('Reset all Rockhound Beta 1.3.4 progress?'))return;
+    if(!window.confirm('Reset all Rockhound Beta 1.3.7 progress?'))return;
     localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
-    saveState();renderAll();showToast('Beta 1.3.4 save reset.');
+    saveState();renderAll();showToast('Beta 1.3.7 save reset.');
   }
 
   function showToast(msg){
