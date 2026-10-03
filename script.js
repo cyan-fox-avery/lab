@@ -1,2263 +1,480 @@
-(() => {
-  'use strict';
+/* Tag, You're It — prototype v1
+   Research -> plan (region/depth/bait) -> dive -> tag -> collection book.
+   For sarah. Cute sea puppies with lots of teeth. */
 
-  const SAVE_KEY = 'rockhound-lab-1.3';
-  const GRID_SIZE = 10;
+"use strict";
 
-  const MATERIALS = {
-    quartz: {
-      name:'Quartz', subtitle:'Silicon dioxide · SiO₂', family:'mineral', wing:'minerals', iconClass:'gem quartz',
-      signature:{id:'silicon-dioxide',label:'Silicon dioxide',formula:'SiO₂'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:4,tumbled:7,cut:12},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'},
-      facts:{
-        raw:'Quartz commonly forms six-sided crystals and is one of Earth’s most abundant minerals.',
-        tumbled:'Tumbling rounds rough edges through repeated abrasion with grit and water.',
-        cut:'Clear quartz can be faceted even though it is much softer than diamond.'
-      },
-      mastery:{fact:'Quartz is piezoelectric: squeezing or vibrating it can create an electrical charge, which is why quartz is useful in clocks, watches, and electronics.'}
-    },
-    amethyst: {
-      name:'Amethyst', subtitle:'Purple quartz · SiO₂', family:'mineral', wing:'minerals', iconClass:'gem amethyst',
-      signature:{id:'silicon-dioxide',label:'Silicon dioxide',formula:'SiO₂'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:8,tumbled:14,cut:24},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'},
-      facts:{
-        raw:'Amethyst is a purple variety of quartz. Its colour is linked to trace iron and natural irradiation.',
-        tumbled:'Polishing can make amethyst’s colour zoning and internal patterns easier to see.',
-        cut:'Amethyst is commonly faceted to emphasize colour and brilliance.'
-      },
-      mastery:{fact:'Heating can change amethyst’s colour. Some commercial citrine is produced by carefully heat-treating amethyst.'}
-    },
-    garnet: {
-      name:'Garnet', subtitle:'A family of silicate minerals', family:'mineral', wing:'minerals', iconClass:'gem garnet',
-      signature:{id:'garnet-silicate',label:'Silicate-group chemistry',formula:'variable'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:14,tumbled:26,cut:46},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
-      facts:{
-        raw:'Garnet is not one single mineral but a group of related minerals with similar crystal structures.',
-        tumbled:'Garnets occur in several colours; deep red is familiar, but green, orange, and other varieties exist.',
-        cut:'Gem-quality garnet can be faceted, while more opaque material is often polished instead.'
-      },
-      mastery:{fact:'Garnet is useful outside jewellery too. Its hardness makes crushed garnet a practical industrial abrasive, including in some waterjet-cutting systems.'}
-    },
-    topaz: {
-      name:'Topaz', subtitle:'Aluminium fluorosilicate', family:'mineral', wing:'minerals', iconClass:'gem topaz',
-      signature:{id:'topaz-chemistry',label:'Aluminium fluorosilicate',formula:'Al₂SiO₄(F,OH)₂'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:18,tumbled:34,cut:60},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
-      facts:{
-        raw:'Topaz can occur in several colours. Natural crystals are often colourless, pale, or lightly coloured.',
-        tumbled:'Topaz is hard but has perfect cleavage, so careless blows can split a crystal along flat planes.',
-        cut:'Cutters orient topaz carefully because its cleavage affects how safely a stone can be shaped.'
-      },
-      mastery:{fact:'Much of the bright blue topaz sold in jewellery starts as pale or colourless topaz and is treated with irradiation and heat to create stable blue colour.'}
-    },
-    pyrite: {
-      name:'Pyrite', subtitle:'Iron sulfide · FeS₂', family:'mineral', wing:'minerals', iconClass:'gem pyrite',
-      signature:{id:'iron-sulfide',label:'Iron sulfide',formula:'FeS₂'},
-      stages:['raw'], stageLabels:{raw:'Natural specimen'}, prices:{raw:11}, process:{},
-      facts:{raw:'Pyrite is an iron sulfide mineral famous for its metallic lustre and nickname: fool’s gold.'},
-      mastery:{fact:'Pyrite commonly forms cubes, pyritohedra, and other sharply geometric crystals. Its metallic shine can be spectacular even when no gold is present.'}
-    },
-    citrine: {
-      name:'Citrine', subtitle:'Yellow to orange quartz · SiO₂', family:'mineral', wing:'minerals', iconClass:'gem citrine',
-      signature:{id:'silicon-dioxide',label:'Silicon dioxide',formula:'SiO₂'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:20,tumbled:36,cut:64},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
-      facts:{
-        raw:'Citrine is a yellow to orange variety of quartz. Natural citrine is much less common than amethyst.',
-        tumbled:'Polishing reveals citrine’s warm colour while keeping the quartz hardness that makes it practical for jewellery.',
-        cut:'Faceting can make transparent citrine bright and lively, especially in larger stones.'
-      },
-      mastery:{fact:'Citrine, amethyst, and colourless quartz are all the same mineral species: quartz. Their different colours come from impurities, defects, and treatment histories.'}
-    },
-    calcite: {
-      name:'Calcite', subtitle:'Calcium carbonate · CaCO₃', family:'mineral', wing:'minerals', iconClass:'gem calcite',
-      signature:{id:'calcium-carbonate',label:'Calcium carbonate',formula:'CaCO₃'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:10,tumbled:18,cut:30},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
-      facts:{
-        raw:'Calcite is a major mineral in limestone and marble and is one of the most common carbonate minerals.',
-        tumbled:'Calcite is quite soft, so polished pieces can scratch more easily than quartz.',
-        cut:'Transparent calcite can be cut, but its perfect cleavage makes it much trickier to facet than tougher gemstones.'
-      },
-      mastery:{fact:'Some clear calcite shows strong double refraction: viewed through the crystal, a single line can appear doubled.'}
-    },
-    fluorite: {
-      name:'Fluorite', subtitle:'Calcium fluoride · CaF₂', family:'mineral', wing:'minerals', iconClass:'gem fluorite',
-      signature:{id:'calcium-fluoride',label:'Calcium fluoride',formula:'CaF₂'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:16,tumbled:30,cut:54},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:1,
-      facts:{
-        raw:'Fluorite often forms cubic crystals and occurs in a remarkable range of colours.',
-        tumbled:'Fluorite can take a beautiful polish, but it is softer than quartz and needs gentler handling.',
-        cut:'Gem fluorite can be faceted, though its softness and cleavage make it better suited to careful use than everyday rings.'
-      },
-      mastery:{fact:'The word fluorescence comes from fluorite. Some specimens glow vividly under ultraviolet light, although not every fluorite specimen fluoresces.'}
-    },
-    aquamarine: {
-      name:'Aquamarine', subtitle:'Blue-green beryl · Be₃Al₂Si₆O₁₈', family:'mineral', wing:'minerals', iconClass:'gem aquamarine',
-      signature:{id:'beryl',label:'Beryllium aluminium silicate',formula:'Be₃Al₂Si₆O₁₈'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:28,tumbled:52,cut:94},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:2,
-      facts:{
-        raw:'Aquamarine is the blue to blue-green variety of beryl, the same mineral family that includes emerald.',
-        tumbled:'Aquamarine is hard enough for durable jewellery, though inclusions and fractures still affect how a piece should be handled.',
-        cut:'Aquamarine is often cut to emphasize transparency and cool blue colour rather than maximum rainbow fire.'
-      },
-      mastery:{fact:'Aquamarine and emerald are both beryl. Small amounts of different trace elements are responsible for their very different colours.'}
-    },
-    sapphire: {
-      name:'Sapphire', subtitle:'Corundum · Al₂O₃', family:'mineral', wing:'minerals', iconClass:'gem sapphire',
-      signature:{id:'corundum',label:'Aluminium oxide',formula:'Al₂O₃'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:38,tumbled:72,cut:135},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:2,
-      facts:{
-        raw:'Sapphire is gem-quality corundum. Blue is famous, but sapphires can occur in many colours.',
-        tumbled:'Corundum is very hard, ranking 9 on the Mohs scale, second only to diamond among common reference minerals.',
-        cut:'Cut orientation matters because sapphire colour can look different along different crystal directions.'
-      },
-      mastery:{fact:'Ruby and sapphire are the same mineral species: corundum. Red gem corundum is called ruby; most other gem colours are called sapphire.'}
-    },
+/* ---------- SVG art: simplified, real proportions, few colours ---------- */
 
-    roseQuartz: {
-      name:'Rose Quartz', subtitle:'Pink quartz · SiO₂', family:'mineral', wing:'minerals', iconClass:'gem rose-quartz',
-      signature:{id:'silicon-dioxide',label:'Silicon dioxide',formula:'SiO₂'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:22,tumbled:40,cut:72},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:2,
-      facts:{
-        raw:'Rose quartz is a pink variety of quartz. Its colour is linked to microscopic inclusions and structural features rather than one simple impurity.',
-        tumbled:'Rose quartz is commonly polished into smooth stones and carvings because much of it is translucent rather than fully transparent.',
-        cut:'Transparent rose quartz is uncommon, but suitable material can be faceted into soft pink gems.'
-      },
-      mastery:{fact:'Quartz, amethyst, citrine, and rose quartz all share the same basic chemistry: SiO₂. Their different colours come from very different microscopic causes.'}
-    },
-    malachite: {
-      name:'Malachite', subtitle:'Copper carbonate hydroxide', family:'mineral', wing:'minerals', iconClass:'gem malachite',
-      signature:{id:'copper-carbonate',label:'Copper carbonate hydroxide',formula:'Cu₂CO₃(OH)₂'},
-      stages:['raw','tumbled','polished'], stageLabels:{raw:'Raw',tumbled:'Tumbled',polished:'Polished'}, prices:{raw:24,tumbled:44,polished:78},
-      process:{raw:'tumbled',tumbled:'polished'}, processLabels:{raw:'Tumble 1',tumbled:'Polish 1'}, workshopRequired:2,
-      facts:{
-        raw:'Malachite is a vivid green copper mineral that commonly forms in the weathered zones of copper deposits.',
-        tumbled:'Its banding can become especially striking when malachite is polished into rounded stones.',
-        polished:'Malachite is relatively soft, so it is more often polished or carved than faceted like a hard transparent gemstone.'
-      },
-      mastery:{fact:'Malachite has been used as a pigment as well as an ornamental stone. Finely ground malachite once supplied a brilliant green colour for paint.'}
-    },
-    ruby: {
-      name:'Ruby', subtitle:'Red corundum · Al₂O₃', family:'mineral', wing:'minerals', iconClass:'gem ruby',
-      signature:{id:'corundum',label:'Aluminium oxide',formula:'Al₂O₃'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:70,tumbled:130,cut:250},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:3,
-      facts:{
-        raw:'Ruby is red gem-quality corundum. Chromium is the main element responsible for its red colour.',
-        tumbled:'Corundum is extremely hard, so ruby takes a durable polish and resists scratching better than most gemstones.',
-        cut:'Fine ruby is cut to balance colour, brightness, and weight, especially because richly coloured material can be valuable even in small sizes.'
-      },
-      mastery:{fact:'Ruby and sapphire are the same mineral species: corundum. The name ruby is reserved for red gem corundum; other gem colours are generally called sapphire.'}
-    },
-    emerald: {
-      name:'Emerald', subtitle:'Green beryl · Be₃Al₂Si₆O₁₈', family:'mineral', wing:'minerals', iconClass:'gem emerald',
-      signature:{id:'beryl',label:'Beryllium aluminium silicate',formula:'Be₃Al₂Si₆O₁₈'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:80,tumbled:145,cut:280},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:3,
-      facts:{
-        raw:'Emerald is the green variety of beryl. Chromium and sometimes vanadium are responsible for its colour.',
-        tumbled:'Emeralds often contain visible inclusions and fractures, so even polished material must be handled with more care than its hardness alone suggests.',
-        cut:'The classic emerald cut was developed in part to protect vulnerable corners while showing off colour and clarity.'
-      },
-      mastery:{fact:'Emerald and aquamarine are both beryl. Their dramatically different colours come from different trace elements inside the same crystal structure.'}
-    },
+const ART = {
+  thresher: `
+  <svg viewBox="0 0 220 110" role="img" aria-label="Thresher shark">
+    <polygon points="150,50 210,6 172,56" fill="#5d7f9e"/>
+    <polygon points="152,62 176,92 160,62" fill="#5d7f9e"/>
+    <ellipse cx="96" cy="56" rx="60" ry="17" fill="#6f93b8"/>
+    <ellipse cx="96" cy="63" rx="52" ry="10" fill="#dfe9f2" opacity="0.85"/>
+    <polygon points="38,56 56,47 56,65" fill="#6f93b8"/>
+    <polygon points="96,40 108,20 118,40" fill="#5d7f9e"/>
+    <polygon points="82,70 70,90 94,71" fill="#5d7f9e"/>
+    <circle cx="54" cy="52" r="3.6" fill="#1c2733"/>
+    <circle cx="55.2" cy="50.8" r="1.1" fill="#ffffff"/>
+    <g stroke="#4a6a86" stroke-width="1.6" stroke-linecap="round">
+      <line x1="72" y1="48" x2="70" y2="62"/>
+      <line x1="78" y1="47" x2="76" y2="63"/>
+      <line x1="84" y1="47" x2="82" y2="63"/>
+    </g>
+  </svg>`,
+  whale: `
+  <svg viewBox="0 0 220 110" role="img" aria-label="Whale shark">
+    <polygon points="168,48 208,22 206,88" fill="#54687a"/>
+    <ellipse cx="100" cy="55" rx="72" ry="25" fill="#5f7484"/>
+    <ellipse cx="100" cy="66" rx="62" ry="14" fill="#cfd9e2" opacity="0.7"/>
+    <polygon points="104,31 118,12 128,31" fill="#54687a"/>
+    <polygon points="84,76 70,100 102,78" fill="#54687a"/>
+    <circle cx="44" cy="50" r="3.2" fill="#1c2733"/>
+    <path d="M28,62 Q40,70 54,68" stroke="#3c4c5c" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <g fill="#ffffff" opacity="0.9">
+      <circle cx="80" cy="44" r="2.6"/><circle cx="98" cy="40" r="2.6"/><circle cx="116" cy="43" r="2.6"/>
+      <circle cx="134" cy="47" r="2.6"/><circle cx="70" cy="54" r="2.4"/><circle cx="90" cy="54" r="2.4"/>
+      <circle cx="110" cy="56" r="2.4"/><circle cx="130" cy="58" r="2.4"/><circle cx="148" cy="56" r="2.2"/>
+      <circle cx="82" cy="64" r="2.2"/><circle cx="104" cy="66" r="2.2"/><circle cx="126" cy="66" r="2.2"/>
+    </g>
+  </svg>`,
+  nurse: `
+  <svg viewBox="0 0 220 110" role="img" aria-label="Nurse shark">
+    <polygon points="160,54 200,36 198,84" fill="#7a6242"/>
+    <ellipse cx="100" cy="60" rx="64" ry="19" fill="#8a6f4d"/>
+    <ellipse cx="100" cy="68" rx="56" ry="11" fill="#d8c6a6" opacity="0.8"/>
+    <polygon points="112,42 122,26 130,42" fill="#7a6242"/>
+    <polygon points="142,43 150,30 156,43" fill="#7a6242"/>
+    <polygon points="88,76 78,96 100,77" fill="#7a6242"/>
+    <circle cx="52" cy="55" r="3.2" fill="#1c2733"/>
+    <g stroke="#5e4a30" stroke-width="2" stroke-linecap="round">
+      <line x1="40" y1="64" x2="33" y2="71"/>
+      <line x1="40" y1="67" x2="33" y2="74"/>
+    </g>
+    <g stroke="#6e5739" stroke-width="1.6" stroke-linecap="round">
+      <line x1="72" y1="52" x2="70" y2="66"/>
+      <line x1="78" y1="51" x2="76" y2="67"/>
+    </g>
+  </svg>`,
+  goblin: `
+  <svg viewBox="0 0 220 110" role="img" aria-label="Goblin shark">
+    <polygon points="158,50 198,28 196,82" fill="#c08484"/>
+    <ellipse cx="106" cy="55" rx="56" ry="15" fill="#d99a9a"/>
+    <ellipse cx="106" cy="61" rx="48" ry="9" fill="#f2d9d9" opacity="0.8"/>
+    <polygon points="52,55 10,46 10,62" fill="#d99a9a"/>
+    <polygon points="106,41 116,28 122,41" fill="#c08484"/>
+    <polygon points="92,68 82,86 102,69" fill="#c08484"/>
+    <circle cx="48" cy="50" r="3.2" fill="#1c2733"/>
+    <path d="M30,60 Q44,66 56,64" stroke="#a86a6a" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <g stroke="#a86a6a" stroke-width="1.4" stroke-linecap="round">
+      <line x1="76" y1="48" x2="74" y2="60"/>
+      <line x1="82" y1="47" x2="80" y2="61"/>
+    </g>
+  </svg>`
+};
 
-    hematite: {
-      name:'Hematite', subtitle:'Iron ore → Iron', family:'ore', wing:'ores', iconClass:'ore hematite', metalDetectable:true,
-      signature:{id:'iron-oxide',label:'Iron oxide',formula:'Fe₂O₃'},
-      stages:['ore','refined'], stageLabels:{ore:'Hematite ore',refined:'Iron'}, prices:{ore:6,refined:12},
-      process:{ore:'refined'}, processLabels:{ore:'Refine to iron'},
-      facts:{
-        ore:'Hematite is iron oxide and one of the world’s most important ores of iron.',
-        refined:'Iron extracted from ore became one of the most important metals in tools, structures, and machines.'
-      },
-      mastery:{fact:'Hematite can look metallic grey, earthy red, or almost black, but its powdered streak is characteristically reddish brown.'}
-    },
-    chalcopyrite: {
-      name:'Chalcopyrite', subtitle:'Copper ore → Copper', family:'ore', wing:'ores', iconClass:'ore chalcopyrite', metalDetectable:true,
-      signature:{id:'copper-iron-sulfide',label:'Copper iron sulfide',formula:'CuFeS₂'},
-      stages:['ore','refined'], stageLabels:{ore:'Chalcopyrite ore',refined:'Copper'}, prices:{ore:7,refined:15},
-      process:{ore:'refined'}, processLabels:{ore:'Refine to copper'},
-      facts:{
-        ore:'Chalcopyrite is a copper iron sulfide and one of the most widespread copper-bearing minerals.',
-        refined:'Copper is valued for conductivity, corrosion resistance, and its ability to be worked into useful shapes.'
-      },
-      mastery:{fact:'Fresh chalcopyrite is brassy yellow, but weathering can produce colourful iridescent tarnish that is sometimes mistaken for bornite.'}
-    },
-    cassiterite: {
-      name:'Cassiterite', subtitle:'Tin ore → Tin', family:'ore', wing:'ores', iconClass:'ore cassiterite', metalDetectable:true,
-      signature:{id:'tin-oxide',label:'Tin oxide',formula:'SnO₂'},
-      stages:['ore','refined'], stageLabels:{ore:'Cassiterite ore',refined:'Tin'}, prices:{ore:22,refined:50},
-      process:{ore:'refined'}, processLabels:{ore:'Refine to tin'}, workshopRequired:1,
-      facts:{
-        ore:'Cassiterite is tin oxide and the principal ore from which most tin is obtained.',
-        refined:'Tin is a soft, corrosion-resistant metal used in solder, coatings, and alloys such as bronze.'
-      },
-      mastery:{fact:'Tin helped transform metallurgy because copper alloyed with tin produces bronze, a material that played a major role in many ancient technologies.'}
-    },
+/* ---------- Data ---------- */
 
-    galena: {
-      name:'Galena', subtitle:'Lead ore → Lead', family:'ore', wing:'ores', iconClass:'ore galena', metalDetectable:true,
-      signature:{id:'lead-sulfide',label:'Lead sulfide',formula:'PbS'},
-      stages:['ore','refined'], stageLabels:{ore:'Galena ore',refined:'Lead'}, prices:{ore:32,refined:70},
-      process:{ore:'refined'}, processLabels:{ore:'Refine to lead'}, workshopRequired:2,
-      facts:{
-        ore:'Galena is lead sulfide and the most important ore of lead. It often forms bright metallic cubic crystals.',
-        refined:'Lead is dense, soft, and easy to shape, but it is also toxic and must be handled carefully in real life.'
-      },
-      mastery:{fact:'Galena can contain small amounts of silver, so some lead deposits have also been important sources of silver.'}
-    },
-    sphalerite: {
-      name:'Sphalerite', subtitle:'Zinc ore → Zinc', family:'ore', wing:'ores', iconClass:'ore sphalerite', metalDetectable:true,
-      signature:{id:'zinc-sulfide',label:'Zinc sulfide',formula:'ZnS'},
-      stages:['ore','refined'], stageLabels:{ore:'Sphalerite ore',refined:'Zinc'}, prices:{ore:36,refined:80},
-      process:{ore:'refined'}, processLabels:{ore:'Refine to zinc'}, workshopRequired:2,
-      facts:{
-        ore:'Sphalerite is zinc sulfide and the most important ore of zinc. Its colour ranges from pale yellow-brown to nearly black.',
-        refined:'Zinc is widely used to protect steel from corrosion through galvanizing and is also an ingredient in brass.'
-      },
-      mastery:{fact:'Some sphalerite can glow under ultraviolet light, and certain specimens show especially bright fluorescence.'}
-    },
+const REGIONS = {
+  "caribbean":    { name: "Caribbean Sea",        note: "A green sea turtle glides past the reef." },
+  "baja":         { name: "Baja California",      note: "A school of sardines shimmers below." },
+  "philippines":  { name: "Philippines",          note: "A manta ray loops lazily overhead." },
+  "maldives":     { name: "Maldives",             note: "Dolphins click and whistle in the distance." },
+  "japan":        { name: "Sagami Bay, Japan",    note: "A lanternfish flickers in the dark." },
+  "mediterranean":{ name: "Mediterranean Sea",    note: "A pod of dolphins crosses the bow." },
+  "open-atlantic":{ name: "Open Atlantic",        note: "Shearwaters wheel above the swells." }
+};
 
-    scheelite: {
-      name:'Scheelite', subtitle:'Tungsten ore → Tungsten', family:'ore', wing:'ores', iconClass:'ore scheelite',
-      signature:{id:'calcium-tungstate',label:'Calcium tungstate',formula:'CaWO₄'},
-      stages:['ore','refined'], stageLabels:{ore:'Scheelite ore',refined:'Tungsten'}, prices:{ore:58,refined:128},
-      process:{ore:'refined'}, processLabels:{ore:'Refine to tungsten'}, workshopRequired:4,
-      facts:{
-        ore:'Scheelite is calcium tungstate and an important ore of tungsten. Many specimens fluoresce blue-white under shortwave ultraviolet light.',
-        refined:'Tungsten has the highest melting point of any pure metal and is valued where heat resistance and hardness matter.'
-      },
-      mastery:{fact:'Scheelite fluorescence comes from its tungstate groups. Small chemical substitutions can shift the colour and brightness of the glow.'}
-    },
-    willemite: {
-      name:'Willemite', subtitle:'Zinc silicate · Zn₂SiO₄', family:'mineral', wing:'minerals', iconClass:'gem willemite',
-      signature:{id:'zinc-silicate',label:'Zinc silicate',formula:'Zn₂SiO₄'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:54,tumbled:100,cut:188},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:4,
-      facts:{
-        raw:'Willemite is a zinc silicate mineral. Manganese-bearing specimens can produce an intensely bright green fluorescence under ultraviolet light.',
-        tumbled:'Polishing can reveal willemite’s glassy lustre while preserving the chemistry responsible for fluorescence.',
-        cut:'Transparent willemite is uncommon, but suitable crystals can be faceted into distinctive collector stones.'
-      },
-      mastery:{fact:'Willemite became famous among fluorescent-mineral collectors because some specimens glow a striking neon green under shortwave UV.'}
-    },
-    hackmanite: {
-      name:'Hackmanite', subtitle:'Tenebrescent sodalite variety', family:'mineral', wing:'minerals', iconClass:'gem hackmanite',
-      signature:{id:'sodalite-group',label:'Sodalite-group aluminosilicate',formula:'variable'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:62,tumbled:116,cut:220},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:4,
-      facts:{
-        raw:'Hackmanite is a sulfur-bearing variety of sodalite famous for tenebrescence: ultraviolet light can temporarily deepen or change its colour.',
-        tumbled:'A polished surface makes hackmanite’s reversible colour change easier to see, though the strength varies from specimen to specimen.',
-        cut:'Transparent hackmanite can be faceted, but collectors often prize its light-sensitive colour behaviour as much as its appearance.'
-      },
-      mastery:{fact:'Tenebrescence is reversible photochromism. A hackmanite specimen can change colour after UV exposure and gradually fade back in ordinary light.'}
-    },
-    apatite: {
-      name:'Apatite', subtitle:'Calcium phosphate mineral group', family:'mineral', wing:'minerals', iconClass:'gem apatite',
-      signature:{id:'apatite-group',label:'Calcium phosphate',formula:'Ca₅(PO₄)₃(F,Cl,OH)'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:48,tumbled:88,cut:168},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:4,
-      facts:{
-        raw:'Apatite is a group of phosphate minerals that can occur in many colours. It defines hardness 5 on the Mohs scale.',
-        tumbled:'Apatite can take a bright polish, but its moderate hardness means polished pieces can scratch more easily than quartz.',
-        cut:'Transparent apatite can be faceted into vivid gems, though it is usually better suited to careful wear than everyday rings.'
-      },
-      mastery:{fact:'The name apatite comes from a Greek word meaning “to deceive,” because its crystals can resemble several other minerals.'}
-    },
-    opal: {
-      name:'Opal', subtitle:'Hydrated silica mineraloid', family:'mineral', wing:'minerals', iconClass:'gem opal',
-      signature:{id:'hydrated-silica',label:'Hydrated amorphous silica',formula:'SiO₂·nH₂O'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:68,tumbled:126,cut:242},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:4,
-      facts:{
-        raw:'Opal is a mineraloid rather than a true mineral because it lacks a regular crystal structure. It contains variable amounts of water.',
-        tumbled:'Some opal shows play-of-colour caused by light interacting with an orderly arrangement of microscopic silica spheres.',
-        cut:'Opal is usually cut as a cabochon rather than faceted so its colour effects can be viewed across a broad curved surface.'
-      },
-      mastery:{fact:'Not every opal shows play-of-colour. Common opal can still be beautiful even when it lacks the shifting spectral flashes associated with precious opal.'}
-    },
+const DEPTHS = {
+  "shallow":  { name: "Shallow reef (0–30 m)",   scene: "depth-shallow" },
+  "surface":  { name: "Open surface (0–50 m)",   scene: "depth-surface" },
+  "midwater": { name: "Mid-water (100–300 m)",   scene: "depth-midwater" },
+  "deep":     { name: "Deep slope (300–1000 m)", scene: "depth-deep" }
+};
 
+const BAITS = {
+  "crustaceans":   "Crabs & lobster",
+  "squid":         "Squid",
+  "schooling-fish":"Schooling fish (mackerel)",
+  "plankton":      "Plankton bloom — no bait, follow the bloom"
+};
 
-    diamond: {
-      name:'Diamond', subtitle:'Carbon · C', family:'mineral', wing:'minerals', iconClass:'gem diamond',
-      signature:{id:'native-carbon',label:'Native carbon',formula:'C'},
-      stages:['rough','cleaved','cut'], stageLabels:{rough:'Rough',cleaved:'Cleaved',cut:'Cut'}, prices:{rough:125,cleaved:235,cut:440},
-      process:{rough:'cleaved',cleaved:'cut'}, processLabels:{rough:'Cleave 1',cleaved:'Cut 1'}, workshopRequired:5,
-      facts:{
-        rough:'Diamond is crystalline carbon formed under very high pressures deep in Earth. It reaches the surface only through unusual geologic transport.',
-        cleaved:'Diamond is extremely hard, but hardness is not the same as toughness. Its perfect cleavage means a well-placed blow can split it.',
-        cut:'A diamond\'s cut controls how light travels through the stone. Brilliant faceting is an optical design, not a natural crystal shape.'
-      },
-      mastery:{fact:'Diamonds form far deeper than an epithermal system. In this fictional composite mine, ancient volcanic material has carried mantle-derived crystals upward into rocks later overprinted by hydrothermal activity.'}
-    },
-    obsidian: {
-      name:'Obsidian', subtitle:'Volcanic glass', family:'mineral', wing:'minerals', iconClass:'gem obsidian',
-      signature:{id:'volcanic-glass',label:'Silica-rich volcanic glass',formula:'variable'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:44,tumbled:82,cut:150},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:4,
-      facts:{
-        raw:'Obsidian is volcanic glass, not a true mineral. It forms when silica-rich lava cools too quickly for an ordered crystal structure to grow.',
-        tumbled:'Fresh obsidian breaks with conchoidal fracture, producing smooth curved surfaces and exceptionally sharp edges.',
-        cut:'Obsidian is usually polished or shaped as a decorative stone rather than faceted for brilliance.'
-      },
-      mastery:{fact:'Because obsidian lacks a regular crystal lattice, geologists classify it as a natural glass rather than a mineral species.'}
-    },
-    olivine: {
-      name:'Olivine / Peridot', subtitle:'Magnesium-iron silicate', family:'mineral', wing:'minerals', iconClass:'gem olivine',
-      signature:{id:'olivine-group',label:'Magnesium-iron silicate',formula:'(Mg,Fe)₂SiO₄'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw Olivine',tumbled:'Tumbled Olivine',cut:'Cut Peridot'}, prices:{raw:72,tumbled:132,cut:248},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut as peridot'}, workshopRequired:5,
-      facts:{
-        raw:'Olivine is a group of green magnesium-iron silicate minerals common in Earth\'s mantle and in many mafic volcanic rocks.',
-        tumbled:'Olivine-rich rocks can weather quickly at Earth\'s surface, but fresh grains may keep a vivid yellow-green colour.',
-        cut:'Gem-quality olivine is called peridot. The gemstone and the common rock-forming mineral are the same mineral family.'
-      },
-      mastery:{fact:'Peridot is one of the few gemstones whose characteristic colour comes from an element essential to its chemistry: iron, rather than a trace impurity.'}
-    },
-    nativeSulfur: {
-      name:'Native Sulfur', subtitle:'Elemental sulfur · S', family:'mineral', wing:'minerals', iconClass:'gem native-sulfur',
-      signature:{id:'native-sulfur',label:'Elemental sulfur',formula:'S'},
-      stages:['raw'], stageLabels:{raw:'Natural specimen'}, prices:{raw:76}, process:{},
-      facts:{raw:'Native sulfur can form around volcanic fumaroles, hot springs, and other settings where sulfur-bearing gases or fluids react near the surface.'},
-      mastery:{fact:'Sulfur is an element, not a silicate or metal ore. Its vivid yellow colour can occur naturally without pigment or polishing.'}
-    },
-    rhodochrosite: {
-      name:'Rhodochrosite', subtitle:'Manganese carbonate · MnCO₃', family:'mineral', wing:'minerals', iconClass:'gem rhodochrosite',
-      signature:{id:'manganese-carbonate',label:'Manganese carbonate',formula:'MnCO₃'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:82,tumbled:150,cut:286},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:5,
-      facts:{
-        raw:'Rhodochrosite is a manganese carbonate mineral known for pink to red colour and, in some deposits, striking bands.',
-        tumbled:'Banded rhodochrosite can show layers produced as mineral-rich fluids changed through time.',
-        cut:'Transparent crystals can be faceted, but much rhodochrosite is cut as cabochons or polished slabs to show its colour patterns.'
-      },
-      mastery:{fact:'Rhodochrosite commonly occurs in hydrothermal veins alongside sulfide minerals, making it an excellent fit for epithermal-style mineralization.'}
-    },
-    adularia: {
-      name:'Adularia', subtitle:'Low-temperature potassium feldspar', family:'mineral', wing:'minerals', iconClass:'gem adularia',
-      signature:{id:'potassium-feldspar',label:'Potassium feldspar',formula:'KAlSi₃O₈'},
-      stages:['raw','tumbled','cut'], stageLabels:{raw:'Raw',tumbled:'Tumbled',cut:'Cut'}, prices:{raw:74,tumbled:138,cut:260},
-      process:{raw:'tumbled',tumbled:'cut'}, processLabels:{raw:'Tumble 1',tumbled:'Cut 1'}, workshopRequired:5,
-      facts:{
-        raw:'Adularia is a low-temperature variety and growth habit of potassium feldspar that commonly forms in hydrothermal veins.',
-        tumbled:'Feldspars are among the most abundant mineral groups in Earth\'s crust, but hydrothermal adularia records a very specific fluid environment.',
-        cut:'Some adularia-related feldspar material can show attractive optical effects, although collector crystals are often valued in their natural form.'
-      },
-      mastery:{fact:'Adularia is so characteristic of some low-sulfidation epithermal systems that geologists use it as an important clue to the conditions under which a vein formed.'}
-    },
-    acanthite: {
-      name:'Acanthite', subtitle:'Silver ore → Silver', family:'ore', wing:'ores', iconClass:'ore acanthite', metalDetectable:true,
-      signature:{id:'silver-sulfide',label:'Silver sulfide',formula:'Ag₂S'},
-      stages:['ore','refined'], stageLabels:{ore:'Acanthite ore',refined:'Silver'}, prices:{ore:108,refined:248},
-      process:{ore:'refined'}, processLabels:{ore:'Refine to silver'}, workshopRequired:5,
-      facts:{
-        ore:'Acanthite is silver sulfide and an important silver mineral in many hydrothermal ore deposits.',
-        refined:'Silver is an excellent electrical conductor and is used in electronics, jewellery, mirrors, and many specialized technologies.'
-      },
-      mastery:{fact:'Acanthite is stable at lower temperatures; at higher temperatures the same Ag₂S composition adopts a different crystal structure called argentite.'}
-    },
-    nativeGold: {
-      name:'Native Gold', subtitle:'Elemental gold · Au', family:'ore', wing:'ores', iconClass:'ore native-gold', metalDetectable:true,
-      signature:{id:'native-gold',label:'Elemental gold',formula:'Au'},
-      stages:['found'], stageLabels:{found:'Native gold'}, prices:{found:315}, process:{},
-      facts:{found:'Gold commonly occurs as the native metal rather than as a simple “gold ore.” Hydrothermal fluids can concentrate it in veins and fractures.'},
-      mastery:{fact:'Gold is dense, very malleable, and chemically resistant. Those traits make it useful, but also make solid gold a terrible choice for a working pickaxe.'}
-    },
-    trilobite: {
-      name:'Trilobite', subtitle:'Fossil arthropod', family:'fossil', wing:'fossils', iconClass:'round trilobite', iconText:'≋',
-      signature:{id:'fossil',label:'Fossilized biological material',formula:''},
-      stages:['found'], stageLabels:{found:'Fossil specimen'}, prices:{found:40}, process:{},
-      facts:{found:'Trilobites were marine arthropods that lived for hundreds of millions of years and disappeared in the end-Permian mass extinction.'}
-    },
-    ammonite: {
-      name:'Ammonite', subtitle:'Fossil marine cephalopod', family:'fossil', wing:'fossils', iconClass:'round ammonite', iconText:'◉',
-      signature:{id:'fossil',label:'Fossilized biological material',formula:''},
-      stages:['found'], stageLabels:{found:'Fossil specimen'}, prices:{found:85}, process:{},
-      facts:{found:'Ammonites were shelled marine cephalopods related to modern squid and octopuses. Their rapidly changing forms make many species useful index fossils.'}
-    },
+const SHARKS = [
+  {
+    id: "nurse",
+    name: "Nurse Shark", latin: "Ginglymostoma cirratum", status: "Vulnerable",
+    combo: { region: "caribbean", depth: "shallow", bait: "crustaceans" },
+    sizeRange: [2.0, 3.0],
+    research: "A bottom-dweller of the warm, shallow tropical Atlantic — the Caribbean, Florida, the Bahamas. By day it piles up with others under reef ledges; by night it hunts alone, vacuuming crabs, lobster and squid off the sand with the little barbels on its snout.",
+    hook: "By day they nap in cuddly heaps of up to 40 on the seafloor. Peak sea puppy.",
+    nameIdeas: ["Puddles", "Biscuit", "Sandy", "Nugget"]
+  },
+  {
+    id: "thresher",
+    name: "Thresher Shark", latin: "Alopias vulpinus", status: "Vulnerable",
+    combo: { region: "open-atlantic", depth: "midwater", bait: "schooling-fish" },
+    sizeRange: [3.0, 4.6],
+    research: "Follows warm water through tropical and temperate oceans worldwide, often over the open Atlantic. Spends the day deep below the sunlit layer and rises toward the surface at night. Hunts schooling fish — anchovies, herring, mackerel — stunning them with a whip of its enormous tail, half its body length.",
+    hook: "That tail looks perpetually nervous, but it's actually a sword. Threshers hunt by tail-whipping.",
+    nameIdeas: ["Whip", "Nervous Nigel", "Swoosh", "Comet"]
+  },
+  {
+    id: "whale",
+    name: "Whale Shark", latin: "Rhincodon typus", status: "Endangered",
+    combo: { region: "philippines", depth: "surface", bait: "plankton" },
+    sizeRange: [5.5, 12.0],
+    research: "Roams all tropical and warm-temperate seas — the Philippines, the Maldives, the Yucatan. A filter feeder: it doesn't chase prey, it finds seasonal plankton blooms and swims through them with its enormous mouth open. Each shark's spot pattern is unique, like a fingerprint.",
+    hook: "The biggest fish in the ocean, and it eats some of the smallest food. Gentle polka-dotted bus.",
+    nameIdeas: ["Dot", "Bus", "Domino", "Galaxy"]
+  },
+  {
+    id: "goblin",
+    name: "Goblin Shark", latin: "Mitsukurina owstoni", status: "Least Concern",
+    combo: { region: "japan", depth: "deep", bait: "squid" },
+    sizeRange: [2.5, 4.0],
+    research: "A living fossil from deep continental slopes — most records come from Japan's Sagami Bay. Lives in darkness between 270 and 960 metres, hunting deep-sea fish and squid. Its jaws shoot forward like a slingshot, and it finds prey by sensing electricity.",
+    hook: "The only living member of a 125-million-year-old lineage. Pink, pointy-nosed, and deeply weird.",
+    nameIdeas: ["Nosey", "Fossil", "Blush", "Slingshot"]
+  }
+];
 
-    crinoidStem: {
-      name:'Crinoid Stem', subtitle:'Fossil marine animal fragment', family:'fossil', wing:'fossils', iconClass:'round crinoid-stem', iconText:'✣',
-      signature:{id:'fossil',label:'Fossilized biological material',formula:''},
-      stages:['found'], stageLabels:{found:'Fossil specimen'}, prices:{found:70}, process:{},
-      facts:{found:'Crinoids are marine animals related to starfish. Their stems often break into small disk-shaped pieces that fossilize readily.'}
-    },
-    brachiopod: {
-      name:'Brachiopod', subtitle:'Fossil marine animal', family:'fossil', wing:'fossils', iconClass:'round brachiopod', iconText:'◒',
-      signature:{id:'fossil',label:'Fossilized biological material',formula:''},
-      stages:['found'], stageLabels:{found:'Fossil specimen'}, prices:{found:140}, process:{},
-      facts:{found:'Brachiopods are marine animals with two shells. They can resemble clams, but their anatomy and evolutionary history are very different.'}
-    },
-    belemnite: {
-      name:'Belemnite', subtitle:'Fossil squid-like cephalopod', family:'fossil', wing:'fossils', iconClass:'round belemnite', iconText:'▸',
-      signature:{id:'fossil',label:'Fossilized biological material',formula:''},
-      stages:['found'], stageLabels:{found:'Fossil specimen'}, prices:{found:210}, process:{},
-      facts:{found:'Belemnites were extinct squid-like cephalopods. Their hard internal guards often fossilize as distinctive bullet-shaped objects.'}
-    },
+/* Cousin texts: genuine conversation, never a "hint" UI */
+const COUSIN_CHATS = [
+  { them: "did you see any sharks today?? tell me EVERYTHING", me: "Working on it! The ocean is big, the sharks are sneaky." },
+  { them: "i drew a thresher shark at school today. the tail took up the WHOLE page lol", me: "As it should. That tail is half the shark." },
+  { them: "mom says i know more about sharks than my teacher. she's probably right", me: "She's definitely right." },
+  { them: "do whale sharks have belly buttons? asking for science", me: "Asking the important questions. I'll look into it." },
+  { them: "ranking sharks by cuddliness: nurse shark is winning by a lot", me: "Strong ranking. Hard to argue with a shark that naps in piles." },
+  { them: "if i was a shark i would be a goblin shark because nobody would bother me down there", me: "Honestly? Valid strategy." }
+];
 
-    fernImpression: {
-      name:'Fern Impression', subtitle:'Fossil plant impression', family:'fossil', wing:'fossils', iconClass:'round fern-impression', iconText:'❧',
-      signature:{id:'fossil',label:'Fossilized biological material',formula:''},
-      stages:['found'], stageLabels:{found:'Fossil specimen'}, prices:{found:96}, process:{},
-      facts:{found:'Plant impressions can preserve the shape and venation of leaves even when little original plant material remains.'}
-    },
-    surveyMarker: {
-      name:'Worn Survey Marker', subtitle:'Historical mine survey marker', family:'artifact', wing:'history', iconClass:'tag survey-marker', iconText:'△', metalDetectable:true,
-      signature:{id:'artifact',label:'Historical object',formula:''},
-      stages:['found'], stageLabels:{found:'Historical artifact'}, prices:{found:120}, process:{},
-      facts:{found:'Survey markers help record measured positions underground so workings can be mapped accurately and tied back to a larger mine plan.'}
-    },
-    drillBit: {
-      name:'Old Drill Bit', subtitle:'Historical drilling equipment', family:'artifact', wing:'history', iconClass:'tag drill-bit', iconText:'⇣', metalDetectable:true,
-      signature:{id:'artifact',label:'Historical object',formula:''},
-      stages:['found'], stageLabels:{found:'Historical artifact'}, prices:{found:180}, process:{},
-      facts:{found:'Drilling tools transformed hard-rock mining by making it faster to bore holes for blasting and excavation.'}
-    },
+const COUSIN_NUDGES = {
+  nurse:   "nurse sharks sleep on the BOTTOM in the SHALLOW parts!! like where you could stand up. and they eat crabs off the sand!! try the caribbean reefs",
+  thresher:"threshers go DEEP during the day!! below where the sunlight reaches. and they hunt schools of little fish. deeper water + fish bait??",
+  whale:   "whale sharks don't eat bait!! they eat PLANKTON!! you have to find the bloom. they're usually right at the surface where the water looks green",
+  goblin:  "goblin sharks live SO deep. deeper than any scuba diver can go. there's a really deep bay in japan where scientists find them!!"
+};
 
-    railSpike: {
-      name:'Old Rail Spike', subtitle:'Historical mine-haulage hardware', family:'artifact', wing:'history', iconClass:'tag rail-spike', iconText:'⌟', metalDetectable:true,
-      signature:{id:'artifact',label:'Historical object',formula:''},
-      stages:['found'], stageLabels:{found:'Historical artifact'}, prices:{found:235}, process:{},
-      facts:{found:'Underground rail systems carried ore, waste rock, people, and supplies. Hardware such as spikes and fasteners helped keep those haulage tracks in place.'}
-    },
+/* ---------- State ---------- */
 
-    surveyCompass: {
-      name:'Brass Survey Compass', subtitle:'Historical underground surveying instrument', family:'artifact', wing:'history', iconClass:'tag survey-compass', iconText:'✥', metalDetectable:true,
-      signature:{id:'artifact',label:'Historical object',formula:''},
-      stages:['found'], stageLabels:{found:'Historical artifact'}, prices:{found:310}, process:{},
-      facts:{found:'Mine surveyors used compasses, levels, chains, and later more precise instruments to map underground workings and keep new excavations tied to known reference points.'}
-    },
-    miningTag: {
-      name:'Mining Tag', subtitle:'Historical mine check', family:'artifact', wing:'history', iconClass:'tag mining-tag', metalDetectable:true, iconText:'#',
-      signature:{id:'artifact',label:'Historical object',formula:''},
-      stages:['found'], stageLabels:{found:'Historical artifact'}, prices:{found:50}, process:{},
-      facts:{found:'Some mines used numbered tags or checks to help track who was underground. Systems varied from one operation to another.'}
-    },
-    miningLamp: {
-      name:'Old Mining Lamp', subtitle:'Historical underground equipment', family:'artifact', wing:'history', iconClass:'tag mining-lamp', metalDetectable:true, iconText:'◒',
-      signature:{id:'artifact',label:'Historical object',formula:''},
-      stages:['found'], stageLabels:{found:'Historical artifact'}, prices:{found:100}, process:{},
-      facts:{found:'Underground lamps changed dramatically over time, from open flames to safety lamps and eventually electric lighting. Safer designs were especially important where flammable gases could accumulate.'}
-    }
-  };
+const store = {
+  load() {
+    try { return JSON.parse(localStorage.getItem("tyi-collection") || "{}"); }
+    catch { return {}; }
+  },
+  save(data) { localStorage.setItem("tyi-collection", JSON.stringify(data)); }
+};
 
-  const SPARKLE_KEYS = new Set(['quartz','amethyst','garnet','topaz','citrine','calcite','fluorite','aquamarine','sapphire','roseQuartz','malachite','ruby','emerald','willemite','hackmanite','apatite','opal','diamond','obsidian','olivine','nativeSulfur','rhodochrosite','adularia']);
-  const UV_CLASSES = {
-    fluorite:'uv-fluorite',
-    calcite:'uv-calcite',
-    ruby:'uv-ruby',
-    sphalerite:'uv-sphalerite',
-    scheelite:'uv-scheelite',
-    willemite:'uv-willemite',
-    hackmanite:'uv-hackmanite',
-    apatite:'uv-apatite'
-  };
+const state = {
+  tagged: store.load(),   // id -> {name, length, sex, location, date}
+  failures: 0,
+  chatIdx: 0,
+  pendingTag: null        // species object awaiting naming
+};
 
+const $ = (id) => document.getElementById(id);
+const sharkById = (id) => SHARKS.find(s => s.id === id);
+const untagged = () => SHARKS.filter(s => !state.tagged[s.id]);
 
-  const UNCRACKED_GEODE_SELL_VALUE = 600;
-  const GEODE_CARTRIDGE_SINGLE_COST = 2500;
-  const GEODE_CARTRIDGE_BULK_COST = 10000;
-  const GEODE_CARTRIDGE_BULK_SIZE = 5;
+/* ---------- Tabs ---------- */
 
-  const GEODE_INTERIORS = [
-    {id:'quartzDruzy',label:'Druzy Quartz Geode',icon:'✧',weight:30,sellValue:800,detail:'A cavity lined with a sparkling crust of tiny quartz crystals.'},
-    {id:'amethyst',label:'Amethyst Geode',icon:'◆',weight:24,sellValue:1200,detail:'Purple quartz crystals grew inward from the walls of the cavity.'},
-    {id:'calcite',label:'Calcite-lined Geode',icon:'◇',weight:18,sellValue:1400,detail:'Later calcite crystals coated part of the cavity after it formed.'},
-    {id:'bandedAgate',label:'Banded Agate Geode',icon:'◎',weight:18,sellValue:1800,detail:'Layer after layer of microcrystalline silica produced concentric bands.'},
-    {id:'chalcedony',label:'Chalcedony Geode',icon:'◉',weight:10,sellValue:2400,detail:'A smooth lining of microcrystalline quartz formed before the cavity fully filled.'}
-  ];
-
-  const EXCEPTIONAL_VARIANTS = {
-    quartz:['Water-clear Quartz Point','Quartz Crystal Cluster','Skeletal Quartz Crystal'],
-    amethyst:['Deep-purple Amethyst Cluster','Chevron Amethyst','Amethyst on Matrix'],
-    garnet:['Sharp Garnet Crystal','Garnet in Matrix'],
-    topaz:['Gemmy Topaz Crystal','Topaz Crystal on Matrix'],
-    pyrite:['Pyrite Cube Cluster','Intergrown Pyrite Crystals'],
-    citrine:['Golden Citrine Crystal','Citrine Crystal Cluster'],
-    calcite:['Dogtooth Calcite Cluster','Optical Calcite Crystal'],
-    fluorite:['Fluorite Cube Cluster','Colour-zoned Fluorite'],
-    aquamarine:['Prismatic Aquamarine Crystal','Aquamarine on Matrix'],
-    sapphire:['Sapphire Crystal in Matrix','Colour-zoned Sapphire'],
-    roseQuartz:['Star-bearing Rose Quartz','Rose Quartz Crystal Mass'],
-    malachite:['Velvety Malachite','Banded Malachite Slice'],
-    ruby:['Ruby in Matrix','Hexagonal Ruby Crystal'],
-    emerald:['Emerald Crystal in Matrix','Prismatic Emerald Crystal'],
-    scheelite:['Sharp Scheelite Crystal','Fluorescent Scheelite Cluster'],
-    willemite:['Fluorescent Willemite Cluster','Willemite on Matrix'],
-    hackmanite:['Strongly Tenebrescent Hackmanite','Hackmanite Crystal Cluster'],
-    apatite:['Prismatic Apatite Crystal','Blue-green Apatite Cluster'],
-    opal:['Fire-rich Opal','Opal Vein Specimen'],
-    diamond:['Well-formed Diamond Crystal','Diamond in Matrix'],
-    obsidian:['Rainbow-sheen Obsidian','Snowflake Obsidian'],
-    olivine:['Gemmy Olivine Cluster','Olivine-rich Volcanic Nodule'],
-    nativeSulfur:['Native Sulfur Crystal Cluster','Sulfur on Volcanic Matrix'],
-    rhodochrosite:['Banded Rhodochrosite','Rhodochrosite Crystal Cluster'],
-    adularia:['Adularia Crystal Cluster','Adularia on Vein Matrix'],
-    acanthite:['Acanthite Crystal Aggregate','Silver-rich Acanthite'],
-    nativeGold:['Dendritic Native Gold','Native Gold in Quartz'],
-    trilobite:['Exceptionally Complete Trilobite'],
-    ammonite:['Exceptionally Complete Ammonite'],
-    crinoidStem:['Articulated Crinoid Stem Section'],
-    brachiopod:['Paired Brachiopod Shells'],
-    belemnite:['Exceptionally Preserved Belemnite Guard'],
-    fernImpression:['Detailed Fern Impression']
-  };
-
-  const WINGS = [
-    {id:'minerals',name:'Mineral Hall'},
-    {id:'ores',name:'Ores & Metals'},
-    {id:'fossils',name:'Fossil Wing'},
-    {id:'history',name:'History Wing'}
-  ];
-
-  const DEPTHS = {
-    1:{
-      name:'Upper Seam',
-      note:'Near-surface workings where common minerals and oxidized ores are easiest to reach. Weathering and groundwater can alter minerals considerably this close to the surface.',
-      materials:{quartz:42,amethyst:22,hematite:20,chalcopyrite:16},
-      sideFinds:[{key:'miningTag',weight:72},{key:'trilobite',weight:28}]
-    },
-    2:{
-      name:'Lower Works',
-      note:'Older, deeper workings cut through several mineral-bearing layers. Changes in pressure, temperature, and host rock create different mineral assemblages.',
-      materials:{quartz:18,amethyst:13,hematite:13,chalcopyrite:13,garnet:15,topaz:12,pyrite:16},
-      sideFinds:[{key:'trilobite',weight:40},{key:'crinoidStem',weight:24},{key:'fernImpression',weight:18},{key:'miningTag',weight:18}]
-    },
-    3:{
-      name:'Deep Gallery',
-      note:'Deeper fractures provided pathways for mineral-rich fluids, leaving crystals and metal-bearing ores behind as conditions changed.',
-      materials:{quartz:8,amethyst:7,hematite:5,chalcopyrite:5,garnet:8,topaz:7,pyrite:6,citrine:12,calcite:10,fluorite:10,aquamarine:7,sapphire:4,cassiterite:5},
-      sideFinds:[{key:'ammonite',weight:36},{key:'crinoidStem',weight:16},{key:'fernImpression',weight:12},{key:'trilobite',weight:10},{key:'surveyMarker',weight:12},{key:'miningLamp',weight:8},{key:'miningTag',weight:6}]
-    },
-    4:{
-      name:'Crystal Veins',
-      note:'Fractures filled by mineral-bearing fluids can produce veins rich in crystals. Different elements and growth conditions give related minerals dramatically different colours.',
-      materials:{quartz:4,amethyst:4,hematite:3,chalcopyrite:3,garnet:5,topaz:5,pyrite:4,citrine:6,calcite:5,fluorite:6,aquamarine:7,sapphire:6,cassiterite:4,roseQuartz:9,malachite:8,ruby:5,emerald:4,galena:6,sphalerite:6},
-      sideFinds:[{key:'brachiopod',weight:33},{key:'ammonite',weight:20},{key:'crinoidStem',weight:10},{key:'drillBit',weight:18},{key:'surveyMarker',weight:11},{key:'miningLamp',weight:8}]
-    },
-    5:{
-      name:'Luminous Zone',
-      note:'Some minerals absorb ultraviolet radiation and release part of that energy as visible light: fluorescence. The effect depends on mineral chemistry and trace impurities.',
-      materials:{quartz:3,amethyst:2,calcite:5,fluorite:6,aquamarine:3,sapphire:3,roseQuartz:3,ruby:3,sphalerite:4,scheelite:11,willemite:10,hackmanite:8,apatite:10,opal:7},
-      sideFinds:[{key:'belemnite',weight:42},{key:'railSpike',weight:28},{key:'brachiopod',weight:10},{key:'drillBit',weight:9},{key:'surveyMarker',weight:6},{key:'miningLamp',weight:5}]
-    },
-    6:{
-      name:'Epithermal Zone',
-      note:'Epithermal deposits form when hot, mineral-rich hydrothermal fluids circulate through shallow volcanic rocks. As those fluids cool, boil, or react with surrounding rock, they can leave spectacular veins of minerals and metal ores.',
-      materials:{calcite:4,fluorite:4,pyrite:4,galena:3,sphalerite:3,scheelite:4,obsidian:10,olivine:9,nativeSulfur:8,rhodochrosite:10,adularia:10,diamond:3,acanthite:7,nativeGold:3},
-      sideFinds:[{key:'surveyCompass',weight:52},{key:'drillBit',weight:18},{key:'railSpike',weight:18},{key:'surveyMarker',weight:12}]
-    }
-  };
-
-const DURABILITY_LEVELS = [
-    {swings:28,cost:60,label:'Basic pick'},
-    {swings:34,cost:140,label:'Reinforced handle'},
-    {swings:40,cost:320,label:'Steel pick'},
-    {swings:48,cost:780,label:'Geologist’s pick'},
-    {swings:56,cost:3600,label:'Deep-work pick'},
-    {swings:68,cost:null,label:'Carbide rock pick'}
-  ];
-
-  const SURVEY_LEVELS = [
-    {name:'None',cost:75,next:'Field Scanner',description:'Unlocks the 3×3 area scanner. Early scans report chemical signatures rather than exact gem names.'},
-    {name:'Field Scanner',cost:160,next:'Spectral Scanner',description:'Reports chemistry and signal strength inside the selected 3×3 area. Scanned tiles stay marked.'},
-    {name:'Spectral Scanner',cost:360,next:'Mineral Analyzer',description:'Adds deposit-pattern information and notices unusual non-mineral signatures.'},
-    {name:'Mineral Analyzer',cost:null,next:null,description:'Identifies exact minerals and distinguishes fossil signatures from historical objects.'}
-  ];
-
-  const SCAN_CHARGE_LEVELS = [
-    {uses:1,cost:80,label:'1 scan per face'},
-    {uses:2,cost:170,label:'2 scans per face'},
-    {uses:3,cost:340,label:'3 scans per face'},
-    {uses:4,cost:560,label:'4 scans per face'},
-    {uses:5,cost:850,label:'5 scans per face'},
-    {uses:6,cost:null,label:'6 scans per face'}
-  ];
-
-  const WORKSHOP_LEVELS = [
-    {name:'Basic Workshop',cost:180,next:'Precision Workshop',description:'Handles your earliest processable minerals and ores.'},
-    {name:'Precision Workshop',cost:650,next:'Advanced Lapidary',description:'Adds support for a broader range of mid-game minerals and ores.'},
-    {name:'Advanced Lapidary',cost:1250,next:'Master Lapidary',description:'Handles tougher gemstones and deeper metal-bearing ores.'},
-    {name:'Master Lapidary',cost:2400,next:'Specialist Lapidary',description:'Handles demanding deep-zone gemstones and prepares the workshop for unusual material.'},
-    {name:'Specialist Lapidary',cost:4200,next:'Master Cutter’s Bench',description:'Adds the precision and abrasives needed for the final-zone gemstones, mineraloids, and metal-bearing ores.'},
-    {name:'Master Cutter’s Bench',cost:null,next:null,description:'A precision bench built to handle every processable specimen in the mine.'}
-  ];
-
-  const DEPTH_UPGRADES = {
-    2:{cost:225,description:'Unlock Depth 2: the Lower Works, adding new gemstones, metallic minerals, and more fossil hunting.'},
-    3:{cost:850,description:'Unlock Depth 3: the Deep Gallery, adding new crystal families, colourful minerals, another metal-bearing ore, and deeper historical finds.'},
-    4:{cost:1800,description:'Unlock Depth 4: the Crystal Veins, adding high-grade gemstones, new metal-bearing ores, fossils, and artifacts.'},
-    5:{cost:3600,description:'Unlock Depth 5: the Luminous Zone, adding fluorescent minerals, an unusual heavy-metal ore, a mineraloid, belemnites, and deeper mining history.'},
-    6:{cost:5200,description:'Open the final route into Depth 6: the Epithermal Zone, a hot volcanic-hydrothermal environment where boiling fluids deposited unusual minerals and metals.'}
-  };
-
-
-  const ACHIEVEMENTS = [
-    {id:'firstCrunch',icon:'⛏️',name:'First Crunch',description:'Mine your first tile.',condition:s=>s.meta.tilesMined>=1},
-    {id:'shiny',icon:'✦',name:'Shiny!',description:'Find your first mineral or ore.',condition:s=>Object.entries(MATERIALS).some(([k,m])=>['mineral','ore'].includes(m.family)&&(s.stats[k]?.found||0)>0)},
-    {id:'museumPiece',icon:'🏛️',name:'Museum Piece',description:'Donate your first specimen.',condition:s=>Object.values(s.stats).some(x=>(x.donated||0)>0)},
-    {id:'shelfRespect',icon:'✨',name:'Shelf Respect',description:'Complete your first material set.',condition:s=>Object.keys(MATERIALS).some(k=>isMastered(k))},
-    {id:'fossilFever',icon:'🦴',name:'Fossil Fever',description:'Donate three different fossils.',condition:s=>countCollectedFamily('fossil')>=3},
-    {id:'oldStuff',icon:'🏺',name:'Old Stuff',description:'Donate three different historical artifacts.',condition:s=>countCollectedFamily('artifact')>=3},
-    {id:'foolMeOnce',icon:'🟨',name:'Fool Me Once',description:'Find pyrite. It is still not gold.',condition:s=>(s.stats.pyrite?.found||0)>0},
-    {id:'sio2Enjoyer',icon:'◇',name:'SiO₂ Enjoyer',description:'Find quartz, amethyst, citrine, and rose quartz.',condition:s=>['quartz','amethyst','citrine','roseQuartz'].every(k=>(s.stats[k]?.found||0)>0)},
-    {id:'familyResemblance',icon:'🔴',name:'Family Resemblance',description:'Master both sapphire and ruby.',condition:s=>isMastered('sapphire')&&isMastered('ruby')},
-    {id:'berylBuddies',icon:'🟢',name:'Beryl Buddies',description:'Master both aquamarine and emerald.',condition:s=>isMastered('aquamarine')&&isMastered('emerald')},
-    {id:'metalhead',icon:'⚙️',name:'Metalhead',description:'Refine iron, copper, tin, lead, and zinc at least once.',condition:s=>['hematite','chalcopyrite','cassiterite','galena','sphalerite'].every(k=>(s.stats[k]?.processed||0)>0)},
-    {id:'prospector',icon:'⌁',name:'Prospector',description:'Use the area scanner 25 times.',condition:s=>s.meta.scansUsed>=25},
-    {id:'dejaVu',icon:'👁️',name:'Déjà Vu',description:'Scan ten tiles at least twice.',condition:s=>s.meta.doubleScans>=10},
-    {id:'xrayish',icon:'◌',name:'X-Ray-ish',description:'Dig up something after its tile has been scanned twice.',condition:s=>s.meta.anomalyFinds>=1},
-    {id:'beepBeep',icon:'🧲',name:'Beep Beep',description:'Use the metal detector for the first time.',condition:s=>s.meta.metalSweeps>=1},
-    {id:'detectorist',icon:'📍',name:'Detectorist',description:'Dig up a metallic target from a detector signal zone.',condition:s=>s.meta.metalSignalFinds>=1},
-    {id:'barelyThere',icon:'🪫',name:'Barely There',description:'Use every last swing on a rock face.',condition:s=>s.meta.facesFinished>=1},
-    {id:'lastSwingLuck',icon:'🍀',name:'Last Swing Luck',description:'Find something with the final point of pick durability.',condition:s=>s.meta.lastSwingFinds>=1},
-    {id:'sellout',icon:'💰',name:'Sellout',description:'Use Sell All ten times.',condition:s=>s.meta.sellAllUses>=10},
-    {id:'fourFloorsDown',icon:'🪜',name:'Four Floors Down',description:'Unlock Depth 4.',condition:s=>s.unlockedDepth>=4},
-    {id:'shinyGoblin',icon:'💎',name:'Shiny Goblin',description:'Find 100 total specimens.',condition:s=>totalFound()>=100},
-    {id:'fullCoverage',icon:'▦',name:'Broad Coverage',description:'Survey at least half of one rock face.',condition:s=>s.meta.fullSurveyFaces>=1},
-    {id:'allThatGlitters',icon:'🌟',name:'All That Glitters',description:'Master citrine, topaz, and pyrite.',condition:s=>['citrine','topaz','pyrite'].every(k=>isMastered(k))},
-    {id:'glowUp',icon:'🔦',name:'Glow Up',description:'View a fluorescent museum specimen under UV.',condition:s=>s.meta.uvViews>=1&&countCollectedUvMaterials()>=1},
-    {id:'glowShow',icon:'✨',name:'The Glow Show',description:'Have five different fluorescent materials represented in the museum.',condition:s=>s.meta.uvViews>=1&&countCollectedUvMaterials()>=5},
-    {id:'fiveFloorsDown',icon:'🔦',name:'Lights Below',description:'Unlock Depth 5: the Luminous Zone.',condition:s=>s.unlockedDepth>=5},
-    {id:'heatRated',icon:'🥵',name:'Dress for the Job',description:'Equip geothermal protective gear.',condition:s=>!!s.upgrades.geothermalGear},
-    {id:'epithermal',icon:'🌋',name:'The Mine Ends Here',description:'Unlock Depth 6: the Epithermal Zone.',condition:s=>s.unlockedDepth>=6},
-    {id:'diamondRough',icon:'💎',name:'Not Invincible',description:'Find your first diamond.',condition:s=>(s.stats.diamond?.found||0)>0},
-    {id:'actualGold',icon:'🟡',name:'Okay, This One Is Gold',description:'Find native gold.',condition:s=>(s.stats.nativeGold?.found||0)>0},
-    {id:'yellowRock',icon:'🟨',name:'Aggressively Yellow',description:'Find native sulfur.',condition:s=>(s.stats.nativeSulfur?.found||0)>0},
-    {id:'silverLining',icon:'🥈',name:'Silver Lining',description:'Refine acanthite into silver.',condition:s=>(s.stats.acanthite?.processed||0)>0},
-    {id:'peridotProper',icon:'💚',name:'Same Rock, Fancy Name',description:'Cut olivine into peridot.',condition:s=>(s.inventory.olivine?.cut||0)>0||!!s.collection.olivine?.cut},
-    {id:'adulariaClue',icon:'🌙',name:'Low Temperature, High Drama',description:'Find adularia in the Epithermal Zone.',condition:s=>(s.stats.adularia?.found||0)>0},
-    {id:'pinkVein',icon:'🩷',name:'Pink Vein',description:'Find rhodochrosite.',condition:s=>(s.stats.rhodochrosite?.found||0)>0},
-    {id:'fossilRecord',icon:'🦴',name:'The Whole Fossil Record',description:'Complete every fossil display in the museum.',condition:s=>Object.entries(MATERIALS).filter(([,m])=>m.family==='fossil').every(([k,m])=>m.stages.every(st=>!!s.collection[k]?.[st]))},
-    {id:'historyBuff',icon:'🧭',name:'Mine Historian',description:'Complete every historical-artifact display.',condition:s=>Object.entries(MATERIALS).filter(([,m])=>m.family==='artifact').every(([k,m])=>m.stages.every(st=>!!s.collection[k]?.[st]))},
-    {id:'mineralHall',icon:'🔷',name:'Mineral Hall Complete',description:'Complete every mineral and gem display.',condition:s=>Object.entries(MATERIALS).filter(([,m])=>m.family==='mineral').every(([k,m])=>m.stages.every(st=>!!s.collection[k]?.[st]))},
-    {id:'oreHall',icon:'⚙️',name:'Ores & Metals Complete',description:'Complete every ore and metal display.',condition:s=>Object.entries(MATERIALS).filter(([,m])=>m.family==='ore').every(([k,m])=>m.stages.every(st=>!!s.collection[k]?.[st]))},
-    {id:'sixDeep',icon:'⬇️',name:'Six Deep',description:'Mine at least one rock tile on every depth.',condition:s=>allDepthsMined()},
-    {id:'geodeFound',icon:'🪨',name:'Something Rattled',description:'Find your first postgame geode.',condition:s=>(s.postgame?.uncrackedGeodes||0)+(s.postgame?.geodesCracked||0)>=1},
-    {id:'crackAttack',icon:'💥',name:'CRACK',description:'Open your first geode.',condition:s=>(s.postgame?.geodesCracked||0)>=1},
-    {id:'exceptionalTaste',icon:'✨',name:'Now THAT Is a Specimen',description:'Find your first exceptional specimen.',condition:s=>(s.postgame?.exceptionalFound||0)>=1},
-    {id:'curator',icon:'🖼️',name:'Your Turn, Curator',description:'Place your first item in Personal Collection.',condition:s=>(s.postgame?.personalSlots||[]).some(Boolean)},
-    {id:'fullHouse',icon:'▦',name:'Full House',description:'Fill all thirty spaces in Personal Collection. Rearranging is still allowed.',condition:s=>(s.postgame?.personalSlots||[]).filter(Boolean).length>=30},
-    {id:'tenGeodes',icon:'◎',name:'Just One More',description:'Crack ten geodes.',condition:s=>(s.postgame?.geodesCracked||0)>=10},
-    {id:'allMetals',icon:'🔩',name:'Heavy Metal',description:'Refine iron, copper, tin, lead, zinc, tungsten, and silver.',condition:s=>['hematite','chalcopyrite','cassiterite','galena','sphalerite','scheelite','acanthite'].every(k=>(s.stats[k]?.processed||0)>0)},
-    {id:'finalVein',icon:'🌋',name:'Epithermal Set',description:'Complete every new core specimen introduced by the Epithermal Zone.',condition:s=>['diamond','obsidian','olivine','nativeSulfur','rhodochrosite','adularia','acanthite','nativeGold'].every(k=>isMastered(k))},
-    {id:'trueRockhound',icon:'🏆',name:'TRUE ROCKHOUND',description:'Complete the entire museum. No reset. No prestige. You finished the game.',condition:s=>!!s.postgame?.completed},
-    {id:'rockaholic',icon:'💎',name:'ROCKAHOLIC',description:'Complete the museum, max every permanent upgrade, discover every core subject, and earn every other achievement.',hidden:true,condition:s=>{
-      const upgradesMaxed =
-        s.unlockedDepth>=6 &&
-        s.upgrades.durability>=DURABILITY_LEVELS.length-1 &&
-        s.upgrades.surveying>=SURVEY_LEVELS.length-1 &&
-        s.upgrades.scannerUses>=SCAN_CHARGE_LEVELS.length-1 &&
-        s.upgrades.workshop>=WORKSHOP_LEVELS.length-1 &&
-        !!s.upgrades.metalDetector &&
-        !!s.upgrades.uvLamp &&
-        !!s.upgrades.geothermalGear &&
-        !!s.upgrades.scannerHeatShield &&
-        !!s.upgrades.detectorHeatShield;
-      const everythingDiscovered=Object.keys(MATERIALS).every(k=>!!s.discovery[k]?.discovered);
-      const everyOtherAchievement=ACHIEVEMENTS.filter(a=>a.id!=='rockaholic').every(a=>!!s.achievements[a.id]);
-      return !!s.postgame?.completed&&upgradesMaxed&&everythingDiscovered&&everyOtherAchievement;
-    }}
-  ];
-
-  const emptyInventory = () => Object.fromEntries(Object.entries(MATERIALS).map(([k,m]) => [k,Object.fromEntries(m.stages.map(s => [s,0]))]));
-  const emptyCollection = () => Object.fromEntries(Object.entries(MATERIALS).map(([k,m]) => [k,Object.fromEntries(m.stages.map(s => [s,false]))]));
-  const emptyStats = () => Object.fromEntries(Object.keys(MATERIALS).map(k => [k,{found:0,sold:0,donated:0,processed:0,earned:0}]));
-  const emptyDiscovery = () => Object.fromEntries(Object.keys(MATERIALS).map(k => [k,{discovered:false,depths:[]}]));
-
-  const defaultState = () => ({
-    credits:0,
-    unlockedDepth:1,
-    currentDepth:1,
-    upgrades:{durability:0,surveying:0,workshop:0,scannerUses:0,metalDetector:false,uvLamp:false,geothermalGear:false,scannerHeatShield:false,detectorHeatShield:false},
-    settings:{autoProcessByMaterial:{},museumUv:false},
-    inventory:emptyInventory(),
-    collection:emptyCollection(),
-    stats:emptyStats(),
-    discovery:emptyDiscovery(),
-    achievements:{},
-    postgame:{
-      completed:false,completedAt:null,completionSeen:false,uncrackedGeodes:0,geodesCracked:0,exceptionalFound:0,nextCollectibleId:1,
-      geodeCartridges:0,vault:[],personalSlots:Array(30).fill(null),lastGeode:null
-    },
-    meta:{
-      tilesMined:0,scansUsed:0,doubleScans:0,anomalyFinds:0,metalSweeps:0,metalSignalFinds:0,
-      facesFinished:0,lastSwingFinds:0,sellAllUses:0,fullSurveyFaces:0,taglineTaps:0,uvViews:0,depthsMined:{}
-    },
-    face:null
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    $("tab-" + btn.dataset.tab).classList.add("active");
   });
+});
+function goTab(name) {
+  document.querySelector(`.tab[data-tab="${name}"]`).click();
+}
 
-  let state = loadState();
-  let openWorkbenchKey = null;
-  let toastTimer = null;
-  let scanMode = false;
-  let activePanel = 'mine';
-  let heatWarningVisible = false;
+/* ---------- Research ---------- */
 
-  const $ = id => document.getElementById(id);
-  const els = {
-    depthName:$('depthName'), depthNumber:$('depthNumber'), durability:$('durability'), maxDurability:$('maxDurability'), durabilityMeter:$('durabilityMeter'),
-    surveyLevel:$('surveyLevel'), scanUseSummary:$('scanUseSummary'), mineBalance:$('mineBalance'), depthSelector:$('depthSelector'), depthFieldNote:$('depthFieldNote'), scanButton:$('scanButton'), scanButtonStatus:$('scanButtonStatus'),
-    metalDetectorButton:$('metalDetectorButton'), detectorButtonStatus:$('detectorButtonStatus'), geodeFinderButton:$('geodeFinderButton'), geodeFinderStatus:$('geodeFinderStatus'),
-    mineBoard:$('mineBoard'), faceFinds:$('faceFinds'), newFaceButton:$('newFaceButton'), surfaceButton:$('surfaceButton'), mineMessage:$('mineMessage'),
-    workbenchList:$('workbenchList'), workbenchDiscoveryCount:$('workbenchDiscoveryCount'), masteredSellValue:$('masteredSellValue'), sellAllMasteredButton:$('sellAllMasteredButton'), postgameWorkbench:$('postgameWorkbench'), museumWings:$('museumWings'), museumCount:$('museumCount'), museumMeter:$('museumMeter'), completionPlaque:$('completionPlaque'), personalCollectionPanel:$('personalCollectionPanel'), personalCollectionSection:$('personalCollectionSection'), personalCollectionGrid:$('personalCollectionGrid'), collectionNavButton:$('collectionNavButton'), bottomNav:document.querySelector('.bottom-nav'),
-    museumLighting:$('museumLighting'), normalLightButton:$('normalLightButton'), uvLightButton:$('uvLightButton'),
-    achievementGrid:$('achievementGrid'), achievementCount:$('achievementCount'), achievementMeter:$('achievementMeter'),
-    shopBalance:$('shopBalance'), upgradeList:$('upgradeList'), resetButton:$('resetButton'), toast:$('toast'),
-    mobileMineHud:$('mobileMineHud'), mobileDurability:$('mobileDurability'), mobileScans:$('mobileScans'),
-    gameTitle:$('gameTitle'), gameTagline:$('gameTagline'), completionModal:$('completionModal'), completionBody:$('completionBody'), keepMiningButton:$('keepMiningButton')
+function renderResearch() {
+  const list = $("researchList");
+  list.innerHTML = "";
+  SHARKS.forEach(s => {
+    const done = !!state.tagged[s.id];
+    const card = document.createElement("div");
+    card.className = "species-card";
+    card.innerHTML = `
+      <div class="shark-art">${ART[s.id]}</div>
+      <h3>${s.name} ${done ? "✅" : ""}</h3>
+      <p class="latin">${s.latin}</p>
+      <span class="status-pill">IUCN: ${s.status}</span>
+      <p class="research-text">${s.research}</p>
+      <p class="hook">💡 ${s.hook}</p>
+      ${done
+        ? `<p class="hook">Tagged: <strong>${state.tagged[s.id].name}</strong> 🎉</p>`
+        : `<button class="secondary-button" data-plan="${s.id}" type="button">Plan an expedition for this shark</button>`}
+    `;
+    list.appendChild(card);
+  });
+  list.querySelectorAll("[data-plan]").forEach(b =>
+    b.addEventListener("click", () => {
+      $("targetSelect").value = b.dataset.plan;
+      goTab("expedition");
+    })
+  );
+}
+
+/* ---------- Planner ---------- */
+
+function fillSelect(el, obj, key) {
+  el.innerHTML = "";
+  Object.entries(obj).forEach(([id, v]) => {
+    const o = document.createElement("option");
+    o.value = id;
+    o.textContent = typeof v === "string" ? v : v.name;
+    el.appendChild(o);
+  });
+}
+
+function renderPlanner() {
+  const t = $("targetSelect");
+  const current = t.value;
+  t.innerHTML = "";
+  untagged().forEach(s => {
+    const o = document.createElement("option");
+    o.value = s.id;
+    o.textContent = s.name;
+    t.appendChild(o);
+  });
+  if (untagged().some(s => s.id === current)) t.value = current;
+  if (!untagged().length) {
+    $("planner").innerHTML = `<p class="research-text" style="text-align:center">All four sharks tagged! Check your collection book. 🎉</p>`;
+  }
+}
+
+$("launchBtn").addEventListener("click", () => {
+  if (!untagged().length) return;
+  runExpedition({
+    target: $("targetSelect").value,
+    region: $("regionSelect").value,
+    depth: $("depthSelect").value,
+    bait: $("baitSelect").value
+  });
+});
+
+/* ---------- Expedition ---------- */
+
+function logLine(html, cls) {
+  const p = document.createElement("p");
+  if (cls) p.className = cls;
+  p.innerHTML = html;
+  $("diveLog").appendChild(p);
+  p.scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+async function runExpedition(plan) {
+  const target = sharkById(plan.target);
+  $("launchBtn").disabled = true;
+  $("diveView").classList.remove("hidden");
+  $("diveActions").classList.add("hidden");
+  $("diveActions").innerHTML = "";
+  $("diveLog").innerHTML = "";
+  $("diveShark").classList.add("hidden");
+
+  const scene = $("diveScene");
+  scene.className = "dive-scene " + DEPTHS[plan.depth].scene;
+
+  const baitText = plan.bait === "plankton"
+    ? "No bait — scanning the water for a plankton bloom…"
+    : `Bait deployed: ${BAITS[plan.bait]}.`;
+
+  logLine(`🛥️ <strong>Expedition begun</strong> — the research vessel leaves the harbor.`);
+  await wait(1100);
+  logLine(`🪝 ${baitText}`);
+  await wait(1100);
+  logLine(`🐟 First fish appear in the blue…`);
+  await wait(1100);
+  logLine(`👀 ${REGIONS[plan.region].note}`);
+  await wait(1200);
+  logLine(`⏳ The hours slip by…`);
+  await wait(1200);
+  logLine(`🌊 The light changes. Something moves below…`);
+  await wait(1400);
+
+  // Who shows up? Any species whose combo matches, target or untagged other.
+  const appeared = SHARKS.filter(s =>
+    s.combo.region === plan.region &&
+    s.combo.depth === plan.depth &&
+    s.combo.bait === plan.bait
+  );
+  const taggable = appeared.filter(s => !state.tagged[s.id]);
+  const alreadyTagged = appeared.filter(s => state.tagged[s.id]);
+
+  const actions = $("diveActions");
+  actions.classList.remove("hidden");
+
+  if (taggable.length) {
+    const s = taggable[0];
+    $("diveShark").innerHTML = ART[s.id];
+    $("diveShark").classList.remove("hidden");
+    logLine(`🦈 <span class="found">SHARKS! A ${s.name}!</span>`, "found");
+    state.failures = 0;
+    const tagBtn = document.createElement("button");
+    tagBtn.className = "primary-button";
+    tagBtn.type = "button";
+    tagBtn.textContent = `🏷️ Tag the ${s.name}`;
+    tagBtn.addEventListener("click", () => openTagging(s));
+    actions.appendChild(tagBtn);
+  } else if (alreadyTagged.length) {
+    const s = alreadyTagged[0];
+    const rec = state.tagged[s.id];
+    $("diveShark").innerHTML = ART[s.id];
+    $("diveShark").classList.remove("hidden");
+    logLine(`🦈 <span class="found">Look who it is — ${rec.name} the ${s.name}, already in your book!</span>`, "found");
+    state.failures = 0;
+  } else {
+    logLine(`<span class="miss">The water stays empty. Time to head back.</span>`, "miss");
+    state.failures += 1;
+  }
+
+  const backBtn = document.createElement("button");
+  backBtn.className = "secondary-button";
+  backBtn.type = "button";
+  backBtn.textContent = "Return to ship";
+  backBtn.addEventListener("click", () => {
+    $("diveView").classList.add("hidden");
+    $("launchBtn").disabled = false;
+    renderPlanner();
+    renderCollection();
+    renderResearch();
+    afterExpedition(plan.target);
+  });
+  actions.appendChild(backBtn);
+}
+
+/* ---------- Cousin texts ---------- */
+
+function showCousin(messages) {
+  const thread = $("cousinThread");
+  thread.innerHTML = "";
+  messages.forEach(m => {
+    const b = document.createElement("div");
+    b.className = "bubble " + m.who;
+    b.textContent = m.text;
+    thread.appendChild(b);
+  });
+  $("cousinOverlay").classList.remove("hidden");
+}
+$("cousinClose").addEventListener("click", () => {
+  $("cousinOverlay").classList.add("hidden");
+});
+
+function afterExpedition(targetId) {
+  if (state.failures >= 3) {
+    // gentle nudge, genuine-conversation style
+    showCousin([
+      { who: "them", text: "how's the shark hunting going??" },
+      { who: "me", text: "Honestly? Struck out a few times. This one's tricky." },
+      { who: "them", text: COUSIN_NUDGES[targetId] || "you'll get the next one!! i believe in you" },
+      { who: "me", text: "Huh. Okay, that's actually really helpful. Thanks, kiddo." }
+    ]);
+    state.failures = 0;
+    return;
+  }
+  const chat = COUSIN_CHATS[state.chatIdx % COUSIN_CHATS.length];
+  state.chatIdx += 1;
+  showCousin([
+    { who: "them", text: chat.them },
+    { who: "me", text: chat.me }
+  ]);
+}
+
+/* ---------- Tagging ---------- */
+
+const rand = (a, b) => Math.round((a + Math.random() * (b - a)) * 10) / 10;
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+function openTagging(species) {
+  state.pendingTag = species;
+  const length = rand(species.sizeRange[0], species.sizeRange[1]);
+  const sex = Math.random() < 0.5 ? "female" : "male";
+  state.pendingTag._gen = { length, sex };
+  $("tagSharkArt").innerHTML = ART[species.id];
+  $("tagInfo").innerHTML = `
+    <strong>${species.name}</strong> <em>(${species.latin})</em><br>
+    📏 ${length} m &nbsp;·&nbsp; ${sex === "female" ? "♀ female" : "♂ male"}<br>
+    📍 Tagged at: ${REGIONS[$("regionSelect").value].name}<br>
+    📅 ${new Date().toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+  `;
+  $("sharkName").value = pick(species.nameIdeas);
+  $("tagOverlay").classList.remove("hidden");
+  setTimeout(() => $("sharkName").select(), 100);
+}
+
+$("tagConfirm").addEventListener("click", () => {
+  const s = state.pendingTag;
+  if (!s) return;
+  const name = $("sharkName").value.trim() || pick(s.nameIdeas);
+  state.tagged[s.id] = {
+    name,
+    length: s._gen.length,
+    sex: s._gen.sex,
+    location: REGIONS[$("regionSelect").value].name,
+    date: new Date().toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
   };
-
-  init();
-
-  function init(){
-    if(!state.face || state.face.depth !== state.currentDepth){
-      state.face = generateFace(state.currentDepth);
-    }else{
-      normalizeFace(state.face);
-    }
-
-    checkAchievements(true);
-    saveState();
-
-    document.querySelectorAll('.nav-button').forEach(btn => btn.addEventListener('click',() => switchPanel(btn)));
-    els.newFaceButton.addEventListener('click',startNewFace);
-    els.surfaceButton.addEventListener('click',startNewFace);
-    els.scanButton.addEventListener('click',toggleScanMode);
-    els.metalDetectorButton.addEventListener('click',useMetalDetector);
-    if(els.geodeFinderButton)els.geodeFinderButton.addEventListener('click',useGeodeFinder);
-    els.normalLightButton.addEventListener('click',()=>setMuseumLighting(false));
-    els.uvLightButton.addEventListener('click',()=>setMuseumLighting(true));
-    els.sellAllMasteredButton.addEventListener('click',sellAllMastered);
-    els.resetButton.addEventListener('click',resetGame);
-    if(els.keepMiningButton)els.keepMiningButton.addEventListener('click',closeCompletionModal);
-
-    renderAll();
-    if(state.postgame?.completed&&!state.postgame.completionSeen)setTimeout(openCompletionModal,120);
-  }
-
-  function loadState(){
-    try{
-      const raw = localStorage.getItem(SAVE_KEY);
-      if(!raw) return defaultState();
-
-      const parsed = JSON.parse(raw);
-      const fresh = defaultState();
-      const merged = {
-        ...fresh,
-        ...parsed,
-        upgrades:{...fresh.upgrades,...(parsed.upgrades||{})},
-        settings:{...fresh.settings,...(parsed.settings||{}),autoProcessByMaterial:{...(parsed.settings?.autoProcessByMaterial||{})}},
-        inventory:fresh.inventory,
-        collection:fresh.collection,
-        stats:fresh.stats,
-        discovery:fresh.discovery,
-        achievements:{...(parsed.achievements||{})},
-        meta:{...fresh.meta,...(parsed.meta||{}),depthsMined:{...(fresh.meta.depthsMined||{}),...(parsed.meta?.depthsMined||{})}},
-        postgame:{...fresh.postgame,...(parsed.postgame||{}),vault:Array.isArray(parsed.postgame?.vault)?parsed.postgame.vault:[],personalSlots:Array.isArray(parsed.postgame?.personalSlots)?parsed.postgame.personalSlots.slice(0,30):Array(30).fill(null)}
-      };
-
-      Object.entries(MATERIALS).forEach(([k,m]) => {
-        m.stages.forEach(stage => {
-          merged.inventory[k][stage] = parsed.inventory?.[k]?.[stage] ?? 0;
-          merged.collection[k][stage] = parsed.collection?.[k]?.[stage] ?? false;
-        });
-        merged.stats[k] = {...fresh.stats[k],...(parsed.stats?.[k]||{})};
-
-        const priorDiscovery=parsed.discovery?.[k];
-        const hasHistoricalEvidence=(merged.stats[k].found||0)>0 || (merged.stats[k].sold||0)>0 || (merged.stats[k].donated||0)>0 || (merged.stats[k].processed||0)>0 || m.stages.some(stage=>(merged.inventory[k][stage]||0)>0 || !!merged.collection[k][stage]);
-        const discovered=!!priorDiscovery?.discovered || hasHistoricalEvidence;
-        let depths=Array.isArray(priorDiscovery?.depths)?priorDiscovery.depths.map(Number).filter(d=>DEPTHS[d]&&d<=merged.unlockedDepth):[];
-
-        // Beta 1.2.2 begins tracking where each discovery was actually encountered.
-        // Older saves did not store that history, so seed useful known locations for
-        // already-discovered items from the depths the old save had unlocked.
-        if(discovered && !depths.length){
-          const currentFaceSawIt=parsed.face?.finds?.[k]>0 ? Number(parsed.face?.depth||parsed.currentDepth||1) : null;
-          if(currentFaceSawIt && DEPTHS[currentFaceSawIt])depths=[currentFaceSawIt];
-          else depths=spawnDepthsFor(k).filter(d=>d<=Math.max(1,Math.min(6,merged.unlockedDepth||1)));
-        }
-        merged.discovery[k]={discovered,depths:[...new Set(depths)].sort((a,b)=>a-b)};
-      });
-
-      // v2.1 migration: if global automation was on, keep it on for materials
-      // that are already mastered in the migrated save.
-      if(parsed.settings?.autoProcess === true){
-        Object.keys(MATERIALS).forEach(k => {
-          if(hasProcessing(k) && MATERIALS[k].stages.every(stage => merged.collection[k][stage])){
-            merged.settings.autoProcessByMaterial[k] = true;
-          }
-        });
-      }
-
-      merged.unlockedDepth = Math.max(1,Math.min(6,merged.unlockedDepth||1));
-      merged.currentDepth = Math.max(1,Math.min(merged.unlockedDepth,merged.currentDepth||1));
-      merged.upgrades.workshop = Math.max(0,Math.min(WORKSHOP_LEVELS.length-1,merged.upgrades.workshop||0));
-      merged.upgrades.scannerUses = Math.max(0,Math.min(SCAN_CHARGE_LEVELS.length-1,merged.upgrades.scannerUses||0));
-      merged.upgrades.surveying = Math.max(0,Math.min(SURVEY_LEVELS.length-1,merged.upgrades.surveying||0));
-      merged.upgrades.durability = Math.max(0,Math.min(DURABILITY_LEVELS.length-1,merged.upgrades.durability||0));
-      merged.upgrades.metalDetector = !!merged.upgrades.metalDetector;
-      merged.upgrades.uvLamp = !!merged.upgrades.uvLamp;
-      merged.upgrades.geothermalGear = !!merged.upgrades.geothermalGear;
-      merged.upgrades.scannerHeatShield = !!merged.upgrades.scannerHeatShield;
-      merged.upgrades.detectorHeatShield = !!merged.upgrades.detectorHeatShield;
-      merged.postgame.completed = !!merged.postgame.completed;
-      merged.postgame.completionSeen = !!merged.postgame.completionSeen;
-      merged.postgame.uncrackedGeodes = Math.max(0,merged.postgame.uncrackedGeodes||0);
-      merged.postgame.geodesCracked = Math.max(0,merged.postgame.geodesCracked||0);
-      merged.postgame.exceptionalFound = Math.max(0,merged.postgame.exceptionalFound||0);
-      merged.postgame.nextCollectibleId = Math.max(1,merged.postgame.nextCollectibleId||1);
-      merged.postgame.geodeCartridges = Math.max(0,merged.postgame.geodeCartridges||0);
-      if(merged.postgame.completed && parsed.postgame?.geodeCartridges === undefined) merged.postgame.geodeCartridges = Math.max(merged.postgame.geodeCartridges,3);
-      while(merged.postgame.personalSlots.length<30)merged.postgame.personalSlots.push(null);
-      merged.settings.museumUv = !!merged.settings.museumUv && merged.upgrades.uvLamp;
-
-      return merged;
-    }catch{
-      return defaultState();
-    }
-  }
-
-  function saveState(){ localStorage.setItem(SAVE_KEY,JSON.stringify(state)); }
-  function formatMoney(cents){ const v=Math.max(0,Math.round(cents||0)); return v<100?`${v}¢`:`$${(v/100).toFixed(2)}`; }
-  function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
-  function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-  function totalInventory(k){ return Object.values(state.inventory[k]||{}).reduce((a,n)=>a+n,0); }
-  function spawnDepthsFor(k){
-    return Object.entries(DEPTHS).filter(([,cfg])=>Object.prototype.hasOwnProperty.call(cfg.materials||{},k) || (cfg.sideFinds||[]).some(x=>x.key===k)).map(([d])=>Number(d));
-  }
-  function isDiscovered(k){ return !!state.discovery?.[k]?.discovered || (state.stats?.[k]?.found||0)>0; }
-  function shouldObscureIdentity(k){
-    const family=MATERIALS[k]?.family;
-    return !isDiscovered(k) && ['mineral','ore','artifact'].includes(family);
-  }
-  function discoveredDepths(k){ return [...new Set((state.discovery?.[k]?.depths||[]).map(Number).filter(d=>DEPTHS[d]))].sort((a,b)=>a-b); }
-  function depthKnowledgeText(k){
-    const depths=discoveredDepths(k);
-    if(!depths.length)return 'Depth not recorded yet';
-    const prefix=depths.length===1?'Depth':'Depths';
-    return `${prefix} ${depths.join(', ')}`;
-  }
-  function museumSearchHint(k){
-    const material=MATERIALS[k];
-    if(!material || !['fossil','artifact'].includes(material.family))return '';
-    const eligible=spawnDepthsFor(k);
-    const available=eligible.filter(d=>d<=state.unlockedDepth);
-    if(!available.length)return '<span class="museum-search-hint">Search deeper…</span>';
-    const labels=available.map(d=>`Depth ${d} · ${DEPTHS[d].name}`);
-    return `<span class="museum-search-hint">Search in: ${labels.join(', ')}</span>`;
-  }
-  function maskUndiscoveredNames(text){
-    let out=String(text||'');
-    Object.entries(MATERIALS).forEach(([k,m])=>{
-      if(!shouldObscureIdentity(k))return;
-      const names=[m.name];
-      Object.values(m.stageLabels||{}).forEach(label=>{
-        if(/^[A-Z][A-Za-z -]+$/.test(label) && !['Raw','Tumbled','Cut','Polished','Natural specimen'].includes(label))names.push(label);
-      });
-      names.sort((a,b)=>b.length-a.length).forEach(name=>{
-        if(!name)return;
-        out=out.replace(new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),'???');
-      });
-    });
-    return out;
-  }
-  function isBulkSellEligible(k){
-    const m=MATERIALS[k];
-    if(m.family==='fossil')return m.stages.every(stage=>!!state.collection[k]?.[stage]);
-    return (m.family==='mineral'||m.family==='ore') && isMastered(k);
-  }
-  function masteredSellSummary(){
-    let items=0,value=0;
-    Object.entries(MATERIALS).forEach(([k,m])=>{
-      if(!isBulkSellEligible(k))return;
-      m.stages.forEach(stage=>{
-        const count=state.inventory[k][stage]||0;
-        items+=count;
-        value+=count*(m.prices[stage]||0);
-      });
-    });
-    return {items,value};
-  }
-  function hasProcessing(k){ return Object.keys(MATERIALS[k].process||{}).length>0; }
-  function currentMaxScans(){ return SCAN_CHARGE_LEVELS[state.upgrades.scannerUses].uses; }
-  function currentPickSwings(){ return state.postgame?.completed?GRID_SIZE*GRID_SIZE:DURABILITY_LEVELS[state.upgrades.durability].swings; }
-  function currentPickLabel(){ return state.postgame?.completed?'Gilded Steel Pickaxe':DURABILITY_LEVELS[state.upgrades.durability].label; }
-  function isMuseumComplete(){ return Object.entries(MATERIALS).every(([k,m])=>m.stages.every(stage=>!!state.collection[k]?.[stage])); }
-  function firstEmptyPersonalSlot(){ return state.postgame.personalSlots.findIndex(x=>!x); }
-  function postgameItemId(){ const id=`pg${state.postgame.nextCollectibleId++}`; return id; }
-  function weightedGeodeInterior(){ return weightedChoice(GEODE_INTERIORS.map(x=>({key:x.id,weight:x.weight}))); }
-  function geodeById(id){ return GEODE_INTERIORS.find(x=>x.id===id); }
-  function exceptionalEligible(k){ return !!EXCEPTIONAL_VARIANTS[k] && MATERIALS[k]?.family!=='artifact'; }
-  function exceptionalSellValue(k){
-    const prices=Object.values(MATERIALS[k]?.prices||{});
-    const best=prices.length?Math.max(...prices):0;
-    return Math.max(500,Math.ceil((best*6)/50)*50);
-  }
-  function specialItemSellValue(item){
-    if(!item)return 0;
-    if(item.kind==='geode')return item.sellValue||geodeById(item.subtype)?.sellValue||800;
-    if(item.kind==='exceptional'&&item.key)return item.sellValue||exceptionalSellValue(item.key);
-    return 0;
-  }
-  function makeExceptional(k){
-    const choices=EXCEPTIONAL_VARIANTS[k]||[];
-    const label=choices.length?choices[randInt(0,choices.length-1)]:`Exceptional ${MATERIALS[k].name} Specimen`;
-    return {id:postgameItemId(),kind:'exceptional',key:k,label,icon:'✦',sellValue:exceptionalSellValue(k)};
-  }
-  function buildGeodeVisual(subtype=null,opened=false){
-    const visual=document.createElement('span');
-    if(!opened){
-      visual.className='geode-sprite geode-closed';
-      visual.setAttribute('aria-hidden','true');
-      return visual;
-    }
-    visual.className=`geode-sprite geode-open geode-${subtype||'quartzDruzy'}`;
-    visual.setAttribute('aria-hidden','true');
-    ['left','right'].forEach(side=>{
-      const half=document.createElement('span');half.className=`geode-half ${side}`;
-      const cavity=document.createElement('span');cavity.className='geode-cavity';
-      half.appendChild(cavity);visual.appendChild(half);
-    });
-    return visual;
-  }
-
-  function totalFound(){ return Object.values(state.stats).reduce((sum,x)=>sum+(x.found||0),0); }
-  function allDepthsMined(){ return Object.keys(DEPTHS).every(d=>(state.meta.depthsMined?.[d]||0)>0); }
-  function countCollectedFamily(family){
-    return Object.entries(MATERIALS).filter(([,m])=>m.family===family).reduce((sum,[k,m])=>sum+m.stages.filter(stage=>state.collection[k]?.[stage]).length,0);
-  }
-  function countCollectedUvMaterials(){
-    return Object.keys(UV_CLASSES).filter(k=>MATERIALS[k]?.stages.some(stage=>state.collection[k]?.[stage])).length;
-  }
-  function isMetalTarget(k){ return !!MATERIALS[k]?.metalDetectable; }
-
-  function weightedChoice(source){
-    const entries=Array.isArray(source)?source.map(x=>[x.key,x.weight]):Object.entries(source);
-    let total=entries.reduce((a,[,w])=>a+w,0),r=Math.random()*total;
-    for(const [k,w] of entries){r-=w;if(r<=0)return k;}
-    return entries[entries.length-1][0];
-  }
-
-  function neighbors(index){
-    const r=Math.floor(index/GRID_SIZE),c=index%GRID_SIZE,out=[];
-    [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([rr,cc])=>{if(rr>=0&&rr<GRID_SIZE&&cc>=0&&cc<GRID_SIZE)out.push(rr*GRID_SIZE+cc);});
-    return out;
-  }
-
-  function scanAreaIndices(index){
-    const r=Math.floor(index/GRID_SIZE),c=index%GRID_SIZE,out=[];
-    for(let rr=r-1;rr<=r+1;rr++){
-      for(let cc=c-1;cc<=c+1;cc++){
-        if(rr>=0&&rr<GRID_SIZE&&cc>=0&&cc<GRID_SIZE)out.push(rr*GRID_SIZE+cc);
-      }
-    }
-    return out;
-  }
-
-  function normalizeFace(face){
-    if(!Array.isArray(face.hints)) face.hints = generateProspectHints(face);
-    if(!face.finds) face.finds = {};
-    if(!Array.isArray(face.scanHistory)) face.scanHistory = [];
-    if(face.lastScan === undefined) face.lastScan = null;
-    if(face.metalDetectorUsed === undefined) face.metalDetectorUsed = false;
-    if(!Array.isArray(face.metalSignalTiles)) face.metalSignalTiles = [];
-    if(face.geodeFinderUsed === undefined) face.geodeFinderUsed = false;
-    if(face.geodeHintTile === undefined) face.geodeHintTile = null;
-    if(face.fullCoverageAwarded === undefined) face.fullCoverageAwarded = false;
-
-    if(!Array.isArray(face.scanCounts) || face.scanCounts.length!==GRID_SIZE*GRID_SIZE){
-      face.scanCounts = Array(GRID_SIZE*GRID_SIZE).fill(0);
-      const oldHistory = Array.isArray(face.scanHistory)?face.scanHistory:[];
-      oldHistory.forEach(entry => {
-        const center = typeof entry==='number'?entry:entry?.center;
-        if(Number.isInteger(center)) scanAreaIndices(center).forEach(i => face.scanCounts[i]++);
-      });
-      if(!oldHistory.length && face.lastScan?.indices){
-        face.lastScan.indices.forEach(i => {if(face.scanCounts[i]!==undefined)face.scanCounts[i]++;});
-      }
-    }
-
-    if(face.scanUsesRemaining === undefined || face.scanUsesRemaining === null){
-      face.scanUsesRemaining = state.upgrades.surveying>0 ? currentMaxScans() : 0;
-    }else{
-      face.scanUsesRemaining = Math.min(face.scanUsesRemaining,currentMaxScans());
-    }
-  }
-
-  function generateProspectHints(face){
-    const occupied=face.tiles.filter(t=>t.material||t.special==='geode');
-    if(!occupied.length)return [];
-    const count=Math.min(randInt(1,3),occupied.length);
-    const pool=[...occupied];
-    for(let i=pool.length-1;i>0;i--){
-      const j=randInt(0,i);
-      [pool[i],pool[j]]=[pool[j],pool[i]];
-    }
-    return pool.slice(0,count).map(t=>t.index);
-  }
-
-  function generateFace(depth){
-    const tiles=Array.from({length:GRID_SIZE*GRID_SIZE},(_,i)=>({index:i,revealed:false,material:null,special:null,depositId:null,depositType:null}));
-    const deposits=[];
-    let nextId=0;
-
-    function placeDeposit(material,size,type){
-      for(let attempt=0;attempt<100;attempt++){
-        const empty=tiles.filter(t=>!t.material);
-        if(!empty.length)return false;
-        const chosen=[empty[randInt(0,empty.length-1)].index],set=new Set();
-        set.add(chosen[0]);
-        while(chosen.length<size){
-          const frontier=[];
-          chosen.forEach(i=>neighbors(i).forEach(n=>{if(!set.has(n)&&!tiles[n].material&&!frontier.includes(n))frontier.push(n);}));
-          if(!frontier.length)break;
-          const n=frontier[randInt(0,frontier.length-1)];
-          chosen.push(n);set.add(n);
-        }
-        if(chosen.length!==size)continue;
-        const id=`d${nextId++}`;
-        chosen.forEach(i=>Object.assign(tiles[i],{material,depositId:id,depositType:type}));
-        deposits.push({id,material,type,size,announced:false});
-        return true;
-      }
-      return false;
-    }
-
-    const cfg=DEPTHS[depth];
-    placeDeposit(weightedChoice(cfg.materials),randInt(5,8),'large');
-    for(let i=0;i<randInt(depth>=3?4:3,depth>=3?5:4);i++)placeDeposit(weightedChoice(cfg.materials),randInt(2,4),'small');
-    for(let i=0;i<randInt(3,5);i++)placeDeposit(weightedChoice(cfg.materials),1,'isolated');
-    if(Math.random()<(depth>=3?.32:depth===2?.27:.24))placeDeposit(weightedChoice(cfg.sideFinds),1,'side');
-    if(Math.random()<(depth>=3?.085:depth===2?.055:.045))placeDeposit(weightedChoice(cfg.sideFinds),1,'side');
-
-    if(state.postgame?.completed && Math.random()<0.30){
-      const empty=tiles.filter(t=>!t.material&&!t.special);
-      if(empty.length)empty[randInt(0,empty.length-1)].special='geode';
-    }
-
-    const face={
-      depth,size:GRID_SIZE,
-      durability:currentPickSwings(),
-      finds:{},tiles,deposits,hints:[],
-      scanUsesRemaining:state.upgrades.surveying>0?currentMaxScans():0,
-      scanHistory:[],scanCounts:Array(GRID_SIZE*GRID_SIZE).fill(0),lastScan:null,
-      metalDetectorUsed:false,metalSignalTiles:[],geodeFinderUsed:false,geodeHintTile:null,fullCoverageAwarded:false
-    };
-    face.hints=generateProspectHints(face);
-    return face;
-  }
-
-  function switchPanel(btn){
-    const target=btn.dataset.target;
-    if(target==='collection'&&!state.postgame?.completed)return;
-    activePanel=target;
-    scanMode=false;
-    document.querySelectorAll('.nav-button').forEach(b=>b.classList.toggle('active',b===btn));
-    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.dataset.panel===target));
-    if(target==='workbench')renderWorkbench();
-    if(target==='museum')renderMuseum();
-    if(target==='collection'){renderPostgameWorkbench();renderPersonalCollection();}
-    if(target==='achievements')renderAchievements();
-    if(target==='upgrades')renderUpgrades();
-    renderMobileHud();
-  }
-
-  function renderPostgameAccess(){
-    const unlocked=!!state.postgame?.completed;
-    els.collectionNavButton?.classList.toggle('hidden',!unlocked);
-    els.personalCollectionPanel?.classList.toggle('hidden',!unlocked);
-    els.bottomNav?.classList.toggle('postgame-nav',unlocked);
-  }
-
-  function startNewFace(){
-    scanMode=false;
-    heatWarningVisible=false;
-    state.face=generateFace(state.currentDepth);
-    saveState();
-    setMineMessage('⛏️','Fresh rock face.','Read the faint geological tells, survey where it seems worthwhile, then start crunching.');
-    renderMine();
-    showToast('Fresh rock face.');
-  }
-
-  function setDepth(d){
-    if(d>state.unlockedDepth||d===state.currentDepth)return;
-    scanMode=false;
-    heatWarningVisible=false;
-    state.currentDepth=d;
-    state.face=generateFace(d);
-    saveState();
-    renderMine();
-    showToast(`${DEPTHS[d].name} selected.`);
-  }
-
-  function toggleScanMode(){
-    if(state.currentDepth===6&&!state.upgrades.scannerHeatShield){showToast('The scanner needs heat-shielded housing in the Epithermal Zone.');return;}
-    if(state.upgrades.surveying===0){showToast('Unlock the Field Scanner first.');return;}
-    if(state.face.scanUsesRemaining<=0){showToast('No scans left on this rock face.');return;}
-    scanMode=!scanMode;
-    if(scanMode){
-      setMineMessage('⌁','Scanner ready.','Tap any tile to scan the 3×3 area around it. Overlap a scan twice and hidden occupied tiles may show a faint density shadow.');
-    }else{
-      setMineMessage('⛏️','Scanner cancelled.','Back to mining.');
-    }
-    renderMine();
-  }
-
-  function handleTile(index){ if(scanMode)scanAt(index);else mineTile(index); }
-
-  function scanAt(index){
-    if(state.upgrades.surveying===0||state.face.scanUsesRemaining<=0)return;
-    const indices=scanAreaIndices(index);
-    const results=analyzeScan(indices,state.upgrades.surveying);
-    const newlyDoubled=indices.filter(i=>(state.face.scanCounts[i]||0)===1).length;
-    indices.forEach(i=>state.face.scanCounts[i]=(state.face.scanCounts[i]||0)+1);
-    state.meta.scansUsed++;
-    state.meta.doubleScans+=newlyDoubled;
-    state.face.scanUsesRemaining--;
-    state.face.scanHistory.push({center:index,indices});
-    state.face.lastScan={center:index,indices,results};
-    if(!state.face.fullCoverageAwarded && state.face.scanCounts.filter(n=>n>0).length>=50){
-      state.face.fullCoverageAwarded=true;
-      state.meta.fullSurveyFaces++;
-    }
-    scanMode=false;
-    checkAchievements();
-    saveState();
-    setMineMessage('⌁','Scan complete.',results.length?results.map(r=>r.plain).join(' · '):'No significant signature detected.');
-    renderMine();
-  }
-
-
-  function metalSignalZone(targetIndex){
-    const targetRow=Math.floor(targetIndex/GRID_SIZE),targetCol=targetIndex%GRID_SIZE;
-    const centerRow=Math.max(0,Math.min(GRID_SIZE-1,targetRow+randInt(-1,1)));
-    const centerCol=Math.max(0,Math.min(GRID_SIZE-1,targetCol+randInt(-1,1)));
-    const zone=[];
-    for(let rr=centerRow-1;rr<=centerRow+1;rr++){
-      for(let cc=centerCol-1;cc<=centerCol+1;cc++){
-        if(rr>=0&&rr<GRID_SIZE&&cc>=0&&cc<GRID_SIZE)zone.push(rr*GRID_SIZE+cc);
-      }
-    }
-    if(!zone.includes(targetIndex))zone.push(targetIndex);
-    return zone;
-  }
-
-  function useMetalDetector(){
-    if(state.currentDepth===6&&!state.upgrades.detectorHeatShield){showToast('The metal detector needs heat-shielded housing in the Epithermal Zone.');return;}
-    if(!state.upgrades.metalDetector){showToast('Unlock the Metal Detector first.');return;}
-    if(state.face.metalDetectorUsed){showToast('The metal detector has already swept this face.');return;}
-
-    const targets=state.face.tiles.filter(t=>!t.revealed&&t.material&&isMetalTarget(t.material));
-    state.face.metalDetectorUsed=true;
-    state.meta.metalSweeps++;
-
-    const selected=[];
-    const shuffled=[...targets].sort(()=>Math.random()-.5);
-    shuffled.forEach(tile=>{
-      if(selected.length>=3)return;
-      const farEnough=selected.every(other=>{
-        const r1=Math.floor(tile.index/GRID_SIZE),c1=tile.index%GRID_SIZE;
-        const r2=Math.floor(other.index/GRID_SIZE),c2=other.index%GRID_SIZE;
-        return Math.abs(r1-r2)+Math.abs(c1-c2)>=3;
-      });
-      if(farEnough)selected.push(tile);
-    });
-    if(!selected.length && targets.length)selected.push(targets[0]);
-
-    const marked=new Set();
-    selected.forEach(tile=>metalSignalZone(tile.index).forEach(i=>marked.add(i)));
-    state.face.metalSignalTiles=[...marked];
-
-    checkAchievements();
-    saveState();
-    if(selected.length){
-      setMineMessage('🧲','Metal sweep complete.',`${selected.length} broad signal zone${selected.length===1?'':'s'} detected. The highlighted areas are intentionally imprecise.`);
-      showToast(`${selected.length} metal signal zone${selected.length===1?'':'s'} detected.`);
-    }else{
-      setMineMessage('🧲','Metal sweep complete.','No strong metallic targets detected on this face.');
-      showToast('No strong metal signals detected.');
-    }
-    renderMine();
-  }
-
-
-  function useGeodeFinder(){
-    if(!state.postgame?.completed){showToast('The Geode Finder unlocks after museum completion.');return;}
-    if(state.face.geodeFinderUsed){showToast('The Geode Finder has already checked this face.');return;}
-    if((state.postgame.geodeCartridges||0)<1){showToast('No Geode Finder cartridges left.');return;}
-    state.postgame.geodeCartridges--;
-    state.face.geodeFinderUsed=true;
-    const target=state.face.tiles.find(t=>!t.revealed&&t.special==='geode');
-    if(target){
-      state.face.geodeHintTile=target.index;
-      setMineMessage('🪨','Geode resonance detected.','A hollow cavity is likely at the marked tile.');
-      showToast('Geode signal found.');
-    }else{
-      state.face.geodeHintTile=null;
-      setMineMessage('🪨','No geode resonance.','No hollow cavity appears to be hiding in this rock face.');
-      showToast('No geode detected on this face.');
-    }
-    saveState();
-    renderMine();
-    renderUpgrades();
-  }
-
-
-  function signalStrength(count){ if(count>=4)return 'Strong';if(count>=2)return 'Moderate';return 'Trace'; }
-  function depositPattern(types){
-    if(types.has('large'))return 'large connected deposit pattern';
-    if(types.has('small'))return 'small connected deposit pattern';
-    if(types.has('isolated'))return 'isolated signature';
-    return 'localized signature';
-  }
-
-  function analyzeScan(indices,level){
-    const scannedTiles=indices.map(i=>state.face.tiles[i]).filter(Boolean);
-    const occupied=scannedTiles.filter(t=>t.material);
-    const geodeCount=scannedTiles.filter(t=>t.special==='geode').length;
-    if(!occupied.length&&!geodeCount)return [{html:'No significant mineral signature detected.',plain:'No significant mineral signature detected.'}];
-
-    const results=[];
-    if(geodeCount&&level>=2)results.push({html:'<strong>Hollow density anomaly detected.</strong>',plain:'Hollow density anomaly detected.'});
-    const side=occupied.filter(t=>['fossil','artifact'].includes(MATERIALS[t.material].family));
-    const geo=occupied.filter(t=>!['fossil','artifact'].includes(MATERIALS[t.material].family));
-
-    if(level<3){
-      const groups=new Map();
-      geo.forEach(tile=>{
-        const sig=MATERIALS[tile.material].signature;
-        if(!groups.has(sig.id))groups.set(sig.id,{sig,count:0,types:new Set()});
-        const g=groups.get(sig.id);g.count++;g.types.add(tile.depositType);
-      });
-      [...groups.values()].sort((a,b)=>b.count-a.count).forEach(g=>{
-        const strength=signalStrength(g.count);
-        const chemistry=`${g.sig.label}${g.sig.formula&&g.sig.formula!=='variable'?` · ${g.sig.formula}`:''}`;
-        const extra=level>=2?` · ${depositPattern(g.types)}`:'';
-        results.push({html:`<strong>${strength}</strong> ${chemistry} signature${extra}`,plain:`${strength} ${chemistry} signature${extra}`});
-      });
-      if(side.length){
-        const msg=level===1?'Unclassified anomaly detected.':'Unusual non-mineral signature detected.';
-        results.push({html:`<strong>${msg}</strong>`,plain:msg});
-      }
-    }else{
-      const groups=new Map();
-      geo.forEach(tile=>{
-        if(!groups.has(tile.material))groups.set(tile.material,{count:0,types:new Set()});
-        const g=groups.get(tile.material);g.count++;g.types.add(tile.depositType);
-      });
-      [...groups.entries()].sort((a,b)=>b[1].count-a[1].count).forEach(([key,g])=>{
-        const strength=signalStrength(g.count);
-        const identified=isDiscovered(key)?MATERIALS[key].name:'Unknown mineral';
-        results.push({html:`<strong>${strength} ${identified}</strong> signal · ${depositPattern(g.types)}`,plain:`${strength} ${identified} signal · ${depositPattern(g.types)}`});
-      });
-      const fossilCount=side.filter(t=>MATERIALS[t.material].family==='fossil').length;
-      const artifactCount=side.filter(t=>MATERIALS[t.material].family==='artifact').length;
-      if(fossilCount)results.push({html:'<strong>Fossil signature detected.</strong>',plain:'Fossil signature detected.'});
-      if(artifactCount)results.push({html:'<strong>Historical-object signature detected.</strong>',plain:'Historical-object signature detected.'});
-    }
-
-    return results.length?results:[{html:'No significant mineral signature detected.',plain:'No significant mineral signature detected.'}];
-  }
-
-  function mineTile(index){
-    const face=state.face,tile=face.tiles[index];
-    if(!tile||tile.revealed||face.durability<=0)return;
-    if(state.currentDepth===6&&!state.upgrades.geothermalGear){
-      heatWarningVisible=true;
-      setMineMessage('🌡️','Too hot to work safely.','You’ll need Geothermal Protective Gear before you can mine in the Epithermal Zone.');
-      renderMine();
-      return;
-    }
-    tile.revealed=true;
-    if(!state.postgame?.completed)face.durability--;
-    state.meta.tilesMined++;
-    state.meta.depthsMined=state.meta.depthsMined||{};
-    state.meta.depthsMined[state.currentDepth]=(state.meta.depthsMined[state.currentDepth]||0)+1;
-
-    const hadDoubleScan=(face.scanCounts?.[index]||0)>=2;
-    const inMetalZone=(face.metalSignalTiles||[]).includes(index);
-
-    if(tile.special==='geode'){
-      state.postgame.uncrackedGeodes++;
-      face.finds.__geode=(face.finds.__geode||0)+1;
-      setMineMessage('🪨','Geode found.','Something is rattling inside. Take it back to the Workbench and crack it open.');
-      showToast('Geode found 🪨');
-    }else if(tile.material){
-      const exceptional=collectFind(tile.material);
-      face.finds[tile.material]=(face.finds[tile.material]||0)+1;
-      if(hadDoubleScan)state.meta.anomalyFinds++;
-      if(inMetalZone&&isMetalTarget(tile.material))state.meta.metalSignalFinds++;
-      if(face.durability===0)state.meta.lastSwingFinds++;
-      const m=MATERIALS[tile.material];
-      if(exceptional){
-        setMineMessage('✨','Exceptional specimen!',exceptional.label);
-        showToast(`Exceptional specimen: ${exceptional.label} ✨`);
-      }else{
-        setMineMessage('✦',`${m.name}!`,findMessage(tile.material));
-        showToast(`Found ${m.name}!`);
-      }
-      maybeAnnounceDeposit(tile.depositId);
-    }else{
-      setMineMessage('🪨','Crunch.','Nothing in that tile. Pick another spot.');
-    }
-
-    if(face.durability<=0){
-      state.meta.facesFinished++;
-      setMineMessage('⛏️','Pick worn out.','That face is finished. Return to the surface for a fresh one.');
-      showToast('Face finished.');
-    }
-
-    checkAchievements();
-    saveState();
-    renderMine();
-    renderWorkbench();
-  }
-
-  function collectFind(k){
-    const m=MATERIALS[k],stage=m.stages[0];
-    state.stats[k].found++;
-    if(!state.discovery)state.discovery=emptyDiscovery();
-    if(!state.discovery[k])state.discovery[k]={discovered:false,depths:[]};
-    state.discovery[k].discovered=true;
-    if(!state.discovery[k].depths.includes(state.currentDepth))state.discovery[k].depths.push(state.currentDepth);
-    state.discovery[k].depths.sort((a,b)=>a-b);
-
-    if(state.postgame?.completed && exceptionalEligible(k) && Math.random()<0.055){
-      const item=makeExceptional(k);
-      state.postgame.vault.push(item);
-      state.postgame.exceptionalFound++;
-      return item;
-    }
-
-    state.inventory[k][stage]++;
-    if(canAutoProcess(k) && state.settings.autoProcessByMaterial[k])autoProcessOne(k);
-    return null;
-  }
-
-  function canProcessMaterial(k){ return state.upgrades.workshop >= (MATERIALS[k].workshopRequired||0); }
-  function canAutoProcess(k){ return hasProcessing(k) && isMastered(k) && canProcessMaterial(k); }
-
-  function autoProcessOne(k){
-    if(!canAutoProcess(k))return;
-    const m=MATERIALS[k];
-    let current=m.stages[0],guard=0;
-    while(m.process?.[current] && state.inventory[k][current]>0 && guard<6){
-      const next=m.process[current];
-      state.inventory[k][current]--;
-      state.inventory[k][next]++;
-      state.stats[k].processed++;
-      current=next;
-      guard++;
-    }
-  }
-
-  function maybeAnnounceDeposit(id){
-    const d=state.face.deposits.find(x=>x.id===id);
-    if(!d||d.announced||['isolated','side'].includes(d.type))return;
-    const count=state.face.tiles.filter(t=>t.depositId===id&&t.revealed).length;
-    const threshold=d.type==='large'?3:2;
-    if(count>=threshold){
-      d.announced=true;
-      showToast(`${d.type==='large'?'Rich vein':'Vein'} discovered: ${MATERIALS[d.material].name}`);
-    }
-  }
-
-  function findMessage(k){
-    return ({
-      quartz:'A quartz specimen. Common does not mean useless.',
-      amethyst:'Purple quartz. There may be more nearby.',
-      hematite:'Hematite: an iron ore. Refine it or keep the natural specimen.',
-      chalcopyrite:'Chalcopyrite: a copper-bearing ore.',
-      garnet:'A garnet specimen from the Lower Works.',
-      topaz:'Topaz. Hard, bright, and worth handling carefully.',
-      pyrite:'Pyrite. Metallic, brassy, and absolutely not failed gold.',
-      citrine:'Citrine: warm-coloured quartz from the Deep Gallery.',
-      calcite:'Calcite. Common, important, and much softer than quartz.',
-      fluorite:'Fluorite. Cubic crystals, wild colours, and an excellent UV-lamp favourite.',
-      aquamarine:'Aquamarine: blue-green beryl. Your cutter will need serious equipment for this one.',
-      sapphire:'Sapphire: gem corundum, and one of the hardest common gemstones.',
-      roseQuartz:'Rose quartz: another member of the quartz family, this time in pink.',
-      malachite:'Malachite: vivid green copper mineral with unmistakable banding.',
-      ruby:'Ruby: red corundum. Same mineral family as sapphire, very different colour.',
-      emerald:'Emerald: green beryl, the same mineral family as aquamarine.',
-      cassiterite:'Cassiterite: the principal ore of tin.',
-      galena:'Galena: dense, metallic lead ore with a habit of forming cubes.',
-      sphalerite:'Sphalerite: the principal ore of zinc.',
-      scheelite:'Scheelite: tungsten ore with a famous blue-white UV surprise.',
-      willemite:'Willemite. Under UV, some specimens glow an absurd green; fluorescence does not mean radioactivity.',
-      hackmanite:'Hackmanite: a sodalite relative that can temporarily change colour after UV exposure.',
-      apatite:'Apatite. Mohs hardness 5, and extremely good at impersonating other minerals.',
-      opal:'Opal: hydrated silica, technically a mineraloid rather than a true mineral.',
-      diamond:'Diamond: crystalline carbon from far deeper conditions, carried upward by ancient volcanic activity.',
-      obsidian:'Obsidian: volcanic glass, frozen before crystals had time to grow.',
-      olivine:'Olivine. If this material is gem-quality, the cut stone gets another name: peridot.',
-      nativeSulfur:'Native sulfur: unmistakably yellow elemental sulfur from a geothermal environment.',
-      rhodochrosite:'Rhodochrosite: pink manganese carbonate from a hydrothermal vein.',
-      adularia:'Adularia: low-temperature potassium feldspar and a classic clue to some epithermal systems.',
-      acanthite:'Acanthite: silver sulfide. There is actual silver hiding in that dark ore.',
-      nativeGold:'Native gold. No cartoon gold ore required; sometimes the metal occurs as itself.',
-      fernImpression:'A fern impression: plant life preserved as a delicate pattern in stone.',
-      surveyCompass:'A brass survey compass. Someone was mapping these workings long before you.',
-      trilobite:'A fossil! The Fossil Wing would like a word.',
-      ammonite:'An ammonite! A coiled fossil from an ancient sea.',
-      crinoidStem:'A crinoid stem fossil: a little piece of an ancient marine animal.',
-      brachiopod:'A brachiopod fossil. Clam-shaped, but definitely not a clam.',
-      belemnite:'A belemnite guard: the bullet-shaped fossil of an extinct squid-like animal.',
-      miningTag:'A historical mining tag. Someone worked this ground before you.',
-      miningLamp:'An old mining lamp. A piece of the mine’s human history survived down here.',
-      surveyMarker:'A worn survey marker. Somebody mapped this place long before you.',
-      drillBit:'An old drill bit. Hard-rock mining leaves hardware behind.',
-      railSpike:'An old rail spike from the mine’s haulage system. The detector earned that beep.'
-    })[k]||'Something interesting came out of the rock.';
-  }
-
-  function setMineMessage(icon,title,body){
-    els.mineMessage.innerHTML=`<span class="message-icon">${icon}</span><div><strong>${title}</strong><p>${body}</p></div>`;
-  }
-
-  function renderAll(){
-    renderPostgameAccess();renderMine();renderWorkbench();renderMuseum();renderPostgameWorkbench();renderPersonalCollection();renderAchievements();renderUpgrades();renderMobileHud();
-  }
-
-  function renderMine(){
-    const f=state.face,max=currentPickSwings();
-    els.depthName.textContent=DEPTHS[state.currentDepth].name;
-    els.depthNumber.textContent=`Depth ${state.currentDepth}`;
-    els.durability.textContent=state.postgame?.completed?'∞':f.durability;
-    els.maxDurability.textContent=state.postgame?.completed?'∞':max;
-    els.durabilityMeter.style.width=state.postgame?.completed?'100%':`${Math.max(0,f.durability/max*100)}%`;
-    if(els.depthFieldNote)els.depthFieldNote.innerHTML=`<span class="status-label">Field note</span><p>${DEPTHS[state.currentDepth].note}</p>`;
-    els.mineBoard.classList.toggle('epithermal-board',state.currentDepth===6);
-    els.surveyLevel.textContent=SURVEY_LEVELS[state.upgrades.surveying].name;
-    els.mineBalance.textContent=formatMoney(state.credits);
-    els.scanUseSummary.textContent=state.currentDepth===6&&!state.upgrades.scannerHeatShield?'heat shield required':state.upgrades.surveying>0?`${f.scanUsesRemaining}/${currentMaxScans()} scans left`:'locked';
-    renderDepthSelector();renderSurvey();renderMetalDetector();renderGeodeFinder();renderBoard();renderFaceFinds();renderMobileHud();
-  }
-
-  function renderDepthSelector(){
-    els.depthSelector.innerHTML='';
-    Object.keys(DEPTHS).forEach(x=>{
-      const d=Number(x),b=document.createElement('button');
-      b.type='button';b.className=`depth-chip ${d===state.currentDepth?'active':''}`;b.disabled=d>state.unlockedDepth;
-      b.textContent=d<=state.unlockedDepth?`Depth ${d} · ${DEPTHS[d].name}`:`Depth ${d} · Locked`;
-      b.addEventListener('click',()=>setDepth(d));els.depthSelector.appendChild(b);
-    });
-  }
-
-  function renderSurvey(){
-    const level=state.upgrades.surveying,f=state.face;
-    els.scanButton.classList.toggle('active',scanMode);
-
-    if(state.currentDepth===6&&!state.upgrades.scannerHeatShield){
-      els.scanButton.disabled=true;
-      els.scanButton.querySelector('strong').textContent='Scan area';
-      els.scanButtonStatus.textContent='Needs heat shield';
-      return;
-    }
-
-    if(level===0){
-      els.scanButton.disabled=true;
-      els.scanButton.querySelector('strong').textContent='Scan area';
-      els.scanButtonStatus.textContent='Locked';
-      return;
-    }
-
-    els.scanButton.disabled=f.scanUsesRemaining<=0;
-    els.scanButton.querySelector('strong').textContent=scanMode?'Cancel scan':'Scan area';
-    els.scanButtonStatus.textContent=scanMode?`Tap a tile · ${f.scanUsesRemaining} left`:`${f.scanUsesRemaining}/${currentMaxScans()} scans`;
-  }
-
-  function renderMetalDetector(){
-    if(state.currentDepth===6&&!state.upgrades.detectorHeatShield){
-      els.metalDetectorButton.disabled=true;
-      els.metalDetectorButton.querySelector('strong').textContent='Sweep face';
-      els.detectorButtonStatus.textContent='Needs heat shield';
-      return;
-    }
-    if(!state.upgrades.metalDetector){
-      els.metalDetectorButton.disabled=true;
-      els.metalDetectorButton.querySelector('strong').textContent='Sweep face';
-      els.detectorButtonStatus.textContent='Locked';
-      return;
-    }
-
-    const used=!!state.face.metalDetectorUsed;
-    els.metalDetectorButton.disabled=used;
-    els.metalDetectorButton.querySelector('strong').textContent='Sweep face';
-    els.detectorButtonStatus.textContent=used?'Used this face':'1/1 sweep';
-  }
-
-  function renderGeodeFinder(){
-    if(!els.geodeFinderButton)return;
-    if(!state.postgame?.completed){
-      els.geodeFinderButton.classList.add('hidden');
-      return;
-    }
-    els.geodeFinderButton.classList.remove('hidden');
-    const cartridges=state.postgame.geodeCartridges||0;
-    const used=!!state.face.geodeFinderUsed;
-    els.geodeFinderButton.disabled=used||cartridges<1;
-    els.geodeFinderButton.querySelector('strong').textContent='Find geode';
-    if(used)els.geodeFinderStatus.textContent='Used this face';
-    else if(cartridges<1)els.geodeFinderStatus.textContent='No cartridges';
-    else els.geodeFinderStatus.textContent=`${cartridges} cartridge${cartridges===1?'':'s'} left`;
-  }
-
-  function buildIcon(key,forTile=false,stage=null){
-    const m=MATERIALS[key],span=document.createElement('span');
-    if(!forTile)span.classList.add('material-icon');
-    m.iconClass.split(' ').forEach(c=>span.classList.add(c));
-    if(!forTile&&stage==='refined'&&key==='hematite'){span.classList.remove('hematite');span.classList.add('iron');}
-    if(!forTile&&stage==='refined'&&key==='chalcopyrite'){span.classList.remove('chalcopyrite');span.classList.add('copper');}
-    if(!forTile&&stage==='refined'&&key==='cassiterite'){span.classList.remove('cassiterite');span.classList.add('tin');}
-    if(!forTile&&stage==='refined'&&key==='galena'){span.classList.remove('galena');span.classList.add('lead');}
-    if(!forTile&&stage==='refined'&&key==='sphalerite'){span.classList.remove('sphalerite');span.classList.add('zinc');}
-    if(!forTile&&stage==='refined'&&key==='scheelite'){span.classList.remove('scheelite');span.classList.add('tungsten');}
-    if(!forTile&&stage==='refined'&&key==='acanthite'){span.classList.remove('acanthite');span.classList.add('silver');}
-    if(forTile&&m.family==='mineral')span.classList.add('gem');
-    if(forTile&&m.family==='ore')span.classList.add('ore');
-    if(SPARKLE_KEYS.has(key)){
-      span.classList.add('sparkle-gem');
-      const seed=[...`${key}-${stage||'raw'}-${forTile?'tile':'ui'}`].reduce((n,ch)=>n+ch.charCodeAt(0),0)%7;
-      span.style.setProperty('--sparkle-delay',`${-seed}.2s`);
-    }
-    if(UV_CLASSES[key])span.classList.add('uv-reactive',UV_CLASSES[key]);
-    if(m.iconText)span.textContent=m.iconText;
-    return span;
-  }
-
-  function renderBoard(){
-    els.mineBoard.innerHTML='';
-    const hints=new Set(state.face.hints||[]);
-
-    state.face.tiles.forEach(t=>{
-      const b=document.createElement('button');
-      b.type='button';b.className='rock';b.setAttribute('aria-label',`Mine tile ${t.index+1}`);
-      const scans=state.face.scanCounts?.[t.index]||0;
-      if(scans>=1)b.classList.add('scan-area');
-      if(scans>=2)b.classList.add('scan-overlap');
-      if((state.face.metalSignalTiles||[]).includes(t.index)&&!t.revealed)b.classList.add('metal-signal');
-      if(state.face.geodeHintTile===t.index&&!t.revealed)b.classList.add('geode-hint');
-      if(scanMode)b.classList.add('scan-selectable');
-
-      if(t.revealed){
-        b.classList.add('revealed');
-        if(t.special==='geode'){
-          b.classList.add('find','geode-tile');
-          const i=document.createElement('span');i.className='tile-find geode-find';i.appendChild(buildGeodeVisual(null,false));b.appendChild(i);
-          b.setAttribute('aria-label','Revealed geode');
-        }else if(t.material){
-          b.classList.add('find');
-          const i=buildIcon(t.material,true);i.classList.remove('material-icon');i.classList.add('tile-find');b.appendChild(i);
-          b.setAttribute('aria-label',`Revealed ${MATERIALS[t.material].name}`);
-        }else{
-          b.classList.add('empty');b.setAttribute('aria-label','Revealed empty rock');
-        }
-        if(!scanMode)b.disabled=true;
-      }else{
-        if(hints.has(t.index)){
-          const mark=document.createElement('span');mark.className='prospect-mark';mark.setAttribute('aria-hidden','true');b.appendChild(mark);
-        }
-        if(state.face.geodeHintTile===t.index){
-          const mark=document.createElement('span');mark.className='geode-hint-mark';mark.setAttribute('aria-hidden','true');mark.textContent='◉';b.appendChild(mark);
-        }
-        if(scans>=2&&t.material){
-          const shadow=document.createElement('span');shadow.className='scan-anomaly-shadow';shadow.setAttribute('aria-hidden','true');b.appendChild(shadow);
-        }
-        b.disabled=!scanMode&&state.face.durability<=0;
-      }
-
-      if(!b.disabled)b.addEventListener('click',()=>handleTile(t.index));
-      els.mineBoard.appendChild(b);
-    });
-
-    if(heatWarningVisible&&state.currentDepth===6&&!state.upgrades.geothermalGear){
-      const warning=document.createElement('div');
-      warning.className='mine-heat-warning';
-      warning.setAttribute('role','status');
-      warning.innerHTML='<strong>🌡️ Too hot to mine safely</strong><span>Geothermal Protective Gear required.</span>';
-      els.mineBoard.appendChild(warning);
-    }
-  }
-
-  function renderFaceFinds(){
-    const list=Object.entries(state.face.finds).filter(([,n])=>n>0);
-    els.faceFinds.innerHTML='';
-    if(!list.length){
-      const empty=document.createElement('span');empty.className='face-find-empty';empty.textContent='Nothing yet';els.faceFinds.appendChild(empty);return;
-    }
-    list.forEach(([k,n])=>{
-      const pill=document.createElement('span');pill.className='face-find-pill';pill.textContent=k==='__geode'?`Geode ×${n}`:`${MATERIALS[k].name} ×${n}`;els.faceFinds.appendChild(pill);
-    });
-  }
-
-  function renderMobileHud(){
-    if(!els.mobileMineHud)return;
-    els.mobileMineHud.classList.toggle('hidden',activePanel!=='mine');
-    const max=currentPickSwings();
-    els.mobileDurability.textContent=state.postgame?.completed?'⛏️ ∞ · gilded steel':`⛏️ ${state.face.durability} / ${max}`;
-    els.mobileScans.textContent=state.upgrades.surveying>0?`⌁ ${state.face.scanUsesRemaining} / ${currentMaxScans()}`:'⌁ locked';
-  }
-
-  function renderWorkbench(){
-    const discoveredCount=Object.keys(MATERIALS).filter(k=>isDiscovered(k)).length;
-    const totalSubjects=Object.keys(MATERIALS).length;
-    if(els.workbenchDiscoveryCount){
-      els.workbenchDiscoveryCount.textContent=`${discoveredCount} / ${totalSubjects} specimens discovered${discoveredCount===totalSubjects?' ✦':''}`;
-      els.workbenchDiscoveryCount.closest('.workbench-discovery-card')?.classList.toggle('complete',discoveredCount===totalSubjects);
-    }
-    const bulk=masteredSellSummary();
-    if(els.masteredSellValue)els.masteredSellValue.textContent=`${formatMoney(bulk.value)} · ${bulk.items} item${bulk.items===1?'':'s'}`;
-    if(els.sellAllMasteredButton){
-      els.sellAllMasteredButton.disabled=bulk.items<1;
-      els.sellAllMasteredButton.textContent=bulk.items>0?`Sell All · ${formatMoney(bulk.value)}`:'Sell All';
-    }
-
-    els.workbenchList.innerHTML='';
-    const discoveredEntries=Object.entries(MATERIALS).filter(([k])=>isDiscovered(k));
-    if(!discoveredEntries.length){
-      els.workbenchList.innerHTML='<div class="workbench-empty"><strong>Your field notebook is empty.</strong><p>Find your first specimen in the mine and its Workbench entry will appear here.</p></div>';
-      return;
-    }
-    discoveredEntries.forEach(([k,m])=>{
-      const stock=totalInventory(k),mastered=isMastered(k);
-      const card=document.createElement('article');
-      card.className=`workbench-card ${openWorkbenchKey===k?'open':''} ${stock>0?'has-stock':''} ${mastered?'mastered':''}`;
-
-      const toggle=document.createElement('button');
-      toggle.type='button';toggle.className='accordion-toggle';toggle.setAttribute('aria-expanded',openWorkbenchKey===k?'true':'false');
-
-      const alert=document.createElement('span');
-      alert.className=`inventory-alert ${stock>0?'visible':''}`;
-      alert.textContent=stock>0?`✦ ${stock}`:'';
-      alert.setAttribute('aria-hidden',stock>0?'false':'true');
-      toggle.appendChild(alert);
-
-      toggle.appendChild(buildIcon(k));
-
-      const main=document.createElement('div');main.className='accordion-main';
-      main.innerHTML=`<h3>${m.name}</h3><div class="material-depths"><span>⌖</span> Found at: <strong>${depthKnowledgeText(k)}</strong></div><div class="summary-chips">${m.stages.map(s=>`<span class="summary-chip">${m.stageLabels[s]} ${state.inventory[k][s]} · ${formatMoney(m.prices[s])}</span>`).join('')}</div>`;
-      toggle.appendChild(main);
-
-      const chev=document.createElement('span');chev.className='chevron';chev.textContent='⌄';toggle.appendChild(chev);
-      toggle.addEventListener('click',()=>{openWorkbenchKey=openWorkbenchKey===k?null:k;renderWorkbench();});
-      card.appendChild(toggle);
-
-      const details=document.createElement('div');details.className='workbench-details';details.innerHTML=workbenchDetails(k);card.appendChild(details);
-      els.workbenchList.appendChild(card);
-    });
-
-    els.workbenchList.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('click',workbenchAction));
-  }
-
-  function renderPostgameWorkbench(){
-    if(!els.postgameWorkbench)return;
-    if(!state.postgame?.completed){els.postgameWorkbench.classList.add('hidden');els.postgameWorkbench.innerHTML='';return;}
-    els.postgameWorkbench.classList.remove('hidden');
-    const vault=state.postgame.vault||[];
-    const last=state.postgame.lastGeode;
-    els.postgameWorkbench.innerHTML=`
-      <div class="collection-overview">
-        <div class="collection-mini-stat"><span class="status-label">Finder cartridges</span><strong>${state.postgame.geodeCartridges||0}</strong></div>
-        <div class="collection-mini-stat"><span class="status-label">Uncracked geodes</span><strong>${state.postgame.uncrackedGeodes||0}</strong></div>
-        <div class="collection-mini-stat"><span class="status-label">Special finds stored</span><strong>${vault.length}</strong></div>
-      </div>
-      <div class="postgame-station geode-cracker-station">
-        <div class="geode-station-visual" id="closedGeodePreview"></div>
-        <div class="postgame-station-copy"><span class="status-label">Geode Cracking Station</span><strong>Crack it or keep the mystery.</strong><p>Unopened geodes can be sold as-is, or cracked for a reveal. Opened geodes can then be displayed or sold individually.</p></div>
-        <div class="geode-action"><span>${state.postgame.uncrackedGeodes} uncracked</span><div class="geode-action-buttons"><button id="crackGeodeButton" class="primary-button" type="button" ${state.postgame.uncrackedGeodes<1?'disabled':''}>CRACK ONE</button><button id="sellUncrackedGeodeButton" class="secondary-button" type="button" ${state.postgame.uncrackedGeodes<1?'disabled':''}>SELL ONE · ${formatMoney(UNCRACKED_GEODE_SELL_VALUE)}</button></div></div>
-        ${last?`<div class="geode-reveal"><span id="lastGeodeVisual" class="geode-reveal-icon"></span><div><span class="status-label">Last cracked</span><strong>${last.label}</strong><p>${last.detail||geodeById(last.subtype)?.detail||''}</p></div></div>`:''}
-      </div>
-      <div class="postgame-vault">
-        <div class="postgame-vault-heading"><div><span class="status-label">Special finds</span><strong>Collection Vault</strong></div><span>${vault.length} waiting</span></div>
-        <p class="vault-help">Exceptional specimens and opened geodes stay here until you display or sell them. Items on display are protected.</p>
-        <div id="postgameVaultList" class="postgame-vault-list">${vault.length?'':'<div class="vault-empty">Nothing waiting right now. Time to make more rocks go crunch.</div>'}</div>
-      </div>`;
-
-    els.postgameWorkbench.querySelector('#closedGeodePreview')?.appendChild(buildGeodeVisual(null,false));
-    if(last)els.postgameWorkbench.querySelector('#lastGeodeVisual')?.appendChild(buildGeodeVisual(last.subtype,true));
-    els.postgameWorkbench.querySelector('#crackGeodeButton')?.addEventListener('click',crackGeode);
-    els.postgameWorkbench.querySelector('#sellUncrackedGeodeButton')?.addEventListener('click',sellUncrackedGeode);
-
-    const list=els.postgameWorkbench.querySelector('#postgameVaultList');
-    if(list&&vault.length){
-      vault.forEach(item=>{
-        const value=specialItemSellValue(item);
-        const card=document.createElement('div');card.className=`vault-item ${item.kind}`;
-        const icon=document.createElement('div');icon.className='vault-item-icon';
-        if(item.kind==='exceptional'&&item.key)icon.appendChild(buildIcon(item.key));
-        else if(item.kind==='geode')icon.appendChild(buildGeodeVisual(item.subtype,true));
-        else icon.textContent=item.icon||'🪨';
-        const copy=document.createElement('div');copy.className='vault-item-copy';copy.innerHTML=`<strong>${item.label}</strong><span>${item.kind==='exceptional'?'Exceptional specimen':'Opened geode'} · sells for ${formatMoney(value)}</span>`;
-        const actions=document.createElement('div');actions.className='vault-item-actions';
-        const display=document.createElement('button');display.type='button';display.className='mini-button personal-display';display.textContent='Display';display.disabled=firstEmptyPersonalSlot()<0;display.addEventListener('click',()=>displayVaultItem(item.id));
-        const sell=document.createElement('button');sell.type='button';sell.className='mini-button vault-sell';sell.textContent=`Sell · ${formatMoney(value)}`;sell.addEventListener('click',()=>sellVaultItem(item.id));
-        actions.append(display,sell);card.append(icon,copy,actions);list.appendChild(card);
-      });
-    }
-  }
-
-  function crackGeode(){
-    if(!state.postgame?.completed||state.postgame.uncrackedGeodes<1)return;
-    state.postgame.uncrackedGeodes--;
-    const interior=geodeById(weightedGeodeInterior());
-    const item={id:postgameItemId(),kind:'geode',subtype:interior.id,label:interior.label,icon:interior.icon,detail:interior.detail,sellValue:interior.sellValue};
-    state.postgame.vault.push(item);
-    state.postgame.geodesCracked++;
-    state.postgame.lastGeode=item;
-    checkAchievements();saveState();renderAll();showToast(`${interior.label}! ✦`);
-  }
-
-  function sellUncrackedGeode(){
-    if(!state.postgame?.completed||state.postgame.uncrackedGeodes<1)return;
-    state.postgame.uncrackedGeodes--;
-    state.credits+=UNCRACKED_GEODE_SELL_VALUE;
-    saveState();renderAll();showToast(`Unopened geode sold for ${formatMoney(UNCRACKED_GEODE_SELL_VALUE)}.`);
-  }
-
-  function sellVaultItem(id){
-    const i=(state.postgame.vault||[]).findIndex(x=>x.id===id);if(i<0)return;
-    const item=state.postgame.vault[i],value=specialItemSellValue(item);if(value<1)return;
-    state.postgame.vault.splice(i,1);
-    state.credits+=value;
-    saveState();renderAll();showToast(`${item.label} sold for ${formatMoney(value)}.`);
-  }
-
-  function displayRegularSpecimen(k,stage){
-    if(!state.postgame?.completed||state.inventory[k]?.[stage]<1)return;
-    const slot=firstEmptyPersonalSlot();if(slot<0){showToast('Personal Collection is full. Remove something first.');return;}
-    state.inventory[k][stage]--;
-    state.postgame.personalSlots[slot]={id:postgameItemId(),kind:'regular',key:k,stage,label:`${MATERIALS[k].name} · ${MATERIALS[k].stageLabels[stage]}`};
-    checkAchievements();saveState();renderAll();showToast(`${MATERIALS[k].name} placed in Personal Collection.`);
-  }
-
-  function displayVaultItem(id){
-    const slot=firstEmptyPersonalSlot();if(slot<0){showToast('Personal Collection is full. Remove something first.');return;}
-    const i=state.postgame.vault.findIndex(x=>x.id===id);if(i<0)return;
-    state.postgame.personalSlots[slot]=state.postgame.vault.splice(i,1)[0];
-    checkAchievements();saveState();renderAll();showToast('Added to Personal Collection.');
-  }
-
-  function removePersonalSlot(index){
-    const item=state.postgame.personalSlots[index];if(!item)return;
-    state.postgame.personalSlots[index]=null;
-    if(item.kind==='regular'&&item.key&&item.stage&&state.inventory[item.key]?.[item.stage]!==undefined)state.inventory[item.key][item.stage]++;
-    else state.postgame.vault.push(item);
-    saveState();renderAll();showToast('Returned to storage.');
-  }
-
-  function renderPersonalCollection(){
-    if(!els.personalCollectionSection||!els.personalCollectionGrid)return;
-    if(!state.postgame?.completed){els.personalCollectionSection.classList.add('hidden');return;}
-    els.personalCollectionSection.classList.remove('hidden');
-    els.personalCollectionGrid.innerHTML='';
-    state.postgame.personalSlots.forEach((item,index)=>{
-      const slot=document.createElement('div');slot.className=`personal-slot ${item?'filled':''}`;
-      if(!item){slot.innerHTML=`<span class="personal-slot-number">${String(index+1).padStart(2,'0')}</span><span class="personal-empty">Empty display</span>`;}
-      else{
-        const visual=document.createElement('div');visual.className='personal-slot-visual';
-        if((item.kind==='regular'||item.kind==='exceptional')&&item.key)visual.appendChild(buildIcon(item.key,false,item.stage||MATERIALS[item.key].stages[0]));
-        else if(item.kind==='geode')visual.appendChild(buildGeodeVisual(item.subtype,true));
-        else visual.textContent=item.icon||'🪨';
-        const copy=document.createElement('div');copy.className='personal-slot-copy';copy.innerHTML=`<strong>${item.label}</strong><span>${item.kind==='regular'?'Favourite specimen':item.kind==='exceptional'?'Exceptional specimen':'Opened geode'}</span>`;
-        const remove=document.createElement('button');remove.type='button';remove.className='mini-button';remove.textContent='Remove';remove.addEventListener('click',()=>removePersonalSlot(index));
-        slot.append(visual,copy,remove);
-      }
-      els.personalCollectionGrid.appendChild(slot);
-    });
-  }
-
-  function checkGameCompletion(){
-    if(state.postgame?.completed||!isMuseumComplete())return false;
-    state.postgame.completed=true;
-    state.postgame.completedAt=new Date().toISOString();
-    state.postgame.completionSeen=false;
-    state.postgame.geodeCartridges=Math.max(state.postgame.geodeCartridges||0,3);
-    state.upgrades.scannerHeatShield=true;
-    state.upgrades.detectorHeatShield=true;
-    state.face=generateFace(state.currentDepth);
-    checkAchievements();
-    saveState();
-    return true;
-  }
-
-  function completionDate(){
-    if(!state.postgame?.completedAt)return 'Completed';
-    try{return new Date(state.postgame.completedAt).toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});}catch{return 'Completed';}
-  }
-
-  function renderCompletionPlaque(){
-    if(!els.completionPlaque)return;
-    if(!state.postgame?.completed){els.completionPlaque.classList.add('hidden');els.completionPlaque.innerHTML='';return;}
-    els.completionPlaque.classList.remove('hidden');
-    els.completionPlaque.innerHTML=`<div><span class="status-label">Permanent museum plaque</span><strong>🏆 True Rockhound</strong><p>Collection completed ${completionDate()} · ${state.meta.tilesMined.toLocaleString()} rock tiles mined · ${totalFound().toLocaleString()} specimens found</p></div><button id="reopenCompletionButton" class="secondary-button" type="button">View rewards</button>`;
-    els.completionPlaque.querySelector('#reopenCompletionButton')?.addEventListener('click',openCompletionModal);
-  }
-
-  function openCompletionModal(){
-    if(!state.postgame?.completed||!els.completionModal)return;
-    els.completionBody.innerHTML=`
-      <p>Every required museum specimen has been collected. Every depth has been opened.</p>
-      <p><strong>You are officially a true Rockhound.</strong></p>
-      <p><strong>You earned every bit of this. Nothing resets. Nothing gets taken away.</strong></p>
-      <div class="completion-rewards">
-        <div>🏆 <strong>Museum Completion Plaque</strong><span>A permanent record that you actually finished.</span></div>
-        <div>⛏️ <strong>Gilded Steel Pickaxe</strong><span>Effectively unbreakable. We considered solid gold. Gold is soft, heavy, and a terrible pickaxe material.</span></div>
-        <div>🖼️ <strong>Personal Collection</strong><span>A new postgame tab with thirty display spaces. No checklist. No percentage. Your rocks, your rules.</span></div>
-        <div>✨ <strong>Exceptional Specimens</strong><span>Unusually beautiful finds can now appear throughout every depth.</span></div>
-        <div>🪨 <strong>Geodes, Geode Cracker & Geode Finder</strong><span>Mystery cavities can now turn up in fresh rock faces. Crack, display, or sell them from Personal Collection, and use the museum-loaned finder when you want help hunting.</span></div>
-        <div>🌋 <strong>Postgame Prospecting</strong><span>Every depth stays open. There is nothing left you have to find.</span></div>
-      </div>
-      <p class="completion-line"><strong>There's nothing left you have to find.</strong><br>But there's always another rock.</p>
-      <div class="avery-thanks"><span class="status-label">One more thing</span><p>Thanks for sticking with Rockhound all the way to the bottom. I made this game because rocks are cool, learning things is fun, and I wanted an incremental game that actually lets you finish.</p><p><strong>I'm really glad you played. 🩵</strong></p><span>— Avery</span></div>`;
-    els.completionModal.classList.remove('hidden');
-    document.body.classList.add('modal-open');
-  }
-
-  function closeCompletionModal(){
-    if(!els.completionModal)return;
-    els.completionModal.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-    state.postgame.completionSeen=true;
-    saveState();renderAll();showToast('Postgame unlocked. Rock still go crunch. ✦');
-  }
-
-  function workbenchDetails(k){
-    const m=MATERIALS[k],s=state.stats[k],mastered=isMastered(k);
-    let automation='';
-    if(hasProcessing(k)){
-      if(mastered){
-        const on=!!state.settings.autoProcessByMaterial[k];
-        const equipmentReady=canProcessMaterial(k);
-        automation=`<div class="material-auto-footer ${equipmentReady?'':'locked'}"><div><strong>Auto-process</strong><span>${equipmentReady?'New finds → highest available stage.':`Needs ${WORKSHOP_LEVELS[m.workshopRequired||0].name}.`}</span></div><button class="toggle-switch ${on&&equipmentReady?'on':''}" data-action="toggle-auto" data-material="${k}" type="button" aria-label="Toggle ${m.name} auto-process" aria-pressed="${on&&equipmentReady?'true':'false'}" ${equipmentReady?'':'disabled'}></button></div>`;
-      }else{
-        automation=`<div class="material-auto-footer locked"><div><strong>Auto-process</strong><span>Unlocks when this museum set is complete.</span></div></div>`;
-      }
-    }
-
-    const rows=m.stages.map(stage=>{
-      const count=state.inventory[k][stage],next=m.process?.[stage],can=canProcessMaterial(k),donated=state.collection[k][stage];
-      const display=state.postgame?.completed?`<button class="mini-button personal-display" data-action="display" data-material="${k}" data-stage="${stage}" ${count<1||firstEmptyPersonalSlot()<0?'disabled':''}>Display</button>`:'';
-      return `<div class="stage-row"><div class="stage-copy"><strong>${m.stageLabels[stage]} · ${count} owned</strong><span>${formatMoney(m.prices[stage])} each</span>${next&&!can?`<span class="process-lock">Needs ${WORKSHOP_LEVELS[m.workshopRequired||0].name}</span>`:''}</div><div class="stage-actions">${next?`<button class="mini-button accent" data-action="process" data-material="${k}" data-stage="${stage}" ${count<1||!can?'disabled':''}>${m.processLabels[stage]}</button>`:''}<button class="mini-button donate" data-action="donate" data-material="${k}" data-stage="${stage}" ${count<1||donated?'disabled':''}>${donated?'In museum':'Donate'}</button><button class="mini-button" data-action="sell" data-material="${k}" data-stage="${stage}" ${count<1?'disabled':''}>Sell ${formatMoney(m.prices[stage])}</button>${display}</div></div>`;
-    }).join('');
-
-    return `<p class="material-subtitle">${m.subtitle}</p><div class="stats-grid"><div class="stat-box"><span>Found</span><strong>${s.found}</strong></div><div class="stat-box"><span>Sold</span><strong>${s.sold}</strong></div><div class="stat-box"><span>Donated</span><strong>${s.donated}</strong></div><div class="stat-box"><span>Processed</span><strong>${s.processed}</strong></div><div class="stat-box"><span>Earned</span><strong>${formatMoney(s.earned)}</strong></div></div>${rows}${automation}`;
-  }
-
-  function workbenchAction(e){
-    const b=e.currentTarget,k=b.dataset.material,stage=b.dataset.stage;
-    if(b.dataset.action==='process')processOne(k,stage);
-    if(b.dataset.action==='donate')donateOne(k,stage);
-    if(b.dataset.action==='sell')sellOne(k,stage);
-    if(b.dataset.action==='toggle-auto')toggleAutoProcess(k);
-    if(b.dataset.action==='display')displayRegularSpecimen(k,stage);
-  }
-
-  function processOne(k,stage){
-    const m=MATERIALS[k],next=m.process?.[stage];
-    if(!next||!canProcessMaterial(k)||state.inventory[k][stage]<1)return;
-    state.inventory[k][stage]--;state.inventory[k][next]++;state.stats[k].processed++;
-    checkAchievements();saveState();renderWorkbench();renderAchievements();showToast(`${m.name}: ${m.stageLabels[stage]} → ${m.stageLabels[next]}`);
-  }
-
-  function donateOne(k,stage){
-    if(state.collection[k][stage]||state.inventory[k][stage]<1)return;
-    const wasMastered=isMastered(k);
-    state.inventory[k][stage]--;state.collection[k][stage]=true;state.stats[k].donated++;
-    const nowMastered=isMastered(k);
-    if(!wasMastered&&nowMastered&&hasProcessing(k))state.settings.autoProcessByMaterial[k]=true;
-    checkAchievements();
-    const justCompleted=checkGameCompletion();
-    saveState();renderAll();
-    if(justCompleted){openCompletionModal();return;}
-    if(!wasMastered&&nowMastered){
-      showToast(hasProcessing(k)?`${MATERIALS[k].name} collection complete — auto-process unlocked ✦`:`${MATERIALS[k].name} collection complete ✦`);
-    }else{
-      showToast(`${MATERIALS[k].name} added to the museum ✦`);
-    }
-  }
-
-  function sellOne(k,stage){
-    if(state.inventory[k][stage]<1)return;
-    const value=MATERIALS[k].prices[stage];
-    state.inventory[k][stage]--;state.credits+=value;state.stats[k].sold++;state.stats[k].earned+=value;
-    checkAchievements();saveState();renderAll();showToast(`Sold for ${formatMoney(value)}.`);
-  }
-
-  function sellAllMastered(){
-    const bulk=masteredSellSummary();
-    if(bulk.items<1)return;
-
-    let sold=0,value=0;
-    Object.entries(MATERIALS).forEach(([k,m])=>{
-      if(!isBulkSellEligible(k))return;
-      m.stages.forEach(stage=>{
-        const qty=state.inventory[k][stage]||0;
-        if(qty<1)return;
-        const stageValue=qty*(m.prices[stage]||0);
-        state.inventory[k][stage]=0;
-        state.stats[k].sold+=qty;
-        state.stats[k].earned+=stageValue;
-        sold+=qty;
-        value+=stageValue;
-      });
-    });
-
-    state.credits+=value;
-    state.meta.sellAllUses++;
-    checkAchievements();
-    saveState();renderAll();
-    showToast(`Sold ${sold} bulk-sell item${sold===1?'':'s'} for ${formatMoney(value)}.`);
-  }
-
-  function toggleAutoProcess(k){
-    if(!canAutoProcess(k))return;
-    state.settings.autoProcessByMaterial[k]=!state.settings.autoProcessByMaterial[k];
-    saveState();renderWorkbench();showToast(`${MATERIALS[k].name} auto-process ${state.settings.autoProcessByMaterial[k]?'on':'off'}.`);
-  }
-
-  function isMastered(k){
-    const m=MATERIALS[k];
-    return !!m.mastery && m.stages.every(stage=>state.collection[k][stage]);
-  }
-
-  function setMuseumLighting(useUv){
-    if(useUv&&!state.upgrades.uvLamp)return;
-    const switchingOn=!!useUv&&!state.settings.museumUv;
-    state.settings.museumUv=!!useUv;
-    if(switchingOn)state.meta.uvViews=(state.meta.uvViews||0)+1;
-    checkAchievements();
-    saveState();
-    renderMuseum();
-  }
-
-  function renderMuseum(){
-    els.museumWings.innerHTML='';
-    const uvAvailable=!!state.upgrades.uvLamp;
-    els.museumLighting.classList.toggle('hidden',!uvAvailable);
-    if(!uvAvailable)state.settings.museumUv=false;
-    els.museumWings.classList.toggle('uv-mode',uvAvailable&&state.settings.museumUv);
-    els.normalLightButton.classList.toggle('active',!state.settings.museumUv);
-    els.uvLightButton.classList.toggle('active',!!state.settings.museumUv);
-    let filledTotal=0;
-    const total=Object.values(MATERIALS).reduce((a,m)=>a+m.stages.length,0);
-
-    WINGS.forEach(w=>{
-      const pairs=Object.entries(MATERIALS).filter(([,m])=>m.wing===w.id);
-      let wf=0,wt=0;
-      pairs.forEach(([k,m])=>{wt+=m.stages.length;wf+=m.stages.filter(s=>state.collection[k][s]).length;});
-      filledTotal+=wf;
-
-      const wing=document.createElement('section');
-      const compactWing=w.id==='fossils'||w.id==='history';
-      wing.className=`museum-wing ${compactWing?'compact-wing':''}`;
-      wing.innerHTML=`<div class="wing-heading"><h3>${w.name}</h3><span>${wf} / ${wt} filled</span></div>`;
-      const groupHost=document.createElement('div');
-      groupHost.className=compactWing?'museum-groups-grid':'';
-      wing.appendChild(groupHost);
-
-      pairs.forEach(([k,m])=>{
-        const group=document.createElement('div');
-        const gf=m.stages.filter(s=>state.collection[k][s]).length,mastered=isMastered(k),obscured=shouldObscureIdentity(k);
-        group.className=`museum-group ${mastered?'mastered':''} ${obscured?'undiscovered':''}`;
-        group.innerHTML=`<div class="museum-group-title"><strong>${obscured?'???':m.name}</strong><span>${obscured?'Unidentified':`${gf} / ${m.stages.length}`}</span></div>`;
-
-        const grid=document.createElement('div');
-        grid.className=`museum-specimen-grid ${m.stages.length>=3?'three':m.stages.length===2?'two':'one'}`;
-
-        m.stages.forEach(stage=>{
-          const filled=state.collection[k][stage];
-          const column=document.createElement('div');column.className=`museum-specimen-column ${filled?'filled':''} ${obscured?'unknown-specimen':''}`;
-          const specimen=document.createElement('div');specimen.className='museum-specimen';
-          const visual=document.createElement('div');visual.className='slot-visual';
-          if(obscured){
-            const mystery=document.createElement('span');mystery.className='unknown-material-icon';mystery.textContent='?';visual.appendChild(mystery);
-          }else visual.appendChild(buildIcon(k,false,stage));
-          specimen.appendChild(visual);
-          specimen.insertAdjacentHTML('beforeend',obscured?'<strong class="slot-stage">Unknown specimen</strong><span class="slot-state">Not identified</span>':`<strong class="slot-stage">${m.stageLabels[stage]}</strong>${filled?'':'<span class="slot-state">Not collected</span>'}`);
-          const fact=document.createElement('div');fact.className='specimen-fact-card';
-          const searchHint=!filled?museumSearchHint(k):'';
-          fact.innerHTML=obscured?`<p class="locked-fact">Find this specimen in the mine to identify it.${searchHint}</p>`:filled?`<p>${m.facts[stage]}</p>`:`<p class="locked-fact">Donate this form to unlock its fact.${searchHint}</p>`;
-          column.appendChild(specimen);column.appendChild(fact);grid.appendChild(column);
-        });
-
-        group.appendChild(grid);
-
-        if(mastered&&m.mastery){
-          const mastery=document.createElement('div');mastery.className='mastery-panel';
-          const unlock=hasProcessing(k)?`<span class="mastery-unlock">⚙ Auto-process unlocked</span>`:'';
-          mastery.innerHTML=`<strong>✦ Bonus discovery</strong><p>${m.mastery.fact}</p>${unlock}`;
-          group.appendChild(mastery);
-        }
-
-        groupHost.appendChild(group);
-      });
-
-      els.museumWings.appendChild(wing);
-    });
-
-    els.museumCount.textContent=`${filledTotal} / ${total}`;
-    els.museumMeter.style.width=`${filledTotal/total*100}%`;
-    renderCompletionPlaque();
-  }
-
-
-  function checkAchievements(silent=false){
-    let newlyUnlocked=[];
-    ACHIEVEMENTS.forEach(a=>{
-      if(state.achievements[a.id])return;
-      let unlocked=false;
-      try{unlocked=!!a.condition(state);}catch{unlocked=false;}
-      if(unlocked){
-        state.achievements[a.id]={unlockedAt:new Date().toISOString()};
-        newlyUnlocked.push(a);
-      }
-    });
-    if(newlyUnlocked.length&&!silent){
-      const a=newlyUnlocked[newlyUnlocked.length-1];
-      showToast(`Achievement unlocked: ${a.name} 🏆`);
-    }
-    if(newlyUnlocked.length)saveState();
-    return newlyUnlocked;
-  }
-
-  function renderAchievements(){
-    if(!els.achievementGrid)return;
-    checkAchievements(true);
-    const unlocked=ACHIEVEMENTS.filter(a=>state.achievements[a.id]).length;
-    els.achievementCount.textContent=`${unlocked} / ${ACHIEVEMENTS.length}`;
-    els.achievementMeter.style.width=`${unlocked/ACHIEVEMENTS.length*100}%`;
-    els.achievementGrid.innerHTML='';
-
-    const featured=new Set(['sio2Enjoyer','familyResemblance','berylBuddies','metalhead','lastSwingLuck','fourFloorsDown','allThatGlitters','glowShow','epithermal','diamondRough','actualGold','fossilRecord','historyBuff','mineralHall','oreHall','finalVein','tenGeodes']);
-    const special=new Set(['rockaholic','trueRockhound']);
-
-    ACHIEVEMENTS.forEach(a=>{
-      const earned=!!state.achievements[a.id];
-      const tier=special.has(a.id)?'tier-special':featured.has(a.id)?'tier-featured':'tier-small';
-      const card=document.createElement('article');
-      card.className=`achievement-card ${tier} ${earned?'unlocked':'locked'} ${a.hidden&&!earned?'hidden-achievement':''}`;
-      const name=a.hidden&&!earned?'???':a.name;
-      const desc=a.hidden&&!earned?'A hidden achievement.':maskUndiscoveredNames(a.description);
-      card.innerHTML=`<div class="achievement-icon">${earned?a.icon:'?'}</div><div><strong>${name}</strong><p>${desc}</p></div>`;
-      els.achievementGrid.appendChild(card);
-    });
-  }
-
-  function renderUpgrades(){
-    els.shopBalance.textContent=formatMoney(state.credits);
-    els.upgradeList.innerHTML='';
-
-    const addCard=(builder,label)=>{
-      try{
-        const card=builder();
-        if(card)els.upgradeList.appendChild(card);
-      }catch(err){
-        console.error(`Upgrade card failed: ${label}`,err);
-      }
-    };
-
-    addCard(depthCard,'mine depth');
-    if(state.unlockedDepth>=6)addCard(geothermalGearCard,'geothermal gear');
-    addCard(durabilityCard,'pick durability');
-    addCard(surveyCard,'scanner analysis');
-    addCard(scannerUsesCard,'scanner charges');
-    addCard(metalDetectorCard,'metal detector');
-    if(state.unlockedDepth>=6){
-      addCard(scannerHeatShieldCard,'scanner heat shielding');
-      addCard(detectorHeatShieldCard,'detector heat shielding');
-    }
-    if(state.unlockedDepth>=5)addCard(uvLampCard,'UV lamp');
-    addCard(workshopCard,'workshop');
-    if(state.postgame?.completed)addCard(geodeFinderCard,'geode finder');
-  }
-
-  function upgradeCard({icon,eyebrow,title,description,current,cost,label,disabled,onClick,maxText=null}){
-    const card=document.createElement('article');card.className='upgrade-card';
-    const action=maxText
-      ?`<div class="upgrade-action"><span class="max-state">${maxText}</span></div>`
-      :`<div class="upgrade-action"><span class="price-tag">${formatMoney(cost)}</span><button class="primary-button" type="button" ${disabled?'disabled':''}>${label}</button></div>`;
-    card.innerHTML=`<div class="upgrade-icon">${icon}</div><div class="upgrade-copy"><span class="status-label">${eyebrow}</span><h3>${title}</h3><p>${description}</p><span class="upgrade-current">${current}</span></div>${action}`;
-    const b=card.querySelector('button');if(b&&!disabled&&onClick)b.addEventListener('click',onClick);return card;
-  }
-
-  function depthCard(){
-    const nextDepth=state.unlockedDepth+1;
-    if(nextDepth>6)return upgradeCard({icon:'🪜',eyebrow:'Mine depth',title:'All depths unlocked',description:'The Upper Seam through the Epithermal Zone are all available.',current:'Depths 1–6 available',maxText:'MAX'});
-    const up=DEPTH_UPGRADES[nextDepth];
-    return upgradeCard({icon:'🪜',eyebrow:'Mine depth',title:`Unlock Depth ${nextDepth}`,description:up.description,current:`Current: Depths 1–${state.unlockedDepth}`,cost:up.cost,label:'Go deeper',disabled:state.credits<up.cost,onClick:buyDepth});
-  }
-
-  function geothermalGearCard(){
-    const owned=!!state.upgrades.geothermalGear,cost=2400;
-    const description='Heat-resistant protective clothing and equipment for working safely in the Epithermal Zone.';
-    if(owned)return upgradeCard({icon:'🥽',eyebrow:'Depth 6 access',title:'Geothermal Protective Gear',description,current:'Current: rated for Epithermal Zone work',maxText:'MAX'});
-    return upgradeCard({icon:'🥽',eyebrow:'Depth 6 access',title:'Geothermal Protective Gear',description,current:'Required to mine in the Epithermal Zone',cost,label:'Equip gear',disabled:state.unlockedDepth<6||state.credits<cost,onClick:buyGeothermalGear});
-  }
-
-  function durabilityCard(){
-    if(state.postgame?.completed)return upgradeCard({icon:'⛏️',eyebrow:'Completion reward',title:'Gilded Steel Pickaxe',description:'Effectively unbreakable. Solid gold would have been soft, heavy, and an objectively terrible material for a working pickaxe.',current:'Current: Gilded Steel Pickaxe · ∞ durability',maxText:'YOURS'});
-    const i=state.upgrades.durability,cur=DURABILITY_LEVELS[i],max=cur.cost===null,next=max?null:DURABILITY_LEVELS[i+1];
-    if(max)return upgradeCard({icon:'⛏️',eyebrow:'Pick durability',title:cur.label,description:'Built for the toughest rock in the deepest workings.',current:`Current: ${cur.label} · ${cur.swings} swings`,maxText:'MAX'});
-    return upgradeCard({icon:'⛏️',eyebrow:'Pick durability',title:`${cur.swings} → ${next.swings} swings`,description:'More swings per rock face.',current:`Current: ${cur.label} · ${cur.swings} swings`,cost:cur.cost,label:'Upgrade pick',disabled:state.credits<cur.cost,onClick:buyDurability});
-  }
-
-  function surveyCard(){
-    const cur=SURVEY_LEVELS[state.upgrades.surveying],max=cur.cost===null;
-    const mechanics='The scanner targets a 3×3 area. Surveyed tiles stay marked for the face, and scanning the same area twice can reveal a faint generic density shadow over occupied tiles.';
-    if(max)return upgradeCard({icon:'⌁',eyebrow:'Scanner analysis',title:cur.name,description:`${mechanics} ${cur.description}`,current:`Current: ${cur.name}`,maxText:'MAX'});
-    return upgradeCard({icon:'⌁',eyebrow:'Scanner analysis',title:`Unlock ${cur.next}`,description:`${mechanics} ${cur.description}`,current:`Current: ${cur.name}`,cost:cur.cost,label:'Upgrade scanner',disabled:state.credits<cur.cost,onClick:buySurvey});
-  }
-
-  function scannerUsesCard(){
-    const cur=SCAN_CHARGE_LEVELS[state.upgrades.scannerUses],max=cur.cost===null,next=max?null:SCAN_CHARGE_LEVELS[state.upgrades.scannerUses+1],locked=state.upgrades.surveying===0;
-    if(max)return upgradeCard({icon:'📡',eyebrow:'Scanner charges',title:cur.label,description:'Each charge scans one selected 3×3 area.',current:`Current: ${cur.uses} scans per face`,maxText:'MAX'});
-    return upgradeCard({icon:'📡',eyebrow:'Scanner charges',title:`${cur.uses} → ${next.uses} scans per face`,description:locked?'Unlock the Field Scanner first.':'Add another 3×3 scan per rock face.',current:`Current: ${cur.uses} scan${cur.uses===1?'':'s'} per face`,cost:cur.cost,label:locked?'Scanner locked':'Add scan',disabled:locked||state.credits<cur.cost,onClick:buyScannerUse});
-  }
-
-  function metalDetectorCard(){
-    const owned=!!state.upgrades.metalDetector,depthReady=state.unlockedDepth>=2,cost=275;
-    const description='The detector sweeps the whole rock face once. It marks deliberately broad, vague signal zones for metallic or conductive targets, including some historical artifacts; it never identifies an exact tile.';
-    if(owned)return upgradeCard({icon:'🧲',eyebrow:'Prospecting tool',title:'Metal Detector',description,current:'Current: Metal Detector equipped',maxText:'MAX'});
-    return upgradeCard({icon:'🧲',eyebrow:'Prospecting tool',title:'Unlock Metal Detector',description,current:depthReady?'Available after reaching the Lower Works':'Reach Depth 2 first',cost,label:depthReady?'Buy detector':'Depth 2 required',disabled:!depthReady||state.credits<cost,onClick:buyMetalDetector});
-  }
-
-  function scannerHeatShieldCard(){
-    const owned=!!state.upgrades.scannerHeatShield,gear=!!state.upgrades.geothermalGear,scanner=state.upgrades.surveying>0,cost=800;
-    const ready=gear&&scanner;
-    const description='Insulates the scanner electronics for the temperatures and geothermal conditions of the Epithermal Zone. It does not change scanner power anywhere else.';
-    if(owned)return upgradeCard({icon:'📡',eyebrow:'Environmental adaptation',title:'Heat-Shielded Scanner Housing',description,current:'Current: scanner rated for Depth 6',maxText:'MAX'});
-    return upgradeCard({icon:'📡',eyebrow:'Environmental adaptation',title:'Heat-Shielded Scanner Housing',description,current:ready?'Ready to install':!gear?'Needs Geothermal Protective Gear':'Needs Field Scanner',cost,label:ready?'Install housing':'Locked',disabled:!ready||state.credits<cost,onClick:buyScannerHeatShield});
-  }
-
-  function detectorHeatShieldCard(){
-    const owned=!!state.upgrades.detectorHeatShield,gear=!!state.upgrades.geothermalGear,detector=!!state.upgrades.metalDetector,cost=650;
-    const ready=gear&&detector;
-    const description='Heat-shields the detector coil and electronics for the Epithermal Zone. The detector still gives one deliberately vague whole-face sweep.';
-    if(owned)return upgradeCard({icon:'🧲',eyebrow:'Environmental adaptation',title:'Heat-Shielded Detector Housing',description,current:'Current: detector rated for Depth 6',maxText:'MAX'});
-    return upgradeCard({icon:'🧲',eyebrow:'Environmental adaptation',title:'Heat-Shielded Detector Housing',description,current:ready?'Ready to install':!gear?'Needs Geothermal Protective Gear':'Needs Metal Detector',cost,label:ready?'Install housing':'Locked',disabled:!ready||state.credits<cost,onClick:buyDetectorHeatShield});
-  }
-
-  function uvLampCard(){
-    const owned=!!state.upgrades.uvLamp,depthReady=state.unlockedDepth>=5,cost=950;
-    const description='Adds a museum-wide Normal / UV lighting toggle. Fluorescent specimens reveal their glow under UV while most of the collection stays dark.';
-    if(owned)return upgradeCard({icon:'🔦',eyebrow:'Museum equipment',title:'UV Fluorescence Lamp',description,current:'Current: UV museum lighting installed',maxText:'MAX'});
-    return upgradeCard({icon:'🔦',eyebrow:'Museum equipment',title:'Unlock UV Fluorescence Lamp',description,current:depthReady?'Available after reaching the Luminous Zone':'Reach Depth 5 first',cost,label:depthReady?'Install UV lamp':'Depth 5 required',disabled:!depthReady||state.credits<cost,onClick:buyUvLamp});
-  }
-
-  function workshopCard(){
-    const i=state.upgrades.workshop,cur=WORKSHOP_LEVELS[i],max=cur.cost===null;
-    if(max)return upgradeCard({icon:'🛠️',eyebrow:'Workshop equipment',title:cur.name,description:cur.description,current:`Current: ${cur.name}`,maxText:'MAX'});
-    return upgradeCard({icon:'🛠️',eyebrow:'Workshop equipment',title:`Unlock ${cur.next}`,description:cur.description,current:`Current: ${cur.name}`,cost:cur.cost,label:'Upgrade workshop',disabled:state.credits<cur.cost,onClick:buyWorkshop});
-  }
-
-  function geodeFinderCard(){
-    const cartridges=Math.max(0,Number(state.postgame?.geodeCartridges)||0);
-    const card=document.createElement('article');card.className='upgrade-card cartridge-card';
-    card.innerHTML=`<div class="upgrade-icon">🪨</div><div class="upgrade-copy"><span class="status-label">Postgame prospecting</span><h3>Museum Geode Finder</h3><p>The museum lends you the finder; cartridges are the consumable part. One cartridge checks one whole rock face. Geodes still appear naturally without it.</p><span class="upgrade-current">Current: ${cartridges} cartridge${cartridges===1?'':'s'} on hand</span></div><div class="upgrade-action cartridge-actions"><button class="secondary-button" data-pack="1" type="button" ${state.credits<GEODE_CARTRIDGE_SINGLE_COST?'disabled':''}>1 · ${formatMoney(GEODE_CARTRIDGE_SINGLE_COST)}</button><button class="primary-button" data-pack="bulk" type="button" ${state.credits<GEODE_CARTRIDGE_BULK_COST?'disabled':''}>5 · ${formatMoney(GEODE_CARTRIDGE_BULK_COST)}</button></div>`;
-    card.querySelector('[data-pack="1"]')?.addEventListener('click',()=>buyGeodeCartridges(1,GEODE_CARTRIDGE_SINGLE_COST));
-    card.querySelector('[data-pack="bulk"]')?.addEventListener('click',()=>buyGeodeCartridges(GEODE_CARTRIDGE_BULK_SIZE,GEODE_CARTRIDGE_BULK_COST));
-    return card;
-  }
-
-  function buyDepth(){
-    const nextDepth=state.unlockedDepth+1,up=DEPTH_UPGRADES[nextDepth];
-    if(!up||state.credits<up.cost)return;
-    state.credits-=up.cost;state.unlockedDepth=nextDepth;state.currentDepth=nextDepth;heatWarningVisible=false;state.face=generateFace(nextDepth);
-    checkAchievements();saveState();renderAll();showToast(`Depth ${nextDepth} unlocked: ${DEPTHS[nextDepth].name}.`);
-  }
-
-  function buyGeothermalGear(){
-    const cost=2400;if(state.upgrades.geothermalGear||state.unlockedDepth<6||state.credits<cost)return;
-    state.credits-=cost;state.upgrades.geothermalGear=true;heatWarningVisible=false;checkAchievements();saveState();renderAll();showToast('Geothermal Protective Gear equipped.');
-  }
-
-  function buyScannerHeatShield(){
-    const cost=800;if(state.upgrades.scannerHeatShield||!state.upgrades.geothermalGear||state.upgrades.surveying===0||state.credits<cost)return;
-    state.credits-=cost;state.upgrades.scannerHeatShield=true;saveState();renderAll();showToast('Scanner heat shielding installed.');
-  }
-
-  function buyDetectorHeatShield(){
-    const cost=650;if(state.upgrades.detectorHeatShield||!state.upgrades.geothermalGear||!state.upgrades.metalDetector||state.credits<cost)return;
-    state.credits-=cost;state.upgrades.detectorHeatShield=true;saveState();renderAll();showToast('Detector heat shielding installed.');
-  }
-
-  function buyDurability(){
-    const i=state.upgrades.durability,cur=DURABILITY_LEVELS[i];
-    if(cur.cost===null||state.credits<cur.cost)return;
-    state.credits-=cur.cost;const old=cur.swings;state.upgrades.durability++;
-    const newer=DURABILITY_LEVELS[state.upgrades.durability].swings;state.face.durability=Math.min(newer,state.face.durability+(newer-old));
-    checkAchievements();saveState();renderAll();showToast(`Pick durability increased to ${newer} swings.`);
-  }
-
-  function buySurvey(){
-    const cur=SURVEY_LEVELS[state.upgrades.surveying];
-    if(cur.cost===null||state.credits<cur.cost)return;
-    state.credits-=cur.cost;state.upgrades.surveying++;
-    if(state.upgrades.surveying===1&&state.face.scanUsesRemaining===0)state.face.scanUsesRemaining=currentMaxScans();
-    checkAchievements();saveState();renderAll();showToast(`${SURVEY_LEVELS[state.upgrades.surveying].name} unlocked.`);
-  }
-
-  function buyScannerUse(){
-    const i=state.upgrades.scannerUses,cur=SCAN_CHARGE_LEVELS[i];
-    if(state.upgrades.surveying===0||cur.cost===null||state.credits<cur.cost)return;
-    state.credits-=cur.cost;const oldUses=cur.uses;state.upgrades.scannerUses++;
-    const newUses=SCAN_CHARGE_LEVELS[state.upgrades.scannerUses].uses;state.face.scanUsesRemaining+=newUses-oldUses;
-    checkAchievements();saveState();renderAll();showToast(`${newUses} scans per rock face unlocked.`);
-  }
-
-
-  function buyMetalDetector(){
-    const cost=275;
-    if(state.upgrades.metalDetector||state.unlockedDepth<2||state.credits<cost)return;
-    state.credits-=cost;
-    state.upgrades.metalDetector=true;
-    checkAchievements();
-    saveState();renderAll();showToast('Metal Detector unlocked.');
-  }
-
-  function buyUvLamp(){
-    const cost=950;
-    if(state.upgrades.uvLamp||state.unlockedDepth<5||state.credits<cost)return;
-    state.credits-=cost;state.upgrades.uvLamp=true;
-    saveState();renderAll();showToast('UV Fluorescence Lamp installed in the museum.');
-  }
-
-  function buyWorkshop(){
-    const cur=WORKSHOP_LEVELS[state.upgrades.workshop];
-    if(cur.cost===null||state.credits<cur.cost)return;
-    state.credits-=cur.cost;state.upgrades.workshop++;
-    checkAchievements();saveState();renderAll();showToast(`${WORKSHOP_LEVELS[state.upgrades.workshop].name} unlocked.`);
-  }
-
-  function buyGeodeCartridges(packSize,cost){
-    if(!state.postgame?.completed||!packSize||!cost||state.credits<cost)return;
-    state.credits-=cost;
-    state.postgame.geodeCartridges=(state.postgame.geodeCartridges||0)+packSize;
-    saveState();
-    renderAll();
-    showToast(`Bought ${packSize} Geode Finder cartridge${packSize===1?'':'s'} for ${formatMoney(cost)}.`);
-  }
-
-  function resetGame(){
-    if(!window.confirm('Reset all Rockhound Beta 1.4.1 progress?'))return;
-    localStorage.removeItem(SAVE_KEY);state=defaultState();state.face=generateFace(1);openWorkbenchKey=null;scanMode=false;
-    saveState();renderAll();showToast('Beta 1.4.1 save reset.');
-  }
-
-  function showToast(msg){
-    clearTimeout(toastTimer);els.toast.textContent=msg;els.toast.classList.add('show');toastTimer=setTimeout(()=>els.toast.classList.remove('show'),1900);
-  }
-
-})();
+  store.save(state.tagged);
+  $("tagOverlay").classList.add("hidden");
+  $("diveView").classList.add("hidden");
+  const lb = $("launchBtn");
+  if (lb) lb.disabled = false;
+  state.pendingTag = null;
+  renderAll();
+  goTab("collection");
+});
+
+/* ---------- Collection book ---------- */
+
+function renderCollection() {
+  const list = $("collectionList");
+  list.innerHTML = "";
+  const ids = Object.keys(state.tagged);
+  $("collectionCount").textContent = `${ids.length}/4`;
+  $("completeBanner").classList.toggle("hidden", ids.length < 4);
+
+  if (!ids.length) {
+    list.innerHTML = `<div class="empty-note">No sharks tagged yet.<br>Do your research, then get out there. 🦈</div>`;
+    return;
+  }
+  SHARKS.filter(s => state.tagged[s.id]).forEach(s => {
+    const t = state.tagged[s.id];
+    const card = document.createElement("div");
+    card.className = "book-card";
+    card.innerHTML = `
+      <div class="shark-art">${ART[s.id]}</div>
+      <div class="given-name">“${t.name}”</div>
+      <h3 style="margin:0">${s.name}</h3>
+      <p class="latin">${s.latin}</p>
+      <span class="status-pill">IUCN: ${s.status}</span>
+      <p class="book-stats">
+        📏 ${t.length} m · ${t.sex === "female" ? "♀ female" : "♂ male"}<br>
+        📍 Tagged at ${t.location}<br>
+        📅 ${t.date}
+      </p>
+      <p class="research-text">${s.research}</p>
+      <p class="hook">💡 ${s.hook}</p>
+    `;
+    list.appendChild(card);
+  });
+}
+
+/* ---------- Boot ---------- */
+
+function renderAll() {
+  renderResearch();
+  renderPlanner();
+  renderCollection();
+}
+
+fillSelect($("regionSelect"), REGIONS);
+fillSelect($("depthSelect"), DEPTHS);
+fillSelect($("baitSelect"), BAITS);
+renderAll();
