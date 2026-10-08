@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Berry Delightful — grey-box prototype v2</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <span id="version">v0.2.0-greybox-v2</span>
+    <span id="hud-day">☀️ Day 1</span>
+    <span id="hud-coins">🪙 20</span>
+  </header>
+
+  <div id="tutorial-banner" class="hidden">
+    <span id="tutorial-text"></span>
+  </div>
+
+  <nav id="scene-nav">
+    <button data-scene="field">🌾<span>Field</span></button>
+    <button data-scene="farmhouse">🏠<span>Farmhouse</span></button>
+    <button data-scene="kitchen">🍳<span>Kitchen</span></button>
+    <button data-scene="farmyard">🐖<span>Farmyard</span></button>
+  </nav>
+
+  <main id="scene"></main>
+
+  <div id="overlay-root"></div>
+  <div id="toast-root"></div>
+</div>
+
+<div id="global-bar">
+  <button id="btn-shop">🛒<span>Shop</span></button>
+  <button id="btn-cookbook">📖<span>Cookbook</span></button>
+  <button id="btn-newgame">🔄<span>New</span></button>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/tutorial.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
