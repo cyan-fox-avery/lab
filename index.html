@@ -1,114 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b2237" />
-  <title>Tag, You're It — prototype</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Berry Delightful — grey-box prototype</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <p class="eyebrow">WORKING TITLE PROTOTYPE</p>
-      <h1>Tag, You're It</h1>
-      <p class="subtitle">a tiny shark-tagging adventure for sarah 🦈</p>
-    </header>
+<div id="app">
+  <header id="hud">
+    <span id="version">v0.1.0-greybox</span>
+    <span id="hud-day">☀️ Day 1</span>
+    <span id="hud-weather" title="tomorrow's forecast">🔮 ?</span>
+    <span id="hud-coins">🪙 20</span>
+    <span id="hud-actions" title="actions left today"></span>
+  </header>
 
-    <nav class="tabs" aria-label="Game sections">
-      <button class="tab active" data-tab="research" type="button">📖 Research</button>
-      <button class="tab" data-tab="expedition" type="button">🛥️ Expedition</button>
-      <button class="tab" data-tab="collection" type="button">🗂️ Collection <span id="collectionCount" class="count-badge">0/4</span></button>
-    </nav>
-
-    <main>
-      <!-- RESEARCH -->
-      <section id="tab-research" class="panel active">
-        <div class="section-head">
-          <h2>Field notes</h2>
-          <p>Short, dense, and true. Read up, then go find them.</p>
-        </div>
-        <div id="researchList" class="card-list"></div>
-      </section>
-
-      <!-- EXPEDITION -->
-      <section id="tab-expedition" class="panel">
-        <div class="section-head">
-          <h2>Plan an expedition</h2>
-          <p>Pick your target, then choose region, depth, and bait. Choose wisely — sharks are picky.</p>
-        </div>
-
-        <div id="planner" class="planner-card">
-          <label class="field">
-            <span>Target species</span>
-            <select id="targetSelect"></select>
-          </label>
-          <label class="field">
-            <span>Region</span>
-            <select id="regionSelect"></select>
-          </label>
-          <label class="field">
-            <span>Depth</span>
-            <select id="depthSelect"></select>
-          </label>
-          <label class="field">
-            <span>Bait</span>
-            <select id="baitSelect"></select>
-          </label>
-          <button id="launchBtn" class="primary-button" type="button">🚀 Launch expedition</button>
-        </div>
-
-        <div id="diveView" class="dive-view hidden" aria-live="polite">
-          <div id="diveScene" class="dive-scene depth-surface">
-            <div class="rays"></div>
-            <div id="diveShark" class="dive-shark hidden"></div>
-          </div>
-          <div id="diveLog" class="dive-log"></div>
-          <div id="diveActions" class="dive-actions hidden"></div>
-        </div>
-      </section>
-
-      <!-- COLLECTION -->
-      <section id="tab-collection" class="panel">
-        <div class="section-head">
-          <h2>Official collection book</h2>
-          <p>Every shark you tag gets its own card. They're all sea puppies.</p>
-        </div>
-        <div id="completeBanner" class="complete-banner hidden">
-          🎉 You tagged all four! Time to show sarah. 🦈
-        </div>
-        <div id="collectionList" class="card-list"></div>
-      </section>
-    </main>
-
-    <footer class="foot">
-      <p>made with ♥ for sarah · remember: cute sea puppies with lots of teeth</p>
-    </footer>
+  <div id="tutorial-banner" class="hidden">
+    <span id="tutorial-text"></span>
   </div>
 
-  <!-- Cousin message -->
-  <div id="cousinOverlay" class="overlay hidden">
-    <div class="phone">
-      <div class="phone-head">📱 texts with cousin</div>
-      <div id="cousinThread" class="phone-thread"></div>
-      <button id="cousinClose" class="primary-button" type="button">ok!</button>
-    </div>
-  </div>
+  <nav id="scene-nav">
+    <button data-scene="field">🌾<span>Field</span></button>
+    <button data-scene="farmhouse">🏠<span>Farmhouse</span></button>
+    <button data-scene="kitchen">🍳<span>Kitchen</span></button>
+    <button data-scene="farmyard">🐖<span>Farmyard</span></button>
+  </nav>
 
-  <!-- Tagging modal -->
-  <div id="tagOverlay" class="overlay hidden">
-    <div class="phone">
-      <div class="phone-head">🏷️ tag your shark</div>
-      <div id="tagSharkArt" class="tag-art"></div>
-      <div id="tagInfo" class="tag-info"></div>
-      <label class="field">
-        <span>Give this shark a name</span>
-        <input id="sharkName" type="text" maxlength="24" placeholder="Name your shark…" />
-      </label>
-      <button id="tagConfirm" class="primary-button" type="button">Add to collection book</button>
-    </div>
-  </div>
+  <main id="scene"></main>
 
-  <script src="script.js"></script>
+  <div id="overlay-root"></div>
+  <div id="toast-root"></div>
+</div>
+
+<div id="global-bar">
+  <button id="btn-journal">📓<span>Journal</span></button>
+  <button id="btn-shop">🛒<span>Shop</span></button>
+  <button id="btn-cookbook">📖<span>Cookbook</span></button>
+  <button id="btn-newgame">🔄<span>New</span></button>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/tutorial.js"></script>
+<script src="js/ui.js"></script>
 </body>
 </html>

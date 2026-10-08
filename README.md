@@ -1,42 +1,34 @@
-# Tag, You're It (working title)
+# lab — Berry Delightful grey-box prototype
 
-A pro-shark conservation collection game — prototype v1.
+This repo currently holds a **disposable grey-box prototype** of *Berry Delightful*
+(Avery's cozy strawberry-farm game for Fiona), covering the **tutorial + Act I
+(through tier 2)**. It replaced the repo's previous redundant contents; the old
+files remain in git history.
 
-You are a conservation scientist. Research each shark's habits, plan an
-expedition (region, depth, bait), head out to sea, and tag one of every
-species for your official collection book. Less *Jaws*, more *cute sea
-puppy with lots of teeth*.
+Vanilla HTML/CSS/JS — no build step. Open `index.html` in a browser (mobile-sized
+is the target), or use the GitHub Pages site.
 
-Built for sarah, who loves sharks. 🦈
+## What it is
 
-## Play it
+A mechanics prototype. Grey boxes, emoji buttons, placeholder dialogue. It exists
+to answer: does the 4-action day budget feel right? Does the day loop flow? Is
+experimenting fun? Is the economy sane?
 
-Open `index.html` in a browser, or visit the GitHub Pages site (see below).
+**In scope:** 8 tutorial beats · day loop with tunable action budget (morning →
+dusk rhythm, never a timer) · weather forecast (rain auto-waters) · coins ·
+T1/T2 shop + 8 recipes · experimenting (failed bakes → the pig) · journal with
+autosave (localStorage) · pig naming (default suggestion "Buddy") · 4 grey-box
+scenes (field, farmhouse, kitchen, farmyard).
 
-No build step — just vanilla HTML, CSS, and JavaScript, like nature intended.
+**Out of scope:** souvenirs/keepsakes · festival + countdown · tiers 3–7 ·
+postgame · hint ladders · visual polish · every parked design-thread pitch.
 
-## The loop
+## Status
 
-1. **Research** — read short, dense, real field notes on each shark.
-2. **Plan** — pick a target species, then choose region, depth, and bait.
-   Bait is realistic: you don't chum a whale shark, you find the plankton bloom.
-3. **Dive** — watch the expedition play out through a dive log with a little suspense.
-4. **Tag** — if your target (or another untagged species!) shows up, tag one,
-   learn about that individual, and give it a name.
-5. **Collect** — every tagged shark gets a card in your collection book.
+`v0.1.0-greybox` in the top corner. All dialogue is placeholder, flagged
+`[DRAFT DIALOGUE]` for review and rewrite before any official release. Economy
+numbers are first-pass from the design doc ("the prototype validates"); costs
+marked PROVISIONAL in `js/data.js` were invented for the prototype. Tuned
+generously per the "easy to finish, gentle to fail" pillar.
 
-Between expeditions you'll hear from your little cousin, whose special
-interest is sharks and who thinks you're the coolest. They're not a hint
-system — they're family. (Okay, they might gently nudge you if you keep
-striking out.)
-
-## Prototype roster
-
-- Thresher shark *(Alopias vulpinus)*
-- Whale shark *(Rhincodon typus)*
-- Nurse shark *(Ginglymostoma cirratum)*
-- Goblin shark *(Mitsukurina owstoni)*
-
-Locations, depths, and diets are based on real species data (see
-`roster-research.md`). Ranges are approximate — verify against a field
-guide before finalizing.
+Design thread: `cyan-fox-avery/berry-delightful` PR #3 (`design-lab-part-2`).
