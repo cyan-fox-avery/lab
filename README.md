@@ -25,7 +25,7 @@ postgame · hint ladders · visual polish · every parked design-thread pitch.
 
 ## Status
 
-`v0.1.0-greybox` in the top corner. All dialogue is placeholder, flagged
+`v0.1.1-greybox` in the top corner. All dialogue is placeholder, flagged
 `[DRAFT DIALOGUE]` for review and rewrite before any official release. Economy
 numbers are first-pass from the design doc ("the prototype validates"); costs
 marked PROVISIONAL in `js/data.js` were invented for the prototype. Tuned

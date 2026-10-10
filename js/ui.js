@@ -60,13 +60,26 @@ const UI = {
     else if (this.scene === "kitchen") el.innerHTML = this.renderKitchen();
     else el.innerHTML = this.renderFarmyard();
     this.wireScene(el);
+    // tutorial wayfinding: warm highlight on the current beat's target action.
+    // Functional colour, not decoration — the grey box still isn't answering "is it pretty?"
+    if (!s.tutorialDone) {
+      const target = { 0: '[data-act="clear-patch"]', 1: '[data-act="water"]', 2: '[data-act="harvest"]',
+                       3: '[data-act="bake"]', 4: '[data-act="sell-open"]', 5: '[data-act="feed-berry"]',
+                       6: '[data-act="bundle"]', 7: '#btn-shop' }[s.tutorialStep];
+      if (target) {
+        const t = el.querySelector(target) || document.querySelector(target);
+        if (t) t.classList.add("beat-target");
+      }
+    }
   },
 
   /* ---------------- scenes ---------------- */
   bedEmoji(b) {
     if (!b.cultivar) return "⬜";
-    if (b.ready) return "🍓";
-    return "🌱";
+    const stage = b.ready ? 3
+      : !b.growth || b.growth <= 0 ? 0
+      : (b.growth / b.matureAt) >= 0.66 ? 2 : 1;
+    return SPRITES.plant(stage, !!b.watered);
   },
   bedStatus(b) {
     if (!b.cultivar) return "Empty bed";
@@ -92,7 +105,7 @@ const UI = {
         if (b.cultivar && !b.watered)
           h += `<button class="btn small" data-act="water" data-bed="${b.id}">💧<span>Water</span></button>`;
         if (b.ready && b.harvestsLeft > 0)
-          h += `<button class="btn small primary" data-act="harvest" data-bed="${b.id}">🧺<span>Harvest</span></button>`;
+          h += `<button class="btn small primary" data-act="harvest" data-bed="${b.id}">${SPRITES.basket()}<span>Harvest</span></button>`;
         if (!b.cultivar) h += `<span class="sub">Empty — plant via the 🛒 Shop.</span>`;
         h += `</div>`;
       }
@@ -145,7 +158,7 @@ const UI = {
   renderFarmyard() {
     const s = Game.state;
     let h = `<div class="scene-title">🐖 Farmyard <span class="sub">(grey box)</span></div>`;
-    h += `<div class="card"><div class="row"><span class="bed-emoji">🐖</span>
+    h += `<div class="card"><div class="row"><span class="bed-emoji">${SPRITES.pig()}</span>
       <div class="info" style="flex:1"><h3>${s.pig.suggested ? "The pig (unnamed)" : s.pig.name}</h3>
       <div class="sub">${PIG_IDLE_LINES[s.day % PIG_IDLE_LINES.length]}</div>
       <div class="sub">Failed bakes eaten: ${s.pig.fedCount} — every one an excellent outcome.</div></div></div>`;

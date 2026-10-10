@@ -68,7 +68,22 @@ body {
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row .btn { flex: 1 1 auto; }
 .bed-emoji { font-size: 40px; }
+.bed-emoji .sprite { width: 56px; height: 56px; vertical-align: middle; }
+.btn .sprite { width: 34px; height: 34px; }
 .locked { opacity: .55; font-style: italic; }
+
+/* Tutorial wayfinding — functional colour, not decoration.
+   The current beat's target action glows warm so the eye lands in one place. */
+.beat-target {
+  outline: 3px solid #e8a13d !important; outline-offset: 2px;
+  box-shadow: 0 0 14px rgba(232,161,61,.55);
+  animation: beat-pulse 1.8s ease-in-out infinite;
+}
+@keyframes beat-pulse {
+  50% { box-shadow: 0 0 22px rgba(232,161,61,.85); }
+}
+/* A whisper of warmth behind the active scene — still a grey box, just not a cold one. */
+#scene { background: linear-gradient(180deg, #faf5ec, #f4eee1); border-radius: 16px; padding: 4px; }
 
 /* Overlays */
 #overlay-root:empty { display: none; }
