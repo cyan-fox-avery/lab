@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Berry Delightful — First Strawberry Day</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <span id="version">v0.1.0-first-strawberry-day</span>
+    <span id="hud-coins">🪙 20</span>
+    <span id="hud-inv" title="inventory">🧺 0 · 🫙 0</span>
+  </header>
+
+  <div id="hint-bar"><span id="hint-emoji">📓</span> <span id="hint-text"></span></div>
+
+  <nav id="scene-nav">
+    <button data-scene="home">🏠<span>Farm</span></button>
+    <button data-scene="field">🌾<span>Field</span></button>
+    <button data-scene="kitchen">🍳<span>Kitchen</span></button>
+    <button data-scene="stall">🏪<span>Stall</span></button>
+  </nav>
+
+  <main id="scene"></main>
+
+  <div id="overlay-root"></div>
+  <div id="toast-root"></div>
+</div>
+
+<div id="global-bar">
+  <button id="btn-journal">📓<span>Journal</span></button>
+  <button id="btn-newgame">🔄<span>Start over</span></button>
+</div>
+
+<div id="save-note">Progress autosaves in this browser. All dialogue is placeholder.</div>
+
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
