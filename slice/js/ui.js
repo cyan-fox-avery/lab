@@ -58,11 +58,6 @@ const SUI = {
     if (s.firstSaleDone)
       h += `<div class="card"><h3>🎉 Starvale's first sale</h3>
         <div class="sub">One jar of compote, sold at the stall. The farm's awake. Look around — or start over and run the day again.</div></div>`;
-    h += `<div class="card"><h3>🧭 Where to</h3><div class="row">
-      <button class="btn" data-act="nav" data-to="field">🌾<span>Field</span></button>
-      <button class="btn" data-act="nav" data-to="kitchen">🍳<span>Kitchen</span></button>
-      <button class="btn" data-act="nav" data-to="stall">🏪<span>Stall</span></button>
-      </div></div>`;
     return h;
   },
 
@@ -131,9 +126,11 @@ const SUI = {
       this.toast("Nothing to sell yet — the compote comes first.");
       return;
     }
+    // June gets the first jar only — every jar after that is just the stall.
+    const firstPending = !s.firstSaleDone;
     this.openOverlay(`<h2>🏪 Stall</h2>
       <div class="card"><h3>Sell 1 Strawberry Compote?</h3>
-      <div class="sub">June gets the jar. You get <strong>${ECONOMY.compoteSell} coins</strong>, right away.</div></div>
+      <div class="sub">${firstPending ? "June gets the jar. " : ""}You get <strong>${ECONOMY.compoteSell} coins</strong>, right away.</div></div>
       <div class="row"><button class="btn primary" id="sell-yes">💰<span>Confirm sale</span></button>
       <button class="btn" id="sell-no">↩️<span>Not yet</span></button></div>`);
     document.getElementById("sell-yes").addEventListener("click", () => {

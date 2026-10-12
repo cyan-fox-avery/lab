@@ -5,7 +5,7 @@
    No action cap, no day loop, no weather. See FIRST_STRAWBERRY_DAY_BUILD_BRIEF.md. */
 "use strict";
 
-const SLICE_VERSION = "v0.1.0-first-strawberry-day";
+const SLICE_VERSION = "v0.1.1-first-strawberry-day";
 const SAVE_KEY = "berry-slice-v1";
 
 const ECONOMY = {
@@ -23,6 +23,7 @@ const INTRO_LINES = [
 ];
 
 const JUNE_FIRST_SALE = [
+  { who: "📓", text: "An older woman with a warm smile approaches the stall." },
   { who: "June", text: "Well now — Starvale's first jar. I'll take it, dear." },
   { who: "June", text: "This farm used to feed half the concession road, you know." },
 ];
