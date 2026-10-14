@@ -5,12 +5,14 @@
 
 const SUI = {
   scene: "home",
+  _ending: false,  // debounce guard for the End Day confirm
 
   init() {
     if (!Slice.load()) Slice.reset();
     document.querySelectorAll("#scene-nav button").forEach(b =>
       b.addEventListener("click", () => this.go(b.dataset.scene)));
     document.getElementById("btn-journal").addEventListener("click", () => this.journalOverlay());
+    document.getElementById("btn-endday").addEventListener("click", () => this.endDayAsk());
     document.getElementById("btn-newgame").addEventListener("click", () => {
       if (confirm("Start over? The current run will be lost.")) { Slice.reset(); this.go("home"); }
     });
@@ -34,6 +36,7 @@ const SUI = {
     document.querySelectorAll("#scene-nav button").forEach(b =>
       b.classList.toggle("active", b.dataset.scene === this.scene));
     document.getElementById("hud-coins").textContent = `🪙 ${s.coins}`;
+    document.getElementById("hud-day").textContent = `☀️ Day ${s.day}`;
     document.getElementById("hud-inv").textContent =
       `🧺 ${s.inv.earliglow} · 🫙 ${s.inv.compote}`;
     document.getElementById("hint-text").textContent = Slice.hint();
@@ -46,9 +49,15 @@ const SUI = {
   },
 
   /* ---------------- scenes ---------------- */
+  daySub(s) { return s.day === 1 ? "(first strawberry day)" : `(day ${s.day})`; },
+
   renderHome() {
     const s = Slice.state;
-    let h = `<div class="scene-title">🏠 Starvale Farm <span class="sub">(first strawberry day)</span></div>`;
+    let h = `<div class="scene-title">🏠 Starvale Farm <span class="sub">${this.daySub(s)}</span></div>`;
+    if (!s.freshNoticeSeen)
+      h += `<div class="card"><h3>🌱 A new season build — fresh start</h3>
+        <div class="sub">This version begins clean, with the day loop. Anything from the earlier demo is untouched.</div>
+        <div class="row" style="margin-top:8px"><button class="btn" data-act="fresh-ok">✔️<span>Got it</span></button></div></div>`;
     h += `<div class="card"><div class="row"><span class="bed-emoji">🍓</span>
       <div class="info" style="flex:1"><h3>The giant strawberry</h3>
       <div class="sub">At the end of the driveway — just wood and paint, big enough to sit in. The sign that you're here. <em>(placeholder)</em></div></div></div></div>`;
@@ -63,13 +72,25 @@ const SUI = {
 
   renderField() {
     const s = Slice.state;
-    let h = `<div class="scene-title">🌾 Strawberry field <span class="sub">(first strawberry day)</span></div>`;
-    h += `<div class="card"><div class="row"><span class="bed-emoji">${s.ripe > 0 ? "🍓" : "🌱"}</span>
-      <div class="info" style="flex:1"><h3>The old Earliglow patch</h3>
-      <div class="sub">${s.ripe > 0 ? `${s.ripe} basket${s.ripe > 1 ? "s" : ""} still ripe on the patch.` : "Picked clean. It started everything."}</div></div></div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn primary" data-act="harvest">🧺<span>Harvest a basket</span></button>
-      </div></div>`;
+    let h = `<div class="scene-title">🌾 Strawberry field <span class="sub">${this.daySub(s)}</span></div>`;
+    if (s.patch === "ready" && s.ripe > 0) {
+      h += `<div class="card"><div class="row"><span class="bed-emoji">🍓</span>
+        <div class="info" style="flex:1"><h3>The old Earliglow patch</h3>
+        <div class="sub">${s.ripe} basket${s.ripe > 1 ? "s" : ""} still ripe on the patch.</div></div></div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn primary" data-act="harvest">🧺<span>Harvest a basket</span></button>
+        </div></div>`;
+    } else {
+      // Regrowing: resting, optionally watered. Never a punishment.
+      h += `<div class="card"><div class="row"><span class="bed-emoji">🌱</span>
+        <div class="info" style="flex:1"><h3>The old patch</h3>
+        <div class="sub">${s.watered
+          ? "Watered. It's drinking — berries by tomorrow morning."
+          : "Resting. A drink would wake it by tomorrow morning — or let it rest and it'll wake the morning after."}</div></div></div>
+        ${s.watered ? "" : `<div class="row" style="margin-top:8px">
+          <button class="btn primary" data-act="water">💧<span>Water the patch</span></button>
+        </div>`}</div>`;
+    }
     h += `<div class="card"><div class="sub">Baskets in hand: <strong>${s.inv.earliglow}</strong> Earliglow.</div></div>`;
     return h;
   },
@@ -77,7 +98,7 @@ const SUI = {
   renderKitchen() {
     const s = Slice.state;
     const canCook = s.inv.earliglow >= 1 && s.coins >= ECONOMY.compotePantryCost;
-    let h = `<div class="scene-title">🍳 Kitchen <span class="sub">(first strawberry day)</span></div>`;
+    let h = `<div class="scene-title">🍳 Kitchen <span class="sub">${this.daySub(s)}</span></div>`;
     h += `<div class="card"><h3>🔪 The old saucepan</h3>
       <div class="sub">It came with the farmhouse. Good for exactly one thing today.</div></div>`;
     h += `<div class="card"><div class="row"><span style="font-size:34px">🫙</span>
@@ -91,7 +112,7 @@ const SUI = {
 
   renderStall() {
     const s = Slice.state;
-    let h = `<div class="scene-title">🏪 Roadside stall <span class="sub">(first strawberry day)</span></div>`;
+    let h = `<div class="scene-title">🏪 Roadside stall <span class="sub">${this.daySub(s)}</span></div>`;
     h += `<div class="card"><div class="row"><span style="font-size:34px">🫙</span>
       <div class="info" style="flex:1"><h3>Strawberry Compote</h3>
       <div class="sub">In stock: <strong>${s.inv.compote}</strong> · sells for <strong>${ECONOMY.compoteSell} coins</strong>, paid immediately.</div></div></div>
@@ -114,9 +135,45 @@ const SUI = {
     let r;
     if (act === "nav") return this.go(b.dataset.to);
     if (act === "harvest") { r = Slice.harvest(); this.toast(r.msg); }
+    else if (act === "water") { r = Slice.water(); this.toast(r.msg); }
     else if (act === "cook") { r = Slice.cook(); this.toast(r.msg); }
     else if (act === "sell-ask") return this.sellConfirm();
+    else if (act === "fresh-ok") { Slice.state.freshNoticeSeen = true; Slice.save(); }
     this.refresh();
+  },
+
+  /* ---------------- End Day: explicit confirm -> short night -> new morning ---------------- */
+  endDayAsk() {
+    const s = Slice.state;
+    this._ending = false;
+    this.openOverlay(`<h2>🌙 Turn in for the night?</h2>
+      <div class="card"><h3>Day ${s.day} → Day ${s.day + 1}</h3>
+      <div class="sub">The farm will keep. Nothing is lost by sleeping — ripe berries wait.</div></div>
+      <div class="row"><button class="btn primary" id="endday-yes">🌙<span>Turn in</span></button>
+      <button class="btn" id="endday-no">↩️<span>Not yet</span></button></div>`);
+    // Note: tapping the backdrop also closes the modal, which reads as cancel.
+    document.getElementById("endday-yes").addEventListener("click", (e) => {
+      if (this._ending) return;  // debounce: a double-tap can never skip two days
+      this._ending = true;
+      e.currentTarget.style.opacity = "0.5";
+      const r = Slice.endDay();  // saves synchronously, before the transition
+      this.nightTransition(r);
+    });
+    document.getElementById("endday-no").addEventListener("click", () => {
+      document.getElementById("overlay-root").innerHTML = "";  // cancel: nothing changes
+    });
+  },
+
+  nightTransition(r) {
+    const root = document.getElementById("overlay-root");
+    root.innerHTML = `<div class="overlay-back"><div class="overlay"><h2>🌙</h2>
+      <div class="card"><div class="sub">Night falls over Starvale…</div></div></div></div>`;
+    setTimeout(() => {
+      root.innerHTML = "";
+      this._ending = false;
+      this.go("home");  // wake on the farm/home scene
+      this.toast(r.woke ? `☀️ Day ${r.toDay} — the patch woke up.` : `☀️ Day ${r.toDay}.`);
+    }, 900);
   },
 
   /* ---------------- stall: explicit Sell -> Confirm ---------------- */

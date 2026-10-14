@@ -1,6 +1,6 @@
 # First Strawberry Day — playable slice
 
-`v0.1.1-first-strawberry-day` in the top corner.
+`v0.2.0-day-loop` in the top corner.
 
 The first playable vertical slice of **Berry Delightful**, per
 `FIRST_STRAWBERRY_DAY_BUILD_BRIEF.md` (on the `design-lab-part-2` branch of
