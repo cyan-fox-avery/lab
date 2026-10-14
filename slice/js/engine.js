@@ -1,18 +1,21 @@
-/* Berry Delightful — First Strawberry Day slice: game engine.
+/* Berry Delightful — "A day at Starvale" slice: game engine.
    DOM-independent on purpose, so the logic can be tested headless.
-   Storage: localStorage key 'berry-slice-v1' (separate from the grey-box saves).
-   Scope: arrival -> harvest Earliglows -> cook compote -> sell at stall.
-   No action cap, no day loop, no weather. See FIRST_STRAWBERRY_DAY_BUILD_BRIEF.md. */
+   Storage: localStorage key 'berry-slice-v2' (fresh schema; the v0.1.x key is
+   never read or migrated — clean break between prototype versions, Avery 2026-10-13).
+   Scope: arrival -> harvest -> cook -> sell, plus the day loop: optional watering,
+   patch regrowth (1 night watered, 2 unwatered), End Day with confirm/cancel.
+   No action cap, no weather, no penalties. Cozy: ripe berries wait. */
 "use strict";
 
-const SLICE_VERSION = "v0.1.1-first-strawberry-day";
-const SAVE_KEY = "berry-slice-v1";
+const SLICE_VERSION = "v0.2.0-day-loop";
+const SAVE_KEY = "berry-slice-v2";
 
 const ECONOMY = {
   compotePantryCost: 2,  // coins of pantry staples; sugar is already in the inherited pantry
   compoteSell: 20,
   startCoins: 20,
   ripeAtStart: 3,        // a few berries already ripe on the old patch
+  regrowYield: 3,        // provisional: regrown crops match the starter patch
 };
 
 const DRAFT = "[DRAFT DIALOGUE — placeholder, review & rewrite before any official release]";
@@ -33,15 +36,21 @@ const Slice = {
 
   newState() {
     return {
-      v: 1,
+      v: 2,
+      day: 1,
       coins: ECONOMY.startCoins,
       ripe: ECONOMY.ripeAtStart,
       harvested: 0,
       cooked: 0,
       sold: 0,
+      // patch: "ready" (berries up) | "regrowing" (picked clean, resting)
+      patch: "ready",
+      watered: false,      // one optional watering per regrowth cycle
+      regrowNights: 0,     // nights rested while regrowing
       inv: { earliglow: 0, compote: 0 },
       firstSaleDone: false,
       introShown: false,
+      freshNoticeSeen: false,  // one-time "new season build" notice
       journal: [],
     };
   },
@@ -69,12 +78,19 @@ const Slice = {
     this.save();
   },
 
-  // Gentle, progress-based hint. Never blocks, never seizes control.
+  // Gentle, progress-based hint. Never blocks, never seizes control, never nags.
   hint() {
     const s = this.state;
-    if (s.firstSaleDone) return "Starvale's first sale. The farm's awake — look around, or start over and run it again.";
+    const resting = s.patch === "regrowing"
+      ? (s.watered
+        ? "The patch is drinking. Tomorrow morning should bring berries."
+        : "The old patch is resting. A drink would wake it sooner — or let it take its time.")
+      : null;
+    if (s.firstSaleDone && resting) return resting;
+    if (s.firstSaleDone) return `Day ${s.day} at Starvale. The farm's awake — look around, or start over and run it again.`;
     if (s.inv.compote > 0) return "The stall by the lane is ready. June's usually first in line.";
     if (s.harvested > 0) return "Those berries won't cook themselves — the old saucepan is waiting in the kitchen.";
+    if (resting) return resting;
     return "The old Earliglow patch might still have a few berries.";
   },
 
@@ -86,10 +102,59 @@ const Slice = {
     s.ripe--;
     s.harvested++;
     s.inv.earliglow++;
-    this.journal("harvest", "Harvested an Earliglow basket",
-      s.ripe > 0 ? `${s.ripe} still ripe on the patch.` : "The old patch is picked clean. It started everything.");
+    if (s.ripe <= 0) {
+      // Picked clean: the patch rests. Watering is optional and only helps.
+      s.patch = "regrowing";
+      s.watered = false;
+      s.regrowNights = 0;
+      this.journal("harvest", "Harvested an Earliglow basket",
+        "The old patch is picked clean. It started everything — now it rests.");
+    } else {
+      this.journal("harvest", "Harvested an Earliglow basket",
+        `${s.ripe} still ripe on the patch.`);
+    }
     this.save();
     return { ok: true, msg: "🧺 +1 Earliglow basket." };
+  },
+
+  // Optional watering: helpful, never mandatory. One watering per regrowth
+  // cycle; extra taps are a no-op. Never punishes.
+  water() {
+    const s = this.state;
+    if (s.patch !== "regrowing")
+      return { ok: false, msg: "The patch doesn't need water right now." };
+    if (s.watered)
+      return { ok: false, msg: "Already watered — the patch is drinking." };
+    s.watered = true;
+    this.journal("tend", "Watered the old patch", "A good drink. It should wake by tomorrow morning.");
+    this.save();
+    return { ok: true, msg: "💧 Watered. The patch will wake up sooner." };
+  },
+
+  // Advance one day. Saved BEFORE returning so a background-killed tab
+  // can never lose the night. Cancel is handled in the UI: this is only
+  // called from the confirmed gesture.
+  endDay() {
+    const s = this.state;
+    const fromDay = s.day;
+    s.day++;
+    let woke = false;
+    if (s.patch === "regrowing") {
+      s.regrowNights++;
+      if (s.watered || s.regrowNights >= 2) {
+        s.ripe = ECONOMY.regrowYield;
+        s.patch = "ready";
+        s.watered = false;
+        s.regrowNights = 0;
+        woke = true;
+      }
+    }
+    this.journal("day", `Day ${s.day}`,
+      woke ? "Morning. The old patch woke up — ripe berries again."
+      : s.patch === "regrowing" ? "Morning. The old patch is still resting."
+      : "Morning at Starvale.");
+    this.save();
+    return { ok: true, fromDay, toDay: s.day, woke };
   },
 
   cook() {
