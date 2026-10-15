@@ -9,7 +9,7 @@
 <body>
 <div id="app">
   <header id="hud">
-    <span id="version">v0.2.0-day-loop</span>
+    <span id="version">v0.3.0-nursery</span>
     <span id="hud-day">☀️ Day 1</span>
     <span id="hud-coins">🪙 20</span>
     <span id="hud-inv" title="inventory">🧺 0 · 🫙 0</span>
@@ -17,12 +17,12 @@
 
   <div id="hint-bar"><span id="hint-emoji">📓</span> <span id="hint-text"></span></div>
 
-  <nav id="scene-nav">
-    <button data-scene="home">🏠<span>Farm</span></button>
-    <button data-scene="field">🌾<span>Field</span></button>
-    <button data-scene="kitchen">🍳<span>Kitchen</span></button>
-    <button data-scene="stall">🏪<span>Stall</span></button>
+  <nav id="category-nav">
+    <button data-category="farm" class="active">🌾<span>Farm</span></button>
+    <button data-category="shop">🛒<span>Shop</span></button>
   </nav>
+
+  <nav id="scene-nav"></nav>
 
   <main id="scene"></main>
 

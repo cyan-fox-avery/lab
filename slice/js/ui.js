@@ -4,17 +4,18 @@
 "use strict";
 
 const SUI = {
+  category: "farm",
   scene: "home",
   _ending: false,  // debounce guard for the End Day confirm
 
   init() {
     if (!Slice.load()) Slice.reset();
-    document.querySelectorAll("#scene-nav button").forEach(b =>
-      b.addEventListener("click", () => this.go(b.dataset.scene)));
+    document.querySelectorAll("#category-nav button").forEach(b =>
+      b.addEventListener("click", () => this.goCategory(b.dataset.category)));
     document.getElementById("btn-journal").addEventListener("click", () => this.journalOverlay());
     document.getElementById("btn-endday").addEventListener("click", () => this.endDayAsk());
     document.getElementById("btn-newgame").addEventListener("click", () => {
-      if (confirm("Start over? The current run will be lost.")) { Slice.reset(); this.go("home"); }
+      if (confirm("Start over? The current run will be lost.")) { Slice.reset(); this.goCategory("farm"); }
     });
     if (!Slice.state.introShown) {
       Slice.state.introShown = true;
@@ -24,27 +25,43 @@ const SUI = {
     this.refresh();
   },
 
+  goCategory(cat) {
+    this.category = cat;
+    this.scene = cat === "farm" ? "home" : "nursery";
+    this.refresh();
+  },
+
   go(scene) {
     this.scene = scene;
-    document.querySelectorAll("#scene-nav button").forEach(b =>
-      b.classList.toggle("active", b.dataset.scene === scene));
     this.refresh();
   },
 
   refresh() {
     const s = Slice.state;
-    document.querySelectorAll("#scene-nav button").forEach(b =>
-      b.classList.toggle("active", b.dataset.scene === this.scene));
+    document.querySelectorAll("#category-nav button").forEach(b =>
+      b.classList.toggle("active", b.dataset.category === this.category));
+    // sub-tabs belong to the current category (Avery 2026-10-12: Farm holds
+    // every farm location; Shop holds the stores)
+    const subs = this.category === "farm"
+      ? [["home", "🏠", "Farm"], ["field", "🌾", "Field"], ["kitchen", "🍳", "Kitchen"], ["stall", "🏪", "Stall"]]
+      : [["nursery", "🌱", "Nursery"]];
+    const nav = document.getElementById("scene-nav");
+    nav.innerHTML = subs.map(([id, emoji, label]) =>
+      `<button data-scene="${id}" class="${id === this.scene ? "active" : ""}">${emoji}<span>${label}</span></button>`).join("");
+    nav.querySelectorAll("button").forEach(b =>
+      b.addEventListener("click", () => this.go(b.dataset.scene)));
     document.getElementById("hud-coins").textContent = `🪙 ${s.coins}`;
     document.getElementById("hud-day").textContent = `☀️ Day ${s.day}`;
+    const baskets = (s.inv.earliglow || 0) + (s.inv.annapolis || 0) + (s.inv.honeoye || 0);
     document.getElementById("hud-inv").textContent =
-      `🧺 ${s.inv.earliglow} · 🫙 ${s.inv.compote}`;
+      `🧺 ${baskets} · 🫙 ${s.inv.compote}`;
     document.getElementById("hint-text").textContent = Slice.hint();
     const el = document.getElementById("scene");
     if (this.scene === "home") el.innerHTML = this.renderHome();
     else if (this.scene === "field") el.innerHTML = this.renderField();
     else if (this.scene === "kitchen") el.innerHTML = this.renderKitchen();
-    else el.innerHTML = this.renderStall();
+    else if (this.scene === "stall") el.innerHTML = this.renderStall();
+    else el.innerHTML = this.renderNursery();
     this.wireScene(el);
   },
 
@@ -56,7 +73,7 @@ const SUI = {
     let h = `<div class="scene-title">🏠 Starvale Farm <span class="sub">${this.daySub(s)}</span></div>`;
     if (!s.freshNoticeSeen)
       h += `<div class="card"><h3>🌱 A new season build — fresh start</h3>
-        <div class="sub">This version begins clean, with the day loop. Anything from the earlier demo is untouched.</div>
+        <div class="sub">This version begins clean, with the Nursery and planting. Anything from the earlier demo is untouched.</div>
         <div class="row" style="margin-top:8px"><button class="btn" data-act="fresh-ok">✔️<span>Got it</span></button></div></div>`;
     h += `<div class="card"><div class="row"><span class="bed-emoji">🍓</span>
       <div class="info" style="flex:1"><h3>The giant strawberry</h3>
@@ -92,6 +109,26 @@ const SUI = {
         </div>`}</div>`;
     }
     h += `<div class="card"><div class="sub">Baskets in hand: <strong>${s.inv.earliglow}</strong> Earliglow.</div></div>`;
+    // Nursery beds, one card each
+    for (const bed of s.beds) {
+      const v = VARIETIES[bed.variety];
+      let state, action = "";
+      if (bed.phase === "growing") {
+        state = `Growing in — first fruit in ${ECONOMY.growDays - bed.growNights} morning${ECONOMY.growDays - bed.growNights > 1 ? "s" : ""}.`;
+      } else if (bed.phase === "ready") {
+        state = `${bed.ripe} basket${bed.ripe > 1 ? "s" : ""} ripe on this bed.`;
+        action = `<div class="row" style="margin-top:8px"><button class="btn primary" data-act="harvest-bed" data-bed="${bed.id}">🧺<span>Harvest a basket</span></button></div>`;
+      } else {
+        state = bed.watered
+          ? "Watered. It's drinking — berries by tomorrow morning."
+          : "Resting. A drink would wake it by tomorrow morning — or let it rest and it'll wake the morning after.";
+        if (!bed.watered)
+          action = `<div class="row" style="margin-top:8px"><button class="btn primary" data-act="water-bed" data-bed="${bed.id}">💧<span>Water this bed</span></button></div>`;
+      }
+      h += `<div class="card"><div class="row"><span class="bed-emoji">${bed.phase === "ready" ? "🍓" : "🌱"}</span>
+        <div class="info" style="flex:1"><h3>${v.name} bed</h3>
+        <div class="sub">${state}</div></div></div>${action}</div>`;
+    }
     return h;
   },
 
@@ -117,12 +154,40 @@ const SUI = {
       <div class="info" style="flex:1"><h3>Strawberry Compote</h3>
       <div class="sub">In stock: <strong>${s.inv.compote}</strong> · sells for <strong>${ECONOMY.compoteSell} coins</strong>, paid immediately.</div></div></div>
       <div class="row" style="margin-top:8px">
-        <button class="btn primary" data-act="sell-ask">💰<span>Sell a jar</span></button>
+        <button class="btn primary" data-act="sell-ask" data-kind="compote">💰<span>Sell a jar</span></button>
       </div>
       <div class="sub" style="margin-top:6px">Everything the farm sells goes through this stall. No sale happens until you confirm it.</div></div>`;
+    // fresh baskets, one row per variety in hand
+    const baskets = [["earliglow", "Earliglow"], ["annapolis", "Annapolis"], ["honeoye", "Honeoye"]]
+      .filter(([k]) => (s.inv[k] || 0) > 0);
+    if (baskets.length) {
+      h += `<div class="card"><h3>🧺 Fresh baskets</h3>`;
+      for (const [k, name] of baskets) {
+        h += `<div class="row" style="margin-top:8px"><div class="info" style="flex:1"><div class="sub">${name} × <strong>${s.inv[k]}</strong> · sells for <strong>${ECONOMY.basketSell[k]} coins</strong> each</div></div>
+          <button class="btn primary" data-act="sell-ask" data-kind="${k}">💰<span>Sell one</span></button></div>`;
+      }
+      h += `</div>`;
+    }
     if (s.firstSaleDone)
       h += `<div class="card"><h3>🎉 Starvale's first sale</h3>
         <div class="sub">June took the first jar. ${s.sold} sold so far, ${s.coins} coins in the jar.</div></div>`;
+    return h;
+  },
+
+  renderNursery() {
+    const s = Slice.state;
+    let h = `<div class="scene-title">🌱 Nursery <span class="sub">${this.daySub(s)}</span></div>`;
+    h += `<div class="card"><div class="sub">Strawberry crowns, from the local supplier. Plant them and a new bed grows in the field — first fruit in three mornings.</div></div>`;
+    for (const [key, v] of Object.entries(VARIETIES)) {
+      const owned = s.beds.filter(b => b.variety === key).length;
+      h += `<div class="card"><div class="row"><span style="font-size:34px">🌱</span>
+        <div class="info" style="flex:1"><h3>${v.name} crowns</h3>
+        <div class="sub">${v.blurb} ${owned ? `(${owned} bed${owned > 1 ? "s" : ""} planted)` : ""}</div></div></div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn primary" data-act="buy-ask" data-variety="${key}">💰<span>Buy crowns — ${ECONOMY.plantCost[key]} coins</span></button>
+        </div></div>`;
+    }
+    h += `<div class="card"><div class="sub">The Hardware and Homewares stores open soon.</div></div>`;
     return h;
   },
 
@@ -135,9 +200,12 @@ const SUI = {
     let r;
     if (act === "nav") return this.go(b.dataset.to);
     if (act === "harvest") { r = Slice.harvest(); this.toast(r.msg); }
+    else if (act === "harvest-bed") { r = Slice.harvestBed(+b.dataset.bed); this.toast(r.msg); }
     else if (act === "water") { r = Slice.water(); this.toast(r.msg); }
+    else if (act === "water-bed") { r = Slice.waterBed(+b.dataset.bed); this.toast(r.msg); }
     else if (act === "cook") { r = Slice.cook(); this.toast(r.msg); }
-    else if (act === "sell-ask") return this.sellConfirm();
+    else if (act === "sell-ask") return this.sellConfirm(b.dataset.kind || "compote");
+    else if (act === "buy-ask") return this.buyAsk(b.dataset.variety);
     else if (act === "fresh-ok") { Slice.state.freshNoticeSeen = true; Slice.save(); }
     this.refresh();
   },
@@ -177,27 +245,57 @@ const SUI = {
   },
 
   /* ---------------- stall: explicit Sell -> Confirm ---------------- */
-  sellConfirm() {
+  sellConfirm(kind) {
     const s = Slice.state;
-    if ((s.inv.compote || 0) < 1) {
-      this.toast("Nothing to sell yet — the compote comes first.");
+    const isCompote = kind === "compote";
+    const name = isCompote ? "Strawberry Compote" : `${VARIETIES[kind]?.name || "Earliglow"} basket`;
+    const price = isCompote ? ECONOMY.compoteSell : ECONOMY.basketSell[kind];
+    const stock = isCompote ? s.inv.compote : s.inv[kind];
+    if ((stock || 0) < 1) {
+      this.toast(`Nothing to sell yet — no ${name.toLowerCase()} in hand.`);
       return;
     }
     // June gets the first jar only — every jar after that is just the stall.
-    const firstPending = !s.firstSaleDone;
+    const firstPending = isCompote && !s.firstSaleDone;
     this.openOverlay(`<h2>🏪 Stall</h2>
-      <div class="card"><h3>Sell 1 Strawberry Compote?</h3>
-      <div class="sub">${firstPending ? "June gets the jar. " : ""}You get <strong>${ECONOMY.compoteSell} coins</strong>, right away.</div></div>
+      <div class="card"><h3>Sell 1 ${name}?</h3>
+      <div class="sub">${firstPending ? "June gets the jar. " : ""}You get <strong>${price} coins</strong>, right away.</div></div>
       <div class="row"><button class="btn primary" id="sell-yes">💰<span>Confirm sale</span></button>
       <button class="btn" id="sell-no">↩️<span>Not yet</span></button></div>`);
     document.getElementById("sell-yes").addEventListener("click", () => {
-      const r = Slice.sell();
+      const r = Slice.sell(kind);
       document.getElementById("overlay-root").innerHTML = "";
       this.toast(r.msg);
       if (r.first) this.dialogue(JUNE_FIRST_SALE);
       this.refresh();
     });
     document.getElementById("sell-no").addEventListener("click", () => {
+      document.getElementById("overlay-root").innerHTML = "";
+    });
+  },
+
+  /* ---------------- nursery: explicit Buy -> Confirm ---------------- */
+  buyAsk(variety) {
+    const s = Slice.state;
+    const v = VARIETIES[variety];
+    if (!v) return;
+    const cost = ECONOMY.plantCost[variety];
+    if (s.coins < cost) {
+      this.toast(`Need ${cost} coins for ${v.name} crowns (have ${s.coins}). Sell something at the stall first.`);
+      return;
+    }
+    this.openOverlay(`<h2>🌱 Nursery</h2>
+      <div class="card"><h3>Buy ${v.name} crowns?</h3>
+      <div class="sub">${cost} coins. A new ${v.name} bed grows in the field — first fruit in three mornings.</div></div>
+      <div class="row"><button class="btn primary" id="buy-yes">💰<span>Confirm purchase</span></button>
+      <button class="btn" id="buy-no">↩️<span>Not yet</span></button></div>`);
+    document.getElementById("buy-yes").addEventListener("click", () => {
+      const r = Slice.plant(variety);
+      document.getElementById("overlay-root").innerHTML = "";
+      this.toast(r.msg);
+      this.refresh();
+    });
+    document.getElementById("buy-no").addEventListener("click", () => {
       document.getElementById("overlay-root").innerHTML = "";
     });
   },
